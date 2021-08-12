@@ -3,7 +3,7 @@
 
 Активация: /animhud.
 
-Требования: MoonLoader 026.5+, mimgui, MoonAdditions. (автоскачивания библиотек нет)
+Требования: MoonLoader 026.5+, [mimgui](https://github.com/THE-FYP/mimgui), [MoonAdditions](https://github.com/THE-FYP/MoonAdditions). (автоскачивания библиотек нет)
 
 Установка: Всё в moonloader
 
