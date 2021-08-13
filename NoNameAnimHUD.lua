@@ -14,7 +14,7 @@ script_author("deddosouru(идея), dmitriyewich")
 script_url("https://vk.com/dmitriyewichmods")
 script_dependencies("ffi", "memory", "vkeys", "mimgui", "MoonAdditions" )
 script_properties('work-in-pause', 'forced-reloading-only')
-script_version("1.0")
+script_version("1.1")
 
 
 local lvkeys, vkeys = pcall(require, 'vkeys')
@@ -31,6 +31,8 @@ local limgui, imgui = pcall(require, 'mimgui') -- https://github.com/THE-FYP/mim
 assert(limgui, 'Library \'mimgui\' not found.')
 
 local new, str, sizeof = imgui.new, ffi.string, ffi.sizeof
+
+local active = true
 
 local lencoding, encoding = pcall(require, 'encoding')
 assert(lencoding, 'Library \'encoding\' not found.')
@@ -894,11 +896,21 @@ local mainFrame = imgui.OnFrame(
 
 
 function main()
-	if not isSampfuncsLoaded() or not isSampLoaded() then return end
-	while not isSampAvailable() do wait(1000) end
-
-	sampRegisterChatCommand('animhud', function() main_window[0] = not main_window[0] end)
-	sampSetClientCommandDescription('animhud', (string.format(u8:decode'Активация/деактивация окна %s, Файл: %s', thisScript().name, thisScript().filename)))
+	-- if not isSampfuncsLoaded() or not isSampLoaded() then return end
+	-- while not isSampAvailable() do wait(1000) end
+	local samp = 0
+	
+	if isSampLoaded() then samp = 1 end
+	if samp == 1 then
+		while not isSampAvailable() do wait(1000) end
+		
+		sampRegisterChatCommand('animhud', function() main_window[0] = not main_window[0] end)
+		sampSetClientCommandDescription('animhud', (string.format(u8:decode'Активация/деактивация окна %s, Файл: %s', thisScript().name, thisScript().filename)))
+	end
+	
+-- sampDisconnectWithReason(quit)
+-- wait(5000)
+-- sampSetGamestate(1)
 
 	outline_anim, fist_anim, brassknuckle_anim, golfclub_anim, nitestick_anim, knifecur_anim, bat_anim, shovel_anim, poolcue_anim, katana_anim, chnsaw_anim, colt45_anim, silenced_anim, desert_eagle, chromegun, sawnoff_anim, shotgspa_anim, micro_uzi_anim, mp5lng_anim, tec9_anim, ak47_anim, m4, cuntgun_anim, sniper_anim, rocketla_anim, heatseek_anim, flame_anim, minigun_anim, grenade_anim, teargas_anim, molotov_anim, satchel_anim, spraycan_anim, fire_ex_anim, camera_anim, gun_dildo1_anim, gun_dildo2_anim, gun_vibe1_anim, gun_vibe2_anim, flowera_anim, gun_cane_anim, nvgoggles_anim, irgoggles_anim, gun_para_anim, bomb_anim = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
 
@@ -1879,363 +1891,366 @@ function main()
 	-----YYYYYYYYYYYYYYYYYY---
 
 	while true do wait(0)
-
-		-- renderDrawLine(convert_x(255.0), convert_y(0), convert_x(255), convert_y(448), 2.0, 0xFFD00000)
-
-		-- display_texture(outline_anim[i_outline_anim], convert_x(200), convert_y(100), convert_x(400), convert_y(200))
 	
+		if samp == 0 then
+			if testCheat("animhud") then main_window[0] = not main_window[0] end
+			if hasCutsceneLoaded() then active = false else active = true end
+		end
+		
+		if samp == 1 then
+			if sampGetGamestate() == 3 then active = true else active = false end
+		end
+
 		-------------------------------
+		local radar = memory.getint8(0xBA6769)
+		local hud = memory.getint8(0xA444A0)
+		if active and hud == 1 and radar == 1 then
+			if not standart_icons[0] and ((fist_anim_active and getCurrentCharWeapon(PLAYER_PED) == 0) or (brassknuckle_anim_active and getCurrentCharWeapon(PLAYER_PED) == 1) or (golfclub_anim_active and getCurrentCharWeapon(PLAYER_PED) == 2) or (nitestick_anim_active and getCurrentCharWeapon(PLAYER_PED) == 3) or 
+			(knifecur_anim_active and getCurrentCharWeapon(PLAYER_PED) == 4) or (bat_anim_active and getCurrentCharWeapon(PLAYER_PED) == 5) or (shovel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 6) or (poolcue_anim_active and getCurrentCharWeapon(PLAYER_PED) == 7) or
+			(katana_anim_active and getCurrentCharWeapon(PLAYER_PED) == 8) or (chnsaw_anim_active and getCurrentCharWeapon(PLAYER_PED) == 9) or (colt45_anim_active and getCurrentCharWeapon(PLAYER_PED) == 22) or (silenced_anim_active and getCurrentCharWeapon(PLAYER_PED) == 23) or
+			(desert_eagle_active and getCurrentCharWeapon(PLAYER_PED) == 24) or (chromegun_active and getCurrentCharWeapon(PLAYER_PED) == 25) or (sawnoff_anim_active and getCurrentCharWeapon(PLAYER_PED) == 26) or (shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27) or
+			(shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27) or (micro_uzi_anim_active and getCurrentCharWeapon(PLAYER_PED) == 28) or (mp5lng_anim_active and getCurrentCharWeapon(PLAYER_PED) == 29) or (tec9_anim_active and getCurrentCharWeapon(PLAYER_PED) == 32) or
+			(ak47_anim_active and getCurrentCharWeapon(PLAYER_PED) == 30) or (m4_active and getCurrentCharWeapon(PLAYER_PED) == 31) or (cuntgun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 33) or (sniper_anim_active and getCurrentCharWeapon(PLAYER_PED) == 34) or
+			(rocketla_anim_active and getCurrentCharWeapon(PLAYER_PED) == 35) or (heatseek_anim_active and getCurrentCharWeapon(PLAYER_PED) == 36) or (flame_anim_active and getCurrentCharWeapon(PLAYER_PED) == 37) or (minigun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 38) or (grenade_anim_active and getCurrentCharWeapon(PLAYER_PED) == 16) or
+			(teargas_anim_active and getCurrentCharWeapon(PLAYER_PED) == 17) or (molotov_anim_active and getCurrentCharWeapon(PLAYER_PED) == 18) or (satchel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 39) or (spraycan_anim_active and getCurrentCharWeapon(PLAYER_PED) == 41) or (fire_ex_anim_active and getCurrentCharWeapon(PLAYER_PED) == 42) or
+			(camera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 43) or (gun_dildo1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 10) or (gun_dildo2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 11) or (gun_vibe1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 12) or (gun_vibe2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 13) or
+			(flowera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 14) or (gun_cane_anim_active and getCurrentCharWeapon(PLAYER_PED) == 15) or (nvgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 44) or (irgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 45) or (gun_para_anim_active and getCurrentCharWeapon(PLAYER_PED) == 46) or (bomb_anim_active and getCurrentCharWeapon(PLAYER_PED) == 40)) then -- ПОТОМ ОПТИМИЗИРУЮ
+				memory.write(0x58D7D0, 195, 1, true) -- Выключить иконки.
+			else
+				memory.write(0x58D7D0, 161, 1, true) -- Включить иконки.
+			end
 
-		if not standart_icons[0] and ((fist_anim_active and getCurrentCharWeapon(PLAYER_PED) == 0) or (brassknuckle_anim_active and getCurrentCharWeapon(PLAYER_PED) == 1) or (golfclub_anim_active and getCurrentCharWeapon(PLAYER_PED) == 2) or (nitestick_anim_active and getCurrentCharWeapon(PLAYER_PED) == 3) or 
-		(knifecur_anim_active and getCurrentCharWeapon(PLAYER_PED) == 4) or (bat_anim_active and getCurrentCharWeapon(PLAYER_PED) == 5) or (shovel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 6) or (poolcue_anim_active and getCurrentCharWeapon(PLAYER_PED) == 7) or
-		(katana_anim_active and getCurrentCharWeapon(PLAYER_PED) == 8) or (chnsaw_anim_active and getCurrentCharWeapon(PLAYER_PED) == 9) or (colt45_anim_active and getCurrentCharWeapon(PLAYER_PED) == 22) or (silenced_anim_active and getCurrentCharWeapon(PLAYER_PED) == 23) or
-		(desert_eagle_active and getCurrentCharWeapon(PLAYER_PED) == 24) or (chromegun_active and getCurrentCharWeapon(PLAYER_PED) == 25) or (sawnoff_anim_active and getCurrentCharWeapon(PLAYER_PED) == 26) or (shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27) or
-		(shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27) or (micro_uzi_anim_active and getCurrentCharWeapon(PLAYER_PED) == 28) or (mp5lng_anim_active and getCurrentCharWeapon(PLAYER_PED) == 29) or (tec9_anim_active and getCurrentCharWeapon(PLAYER_PED) == 32) or
-		(ak47_anim_active and getCurrentCharWeapon(PLAYER_PED) == 30) or (m4_active and getCurrentCharWeapon(PLAYER_PED) == 31) or (cuntgun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 33) or (sniper_anim_active and getCurrentCharWeapon(PLAYER_PED) == 34) or
-		(rocketla_anim_active and getCurrentCharWeapon(PLAYER_PED) == 35) or (heatseek_anim_active and getCurrentCharWeapon(PLAYER_PED) == 36) or (flame_anim_active and getCurrentCharWeapon(PLAYER_PED) == 37) or (minigun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 38) or (grenade_anim_active and getCurrentCharWeapon(PLAYER_PED) == 16) or
-		(teargas_anim_active and getCurrentCharWeapon(PLAYER_PED) == 17) or (molotov_anim_active and getCurrentCharWeapon(PLAYER_PED) == 18) or (satchel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 39) or (spraycan_anim_active and getCurrentCharWeapon(PLAYER_PED) == 41) or (fire_ex_anim_active and getCurrentCharWeapon(PLAYER_PED) == 42) or
-		(camera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 43) or (gun_dildo1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 10) or (gun_dildo2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 11) or (gun_vibe1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 12) or (gun_vibe2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 13) or
-		(flowera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 14) or (gun_cane_anim_active and getCurrentCharWeapon(PLAYER_PED) == 15) or (nvgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 44) or (irgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 45) or (gun_para_anim_active and getCurrentCharWeapon(PLAYER_PED) == 46) or (bomb_anim_active and getCurrentCharWeapon(PLAYER_PED) == 40)) then -- ПОТОМ ОПТИМИЗИРУЮ
-			memory.write(0x58D7D0, 195, 1, true) -- Выключить иконки.
-		else
-			memory.write(0x58D7D0, 161, 1, true) -- Включить иконки.
-		end
+			if not standart_icons[0] and fist_anim_active and getCurrentCharWeapon(PLAYER_PED) == 0 then
+				i_frames_max = #fist_anim
+				i_delay = config.fist_anim.delay
+				i_delay_replay = config.fist_anim.delay_replay
+				
+				display_texture(fist_anim[i_frames], convert_x(GetX_Icons() + config.fist_anim.customX1) , convert_y(GetY_Icons() + config.fist_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.fist_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.fist_anim.customY2))
+			end
 
-		if not standart_icons[0] and fist_anim_active and getCurrentCharWeapon(PLAYER_PED) == 0 then
-			i_frames_max = #fist_anim
-			i_delay = config.fist_anim.delay
-			i_delay_replay = config.fist_anim.delay_replay
+			if not standart_icons[0] and brassknuckle_anim_active and getCurrentCharWeapon(PLAYER_PED) == 1 then
+				i_delay = config.brassknuckle_anim.delay
+				i_delay_replay = config.brassknuckle_anim.delay_replay
+				i_frames_max = #brassknuckle_anim
+				display_texture(brassknuckle_anim[i_frames], convert_x(GetX_Icons() + config.brassknuckle_anim.customX1) , convert_y(GetY_Icons() + config.brassknuckle_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.brassknuckle_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.brassknuckle_anim.customY2))
+			end
 			
-			display_texture(fist_anim[i_frames], convert_x(GetX_Icons() + config.fist_anim.customX1) , convert_y(GetY_Icons() + config.fist_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.fist_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.fist_anim.customY2))
-		end
+			if not standart_icons[0] and golfclub_anim_active and getCurrentCharWeapon(PLAYER_PED) == 2 then
+				i_delay = config.golfclub_anim.delay
+				i_delay_replay = config.golfclub_anim.delay_replay
+				i_frames_max = #golfclub_anim
+				display_texture(golfclub_anim[i_frames], convert_x(GetX_Icons() + config.golfclub_anim.customX1) , convert_y(GetY_Icons() + config.golfclub_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.golfclub_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.golfclub_anim.customY2))
+			end
+			
+			if not standart_icons[0] and nitestick_anim_active and getCurrentCharWeapon(PLAYER_PED) == 3 then
+				i_delay = config.nitestick_anim.delay
+				i_delay_replay = config.nitestick_anim.delay_replay
+				i_frames_max = #nitestick_anim
+				display_texture(nitestick_anim[i_frames], convert_x(GetX_Icons() + config.nitestick_anim.customX1) , convert_y(GetY_Icons() + config.nitestick_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.nitestick_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.nitestick_anim.customY2))
+			end
+			
+			if not standart_icons[0] and knifecur_anim_active and getCurrentCharWeapon(PLAYER_PED) == 4 then
+				i_delay = config.knifecur_anim.delay
+				i_delay_replay = config.knifecur_anim.delay_replay
+				i_frames_max = #knifecur_anim
+				display_texture(knifecur_anim[i_frames], convert_x(GetX_Icons() + config.knifecur_anim.customX1) , convert_y(GetY_Icons() + config.knifecur_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.knifecur_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.knifecur_anim.customY2))
+			end
+			
+			if not standart_icons[0] and bat_anim_active and getCurrentCharWeapon(PLAYER_PED) == 5 then
+				i_delay = config.bat_anim.delay
+				i_delay_replay = config.bat_anim.delay_replay
+				i_frames_max = #bat_anim
+				display_texture(bat_anim[i_frames], convert_x(GetX_Icons() + config.bat_anim.customX1) , convert_y(GetY_Icons() + config.bat_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.bat_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.bat_anim.customY2))
+			end
+			
+			if not standart_icons[0] and shovel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 6 then
+				i_delay = config.shovel_anim.delay
+				i_delay_replay = config.shovel_anim.delay_replay
+				i_frames_max = #shovel_anim
+				display_texture(shovel_anim[i_frames], convert_x(GetX_Icons() + config.shovel_anim.customX1) , convert_y(GetY_Icons() + config.shovel_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.shovel_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.shovel_anim.customY2))
+			end
 
-		if not standart_icons[0] and brassknuckle_anim_active and getCurrentCharWeapon(PLAYER_PED) == 1 then
-			i_delay = config.brassknuckle_anim.delay
-			i_delay_replay = config.brassknuckle_anim.delay_replay
-			i_frames_max = #brassknuckle_anim
-			display_texture(brassknuckle_anim[i_frames], convert_x(GetX_Icons() + config.brassknuckle_anim.customX1) , convert_y(GetY_Icons() + config.brassknuckle_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.brassknuckle_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.brassknuckle_anim.customY2))
-		end
-		
-		if not standart_icons[0] and golfclub_anim_active and getCurrentCharWeapon(PLAYER_PED) == 2 then
-			i_delay = config.golfclub_anim.delay
-			i_delay_replay = config.golfclub_anim.delay_replay
-			i_frames_max = #golfclub_anim
-			display_texture(golfclub_anim[i_frames], convert_x(GetX_Icons() + config.golfclub_anim.customX1) , convert_y(GetY_Icons() + config.golfclub_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.golfclub_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.golfclub_anim.customY2))
-		end
-		
-		if not standart_icons[0] and nitestick_anim_active and getCurrentCharWeapon(PLAYER_PED) == 3 then
-			i_delay = config.nitestick_anim.delay
-			i_delay_replay = config.nitestick_anim.delay_replay
-			i_frames_max = #nitestick_anim
-			display_texture(nitestick_anim[i_frames], convert_x(GetX_Icons() + config.nitestick_anim.customX1) , convert_y(GetY_Icons() + config.nitestick_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.nitestick_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.nitestick_anim.customY2))
-		end
-		
-		if not standart_icons[0] and knifecur_anim_active and getCurrentCharWeapon(PLAYER_PED) == 4 then
-			i_delay = config.knifecur_anim.delay
-			i_delay_replay = config.knifecur_anim.delay_replay
-			i_frames_max = #knifecur_anim
-			display_texture(knifecur_anim[i_frames], convert_x(GetX_Icons() + config.knifecur_anim.customX1) , convert_y(GetY_Icons() + config.knifecur_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.knifecur_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.knifecur_anim.customY2))
-		end
-		
-		if not standart_icons[0] and bat_anim_active and getCurrentCharWeapon(PLAYER_PED) == 5 then
-			i_delay = config.bat_anim.delay
-			i_delay_replay = config.bat_anim.delay_replay
-			i_frames_max = #bat_anim
-			display_texture(bat_anim[i_frames], convert_x(GetX_Icons() + config.bat_anim.customX1) , convert_y(GetY_Icons() + config.bat_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.bat_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.bat_anim.customY2))
-		end
-		
-		if not standart_icons[0] and shovel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 6 then
-			i_delay = config.shovel_anim.delay
-			i_delay_replay = config.shovel_anim.delay_replay
-			i_frames_max = #shovel_anim
-			display_texture(shovel_anim[i_frames], convert_x(GetX_Icons() + config.shovel_anim.customX1) , convert_y(GetY_Icons() + config.shovel_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.shovel_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.shovel_anim.customY2))
-		end
+			if not standart_icons[0] and poolcue_anim_active and getCurrentCharWeapon(PLAYER_PED) == 7 then
+				i_delay = config.poolcue_anim.delay
+				i_delay_replay = config.poolcue_anim.delay_replay
+				i_frames_max = #poolcue_anim
+				display_texture(poolcue_anim[i_frames], convert_x(GetX_Icons() + config.poolcue_anim.customX1) , convert_y(GetY_Icons() + config.poolcue_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.poolcue_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.poolcue_anim.customY2))
+			end
+			
+			if not standart_icons[0] and katana_anim_active and getCurrentCharWeapon(PLAYER_PED) == 8 then
+				i_delay = config.katana_anim.delay
+				i_delay_replay = config.katana_anim.delay_replay
+				i_frames_max = #katana_anim
+				display_texture(katana_anim[i_frames], convert_x(GetX_Icons() + config.katana_anim.customX1) , convert_y(GetY_Icons() + config.katana_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.katana_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.katana_anim.customY2))
+			end
+			
+			if not standart_icons[0] and chnsaw_anim_active and getCurrentCharWeapon(PLAYER_PED) == 9 then
+				i_delay = config.chnsaw_anim.delay
+				i_delay_replay = config.chnsaw_anim.delay_replay
+				i_frames_max = #chnsaw_anim
+				display_texture(chnsaw_anim[i_frames], convert_x(GetX_Icons() + config.chnsaw_anim.customX1) , convert_y(GetY_Icons() + config.chnsaw_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.chnsaw_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.chnsaw_anim.customY2))
+			end
+			
+			if not standart_icons[0] and colt45_anim_active and getCurrentCharWeapon(PLAYER_PED) == 22 then
+				i_delay = config.colt45_anim.delay
+				i_delay_replay = config.colt45_anim.delay_replay
+				i_frames_max = #colt45_anim
+				display_texture(colt45_anim[i_frames], convert_x(GetX_Icons() + config.colt45_anim.customX1) , convert_y(GetY_Icons() + config.colt45_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.colt45_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.colt45_anim.customY2))
+			end
+			
+			if not standart_icons[0] and silenced_anim_active and getCurrentCharWeapon(PLAYER_PED) == 23 then
+				i_delay = config.silenced_anim.delay
+				i_delay_replay = config.silenced_anim.delay_replay
+				i_frames_max = #silenced_anim
+				display_texture(silenced_anim[i_frames], convert_x(GetX_Icons() + config.silenced_anim.customX1) , convert_y(GetY_Icons() + config.silenced_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.silenced_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.silenced_anim.customY2))
+			end
+			
+			if not standart_icons[0] and desert_eagle_active and getCurrentCharWeapon(PLAYER_PED) == 24 then
+				i_frames_max = #desert_eagle
+				i_delay = config.desert_eagle.delay
+				i_delay_replay = config.desert_eagle.delay_replay
+				display_texture(desert_eagle[i_frames], convert_x(GetX_Icons() + config.desert_eagle.customX1) , convert_y(GetY_Icons() + config.desert_eagle.customY1), convert_x((GetX_Icons() + width_icons().x) + config.desert_eagle.customX2), convert_y((GetY_Icons() + width_icons().y) + config.desert_eagle.customY2))
+			end
+			
+			if not standart_icons[0] and chromegun_active and getCurrentCharWeapon(PLAYER_PED) == 25 then
+				i_frames_max = #chromegun
+				i_delay = config.chromegun.delay
+				i_delay_replay = config.chromegun.delay_replay
+				display_texture(chromegun[i_frames], convert_x(GetX_Icons() + config.chromegun.customX1) , convert_y(GetY_Icons() + config.chromegun.customY1), convert_x((GetX_Icons() + width_icons().x) + config.chromegun.customX2), convert_y((GetY_Icons() + width_icons().y) + config.chromegun.customY2))
+			end
+			
+			if not standart_icons[0] and sawnoff_anim_active and getCurrentCharWeapon(PLAYER_PED) == 26 then
+				i_frames_max = #sawnoff_anim
+				i_delay = config.sawnoff_anim.delay
+				i_delay_replay = config.sawnoff_anim.delay_replay
+				display_texture(sawnoff_anim[i_frames], convert_x(GetX_Icons() + config.sawnoff_anim.customX1) , convert_y(GetY_Icons() + config.sawnoff_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.sawnoff_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.sawnoff_anim.customY2))
+			end
+			
+			if not standart_icons[0] and shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27 then
+				i_frames_max = #shotgspa_anim
+				i_delay = config.shotgspa_anim.delay
+				i_delay_replay = config.shotgspa_anim.delay_replay
+				display_texture(shotgspa_anim[i_frames], convert_x(GetX_Icons() + config.shotgspa_anim.customX1) , convert_y(GetY_Icons() + config.shotgspa_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.shotgspa_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.shotgspa_anim.customY2))
+			end
+			
+			if not standart_icons[0] and shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27 then
+				i_frames_max = #shotgspa_anim
+				i_delay = config.shotgspa_anim.delay
+				i_delay_replay = config.shotgspa_anim.delay_replay
+				display_texture(shotgspa_anim[i_frames], convert_x(GetX_Icons() + config.shotgspa_anim.customX1) , convert_y(GetY_Icons() + config.shotgspa_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.shotgspa_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.shotgspa_anim.customY2))
+			end
+			
+			if not standart_icons[0] and micro_uzi_anim_active and getCurrentCharWeapon(PLAYER_PED) == 28 then
+				i_frames_max = #micro_uzi_anim
+				i_delay = config.micro_uzi_anim.delay
+				i_delay_replay = config.micro_uzi_anim.delay_replay
+				display_texture(micro_uzi_anim[i_frames], convert_x(GetX_Icons() + config.micro_uzi_anim.customX1) , convert_y(GetY_Icons() + config.micro_uzi_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.micro_uzi_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.micro_uzi_anim.customY2))
+			end
 
-		if not standart_icons[0] and poolcue_anim_active and getCurrentCharWeapon(PLAYER_PED) == 7 then
-			i_delay = config.poolcue_anim.delay
-			i_delay_replay = config.poolcue_anim.delay_replay
-			i_frames_max = #poolcue_anim
-			display_texture(poolcue_anim[i_frames], convert_x(GetX_Icons() + config.poolcue_anim.customX1) , convert_y(GetY_Icons() + config.poolcue_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.poolcue_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.poolcue_anim.customY2))
-		end
-		
-		if not standart_icons[0] and katana_anim_active and getCurrentCharWeapon(PLAYER_PED) == 8 then
-			i_delay = config.katana_anim.delay
-			i_delay_replay = config.katana_anim.delay_replay
-			i_frames_max = #katana_anim
-			display_texture(katana_anim[i_frames], convert_x(GetX_Icons() + config.katana_anim.customX1) , convert_y(GetY_Icons() + config.katana_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.katana_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.katana_anim.customY2))
-		end
-		
-		if not standart_icons[0] and chnsaw_anim_active and getCurrentCharWeapon(PLAYER_PED) == 9 then
-			i_delay = config.chnsaw_anim.delay
-			i_delay_replay = config.chnsaw_anim.delay_replay
-			i_frames_max = #chnsaw_anim
-			display_texture(chnsaw_anim[i_frames], convert_x(GetX_Icons() + config.chnsaw_anim.customX1) , convert_y(GetY_Icons() + config.chnsaw_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.chnsaw_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.chnsaw_anim.customY2))
-		end
-		
-		if not standart_icons[0] and colt45_anim_active and getCurrentCharWeapon(PLAYER_PED) == 22 then
-			i_delay = config.colt45_anim.delay
-			i_delay_replay = config.colt45_anim.delay_replay
-			i_frames_max = #colt45_anim
-			display_texture(colt45_anim[i_frames], convert_x(GetX_Icons() + config.colt45_anim.customX1) , convert_y(GetY_Icons() + config.colt45_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.colt45_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.colt45_anim.customY2))
-		end
-		
-		if not standart_icons[0] and silenced_anim_active and getCurrentCharWeapon(PLAYER_PED) == 23 then
-			i_delay = config.silenced_anim.delay
-			i_delay_replay = config.silenced_anim.delay_replay
-			i_frames_max = #silenced_anim
-			display_texture(silenced_anim[i_frames], convert_x(GetX_Icons() + config.silenced_anim.customX1) , convert_y(GetY_Icons() + config.silenced_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.silenced_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.silenced_anim.customY2))
-		end
-		
-		if not standart_icons[0] and desert_eagle_active and getCurrentCharWeapon(PLAYER_PED) == 24 then
-			i_frames_max = #desert_eagle
-			i_delay = config.desert_eagle.delay
-			i_delay_replay = config.desert_eagle.delay_replay
-			display_texture(desert_eagle[i_frames], convert_x(GetX_Icons() + config.desert_eagle.customX1) , convert_y(GetY_Icons() + config.desert_eagle.customY1), convert_x((GetX_Icons() + width_icons().x) + config.desert_eagle.customX2), convert_y((GetY_Icons() + width_icons().y) + config.desert_eagle.customY2))
-		end
-		
-		if not standart_icons[0] and chromegun_active and getCurrentCharWeapon(PLAYER_PED) == 25 then
-			i_frames_max = #chromegun
-			i_delay = config.chromegun.delay
-			i_delay_replay = config.chromegun.delay_replay
-			display_texture(chromegun[i_frames], convert_x(GetX_Icons() + config.chromegun.customX1) , convert_y(GetY_Icons() + config.chromegun.customY1), convert_x((GetX_Icons() + width_icons().x) + config.chromegun.customX2), convert_y((GetY_Icons() + width_icons().y) + config.chromegun.customY2))
-		end
-		
-		if not standart_icons[0] and sawnoff_anim_active and getCurrentCharWeapon(PLAYER_PED) == 26 then
-			i_frames_max = #sawnoff_anim
-			i_delay = config.sawnoff_anim.delay
-			i_delay_replay = config.sawnoff_anim.delay_replay
-			display_texture(sawnoff_anim[i_frames], convert_x(GetX_Icons() + config.sawnoff_anim.customX1) , convert_y(GetY_Icons() + config.sawnoff_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.sawnoff_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.sawnoff_anim.customY2))
-		end
-		
-		if not standart_icons[0] and shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27 then
-			i_frames_max = #shotgspa_anim
-			i_delay = config.shotgspa_anim.delay
-			i_delay_replay = config.shotgspa_anim.delay_replay
-			display_texture(shotgspa_anim[i_frames], convert_x(GetX_Icons() + config.shotgspa_anim.customX1) , convert_y(GetY_Icons() + config.shotgspa_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.shotgspa_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.shotgspa_anim.customY2))
-		end
-		
-		if not standart_icons[0] and shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27 then
-			i_frames_max = #shotgspa_anim
-			i_delay = config.shotgspa_anim.delay
-			i_delay_replay = config.shotgspa_anim.delay_replay
-			display_texture(shotgspa_anim[i_frames], convert_x(GetX_Icons() + config.shotgspa_anim.customX1) , convert_y(GetY_Icons() + config.shotgspa_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.shotgspa_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.shotgspa_anim.customY2))
-		end
-		
-		if not standart_icons[0] and micro_uzi_anim_active and getCurrentCharWeapon(PLAYER_PED) == 28 then
-			i_frames_max = #micro_uzi_anim
-			i_delay = config.micro_uzi_anim.delay
-			i_delay_replay = config.micro_uzi_anim.delay_replay
-			display_texture(micro_uzi_anim[i_frames], convert_x(GetX_Icons() + config.micro_uzi_anim.customX1) , convert_y(GetY_Icons() + config.micro_uzi_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.micro_uzi_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.micro_uzi_anim.customY2))
-		end
+			if not standart_icons[0] and mp5lng_anim_active and getCurrentCharWeapon(PLAYER_PED) == 29 then
+				i_frames_max = #mp5lng_anim
+				i_delay = config.mp5lng_anim.delay
+				i_delay_replay = config.mp5lng_anim.delay_replay
+				display_texture(mp5lng_anim[i_frames], convert_x(GetX_Icons() + config.mp5lng_anim.customX1) , convert_y(GetY_Icons() + config.mp5lng_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.mp5lng_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.mp5lng_anim.customY2))
+			end
 
-		if not standart_icons[0] and mp5lng_anim_active and getCurrentCharWeapon(PLAYER_PED) == 29 then
-			i_frames_max = #mp5lng_anim
-			i_delay = config.mp5lng_anim.delay
-			i_delay_replay = config.mp5lng_anim.delay_replay
-			display_texture(mp5lng_anim[i_frames], convert_x(GetX_Icons() + config.mp5lng_anim.customX1) , convert_y(GetY_Icons() + config.mp5lng_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.mp5lng_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.mp5lng_anim.customY2))
-		end
+			if not standart_icons[0] and tec9_anim_active and getCurrentCharWeapon(PLAYER_PED) == 32 then
+				i_frames_max = #tec9_anim
+				i_delay = config.tec9_anim.delay
+				i_delay_replay = config.tec9_anim.delay_replay
+				display_texture(tec9_anim[i_frames], convert_x(GetX_Icons() + config.tec9_anim.customX1) , convert_y(GetY_Icons() + config.tec9_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.tec9_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.tec9_anim.customY2))
+			end
 
-		if not standart_icons[0] and tec9_anim_active and getCurrentCharWeapon(PLAYER_PED) == 32 then
-			i_frames_max = #tec9_anim
-			i_delay = config.tec9_anim.delay
-			i_delay_replay = config.tec9_anim.delay_replay
-			display_texture(tec9_anim[i_frames], convert_x(GetX_Icons() + config.tec9_anim.customX1) , convert_y(GetY_Icons() + config.tec9_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.tec9_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.tec9_anim.customY2))
-		end
+			if not standart_icons[0] and ak47_anim_active and getCurrentCharWeapon(PLAYER_PED) == 30 then
+				i_frames_max = #ak47_anim
+				i_delay = config.ak47_anim.delay
+				i_delay_replay = config.ak47_anim.delay_replay
+				display_texture(ak47_anim[i_frames], convert_x(GetX_Icons() + config.ak47_anim.customX1) , convert_y(GetY_Icons() + config.ak47_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.ak47_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.ak47_anim.customY2))
+			end
 
-		if not standart_icons[0] and ak47_anim_active and getCurrentCharWeapon(PLAYER_PED) == 30 then
-			i_frames_max = #ak47_anim
-			i_delay = config.ak47_anim.delay
-			i_delay_replay = config.ak47_anim.delay_replay
-			display_texture(ak47_anim[i_frames], convert_x(GetX_Icons() + config.ak47_anim.customX1) , convert_y(GetY_Icons() + config.ak47_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.ak47_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.ak47_anim.customY2))
-		end
+			if not standart_icons[0] and m4_active and getCurrentCharWeapon(PLAYER_PED) == 31 then
+				i_frames_max = #m4
+				i_delay = config.m4.delay
+				i_delay_replay = config.m4.delay_replay
+				display_texture(m4[i_frames], convert_x(GetX_Icons() + config.m4.customX1) , convert_y(GetY_Icons() + config.m4.customY1), convert_x((GetX_Icons() + width_icons().x) + config.m4.customX2), convert_y((GetY_Icons() + width_icons().y) + config.m4.customY2))
+			end
 
-		if not standart_icons[0] and m4_active and getCurrentCharWeapon(PLAYER_PED) == 31 then
-			i_frames_max = #m4
-			i_delay = config.m4.delay
-			i_delay_replay = config.m4.delay_replay
-			display_texture(m4[i_frames], convert_x(GetX_Icons() + config.m4.customX1) , convert_y(GetY_Icons() + config.m4.customY1), convert_x((GetX_Icons() + width_icons().x) + config.m4.customX2), convert_y((GetY_Icons() + width_icons().y) + config.m4.customY2))
-		end
+			if not standart_icons[0] and cuntgun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 33 then
+				i_frames_max = #cuntgun_anim
+				i_delay = config.cuntgun_anim.delay
+				i_delay_replay = config.cuntgun_anim.delay_replay
+				display_texture(cuntgun_anim[i_frames], convert_x(GetX_Icons() + config.cuntgun_anim.customX1) , convert_y(GetY_Icons() + config.cuntgun_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.cuntgun_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.cuntgun_anim.customY2))
+			end
+			
+			if not standart_icons[0] and sniper_anim_active and getCurrentCharWeapon(PLAYER_PED) == 34 then
+				i_frames_max = #sniper_anim
+				i_delay = config.sniper_anim.delay
+				i_delay_replay = config.sniper_anim.delay_replay
+				display_texture(sniper_anim[i_frames], convert_x(GetX_Icons() + config.sniper_anim.customX1) , convert_y(GetY_Icons() + config.sniper_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.sniper_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.sniper_anim.customY2))
+			end
+			
+			if not standart_icons[0] and rocketla_anim_active and getCurrentCharWeapon(PLAYER_PED) == 35 then
+				i_frames_max = #rocketla_anim
+				i_delay = config.rocketla_anim.delay
+				i_delay_replay = config.rocketla_anim.delay_replay
+				display_texture(rocketla_anim[i_frames], convert_x(GetX_Icons() + config.rocketla_anim.customX1) , convert_y(GetY_Icons() + config.rocketla_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.rocketla_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.rocketla_anim.customY2))
+			end
+			
+			if not standart_icons[0] and heatseek_anim_active and getCurrentCharWeapon(PLAYER_PED) == 36 then
+				i_frames_max = #heatseek_anim
+				i_delay = config.heatseek_anim.delay
+				i_delay_replay = config.heatseek_anim.delay_replay
+				display_texture(heatseek_anim[i_frames], convert_x(GetX_Icons() + config.heatseek_anim.customX1) , convert_y(GetY_Icons() + config.heatseek_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.heatseek_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.heatseek_anim.customY2))
+			end
+			
+			if not standart_icons[0] and flame_anim_active and getCurrentCharWeapon(PLAYER_PED) == 37 then
+				i_frames_max = #flame_anim
+				i_delay = config.flame_anim.delay
+				i_delay_replay = config.flame_anim.delay_replay
+				display_texture(flame_anim[i_frames], convert_x(GetX_Icons() + config.flame_anim.customX1) , convert_y(GetY_Icons() + config.flame_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.flame_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.flame_anim.customY2))
+			end
+			
+			if not standart_icons[0] and minigun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 38 then
+				i_frames_max = #minigun_anim
+				i_delay = config.minigun_anim.delay
+				i_delay_replay = config.minigun_anim.delay_replay
+				display_texture(minigun_anim[i_frames], convert_x(GetX_Icons() + config.minigun_anim.customX1) , convert_y(GetY_Icons() + config.minigun_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.minigun_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.minigun_anim.customY2))
+			end
+			
+			if not standart_icons[0] and grenade_anim_active and getCurrentCharWeapon(PLAYER_PED) == 16 then
+				i_frames_max = #grenade_anim
+				i_delay = config.grenade_anim.delay
+				i_delay_replay = config.grenade_anim.delay_replay
+				display_texture(grenade_anim[i_frames], convert_x(GetX_Icons() + config.grenade_anim.customX1) , convert_y(GetY_Icons() + config.grenade_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.grenade_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.grenade_anim.customY2))
+			end
+			
+			if not standart_icons[0] and teargas_anim_active and getCurrentCharWeapon(PLAYER_PED) == 17 then
+				i_frames_max = #teargas_anim
+				i_delay = config.teargas_anim.delay
+				i_delay_replay = config.teargas_anim.delay_replay
+				display_texture(teargas_anim[i_frames], convert_x(GetX_Icons() + config.teargas_anim.customX1) , convert_y(GetY_Icons() + config.teargas_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.teargas_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.teargas_anim.customY2))
+			end
+			
+			if not standart_icons[0] and molotov_anim_active and getCurrentCharWeapon(PLAYER_PED) == 18 then
+				i_frames_max = #molotov_anim
+				i_delay = config.molotov_anim.delay
+				i_delay_replay = config.molotov_anim.delay_replay
+				display_texture(molotov_anim[i_frames], convert_x(GetX_Icons() + config.molotov_anim.customX1) , convert_y(GetY_Icons() + config.molotov_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.molotov_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.molotov_anim.customY2))
+			end
+			
+			if not standart_icons[0] and satchel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 39 then
+				i_frames_max = #satchel_anim
+				i_delay = config.satchel_anim.delay
+				i_delay_replay = config.satchel_anim.delay_replay
+				display_texture(satchel_anim[i_frames], convert_x(GetX_Icons() + config.satchel_anim.customX1) , convert_y(GetY_Icons() + config.satchel_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.satchel_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.satchel_anim.customY2))
+			end
+			
+			if not standart_icons[0] and spraycan_anim_active and getCurrentCharWeapon(PLAYER_PED) == 41 then
+				i_frames_max = #spraycan_anim
+				i_delay = config.spraycan_anim.delay
+				i_delay_replay = config.spraycan_anim.delay_replay
+				display_texture(spraycan_anim[i_frames], convert_x(GetX_Icons() + config.spraycan_anim.customX1) , convert_y(GetY_Icons() + config.spraycan_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.spraycan_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.spraycan_anim.customY2))
+			end
+			
+			if not standart_icons[0] and fire_ex_anim_active and getCurrentCharWeapon(PLAYER_PED) == 42 then
+				i_frames_max = #fire_ex_anim
+				i_delay = config.fire_ex_anim.delay
+				i_delay_replay = config.fire_ex_anim.delay_replay
+				display_texture(fire_ex_anim[i_frames], convert_x(GetX_Icons() + config.fire_ex_anim.customX1) , convert_y(GetY_Icons() + config.fire_ex_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.fire_ex_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.fire_ex_anim.customY2))
+			end
+			
+			if not standart_icons[0] and camera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 43 then
+				i_frames_max = #camera_anim
+				i_delay = config.camera_anim.delay
+				i_delay_replay = config.camera_anim.delay_replay
+				display_texture(camera_anim[i_frames], convert_x(GetX_Icons() + config.camera_anim.customX1) , convert_y(GetY_Icons() + config.camera_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.camera_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.camera_anim.customY2))
+			end
+			
+			if not standart_icons[0] and gun_dildo1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 10 then
+				i_frames_max = #gun_dildo1_anim
+				i_delay = config.gun_dildo1_anim.delay
+				i_delay_replay = config.gun_dildo1_anim.delay_replay
+				display_texture(gun_dildo1_anim[i_frames], convert_x(GetX_Icons() + config.gun_dildo1_anim.customX1) , convert_y(GetY_Icons() + config.gun_dildo1_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_dildo1_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_dildo1_anim.customY2))
+			end
+			
+			if not standart_icons[0] and gun_dildo2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 11 then
+				i_frames_max = #gun_dildo2_anim
+				i_delay = config.gun_dildo2_anim.delay
+				i_delay_replay = config.gun_dildo2_anim.delay_replay
+				display_texture(gun_dildo2_anim[i_frames], convert_x(GetX_Icons() + config.gun_dildo2_anim.customX1) , convert_y(GetY_Icons() + config.gun_dildo2_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_dildo2_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_dildo2_anim.customY2))
+			end
+			
+			if not standart_icons[0] and gun_vibe1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 12 then
+				i_frames_max = #gun_vibe1_anim
+				i_delay = config.gun_vibe1_anim.delay
+				i_delay_replay = config.gun_vibe1_anim.delay_replay
+				display_texture(gun_vibe1_anim[i_frames], convert_x(GetX_Icons() + config.gun_vibe1_anim.customX1) , convert_y(GetY_Icons() + config.gun_vibe1_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_vibe1_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_vibe1_anim.customY2))
+			end
+			
+			if not standart_icons[0] and gun_vibe2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 13 then
+				i_frames_max = #gun_vibe2_anim
+				i_delay = config.gun_vibe2_anim.delay
+				i_delay_replay = config.gun_vibe2_anim.delay_replay
+				display_texture(gun_vibe2_anim[i_frames], convert_x(GetX_Icons() + config.gun_vibe2_anim.customX1) , convert_y(GetY_Icons() + config.gun_vibe2_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_vibe2_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_vibe2_anim.customY2))
+			end
+			
+			if not standart_icons[0] and flowera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 14 then
+				i_frames_max = #flowera_anim
+				i_delay = config.flowera_anim.delay
+				i_delay_replay = config.flowera_anim.delay_replay
+				display_texture(flowera_anim[i_frames], convert_x(GetX_Icons() + config.flowera_anim.customX1) , convert_y(GetY_Icons() + config.flowera_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.flowera_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.flowera_anim.customY2))
+			end
+			
+			if not standart_icons[0] and gun_cane_anim_active and getCurrentCharWeapon(PLAYER_PED) == 15 then
+				i_frames_max = #gun_cane_anim
+				i_delay = config.gun_cane_anim.delay
+				i_delay_replay = config.gun_cane_anim.delay_replay
+				display_texture(gun_cane_anim[i_frames], convert_x(GetX_Icons() + config.gun_cane_anim.customX1) , convert_y(GetY_Icons() + config.gun_cane_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_cane_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_cane_anim.customY2))
+			end
+			
+			if not standart_icons[0] and nvgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 44 then
+				i_frames_max = #nvgoggles_anim
+				i_delay = config.nvgoggles_anim.delay
+				i_delay_replay = config.nvgoggles_anim.delay_replay
+				display_texture(nvgoggles_anim[i_frames], convert_x(GetX_Icons() + config.nvgoggles_anim.customX1) , convert_y(GetY_Icons() + config.nvgoggles_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.nvgoggles_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.nvgoggles_anim.customY2))
+			end
+			
+			if not standart_icons[0] and irgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 45 then
+				i_frames_max = #irgoggles_anim
+				i_delay = config.irgoggles_anim.delay
+				i_delay_replay = config.irgoggles_anim.delay_replay
+				display_texture(irgoggles_anim[i_frames], convert_x(GetX_Icons() + config.irgoggles_anim.customX1) , convert_y(GetY_Icons() + config.irgoggles_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.irgoggles_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.irgoggles_anim.customY2))
+			end
+			
+			if not standart_icons[0] and gun_para_anim_active and getCurrentCharWeapon(PLAYER_PED) == 46 then
+				i_frames_max = #gun_para_anim
+				i_delay = config.gun_para_anim.delay
+				i_delay_replay = config.gun_para_anim.delay_replay
+				display_texture(gun_para_anim[i_frames], convert_x(GetX_Icons() + config.gun_para_anim.customX1) , convert_y(GetY_Icons() + config.gun_para_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_para_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_para_anim.customY2))
+			end
+			
+			if not standart_icons[0] and bomb_anim_active and getCurrentCharWeapon(PLAYER_PED) == 40 then
+				i_frames_max = #bomb_anim
+				i_delay = config.bomb_anim.delay
+				i_delay_replay = config.bomb_anim.delay_replay
+				display_texture(bomb_anim[i_frames], convert_x(GetX_Icons() + config.bomb_anim.customX1) , convert_y(GetY_Icons() + config.bomb_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.bomb_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.bomb_anim.customY2))
+			end
+			
 
-		if not standart_icons[0] and cuntgun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 33 then
-			i_frames_max = #cuntgun_anim
-			i_delay = config.cuntgun_anim.delay
-			i_delay_replay = config.cuntgun_anim.delay_replay
-			display_texture(cuntgun_anim[i_frames], convert_x(GetX_Icons() + config.cuntgun_anim.customX1) , convert_y(GetY_Icons() + config.cuntgun_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.cuntgun_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.cuntgun_anim.customY2))
-		end
-		
-		if not standart_icons[0] and sniper_anim_active and getCurrentCharWeapon(PLAYER_PED) == 34 then
-			i_frames_max = #sniper_anim
-			i_delay = config.sniper_anim.delay
-			i_delay_replay = config.sniper_anim.delay_replay
-			display_texture(sniper_anim[i_frames], convert_x(GetX_Icons() + config.sniper_anim.customX1) , convert_y(GetY_Icons() + config.sniper_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.sniper_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.sniper_anim.customY2))
-		end
-		
-		if not standart_icons[0] and rocketla_anim_active and getCurrentCharWeapon(PLAYER_PED) == 35 then
-			i_frames_max = #rocketla_anim
-			i_delay = config.rocketla_anim.delay
-			i_delay_replay = config.rocketla_anim.delay_replay
-			display_texture(rocketla_anim[i_frames], convert_x(GetX_Icons() + config.rocketla_anim.customX1) , convert_y(GetY_Icons() + config.rocketla_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.rocketla_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.rocketla_anim.customY2))
-		end
-		
-		if not standart_icons[0] and heatseek_anim_active and getCurrentCharWeapon(PLAYER_PED) == 36 then
-			i_frames_max = #heatseek_anim
-			i_delay = config.heatseek_anim.delay
-			i_delay_replay = config.heatseek_anim.delay_replay
-			display_texture(heatseek_anim[i_frames], convert_x(GetX_Icons() + config.heatseek_anim.customX1) , convert_y(GetY_Icons() + config.heatseek_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.heatseek_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.heatseek_anim.customY2))
-		end
-		
-		if not standart_icons[0] and flame_anim_active and getCurrentCharWeapon(PLAYER_PED) == 37 then
-			i_frames_max = #flame_anim
-			i_delay = config.flame_anim.delay
-			i_delay_replay = config.flame_anim.delay_replay
-			display_texture(flame_anim[i_frames], convert_x(GetX_Icons() + config.flame_anim.customX1) , convert_y(GetY_Icons() + config.flame_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.flame_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.flame_anim.customY2))
-		end
-		
-		if not standart_icons[0] and minigun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 38 then
-			i_frames_max = #minigun_anim
-			i_delay = config.minigun_anim.delay
-			i_delay_replay = config.minigun_anim.delay_replay
-			display_texture(minigun_anim[i_frames], convert_x(GetX_Icons() + config.minigun_anim.customX1) , convert_y(GetY_Icons() + config.minigun_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.minigun_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.minigun_anim.customY2))
-		end
-		
-		if not standart_icons[0] and grenade_anim_active and getCurrentCharWeapon(PLAYER_PED) == 16 then
-			i_frames_max = #grenade_anim
-			i_delay = config.grenade_anim.delay
-			i_delay_replay = config.grenade_anim.delay_replay
-			display_texture(grenade_anim[i_frames], convert_x(GetX_Icons() + config.grenade_anim.customX1) , convert_y(GetY_Icons() + config.grenade_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.grenade_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.grenade_anim.customY2))
-		end
-		
-		if not standart_icons[0] and teargas_anim_active and getCurrentCharWeapon(PLAYER_PED) == 17 then
-			i_frames_max = #teargas_anim
-			i_delay = config.teargas_anim.delay
-			i_delay_replay = config.teargas_anim.delay_replay
-			display_texture(teargas_anim[i_frames], convert_x(GetX_Icons() + config.teargas_anim.customX1) , convert_y(GetY_Icons() + config.teargas_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.teargas_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.teargas_anim.customY2))
-		end
-		
-		if not standart_icons[0] and molotov_anim_active and getCurrentCharWeapon(PLAYER_PED) == 18 then
-			i_frames_max = #molotov_anim
-			i_delay = config.molotov_anim.delay
-			i_delay_replay = config.molotov_anim.delay_replay
-			display_texture(molotov_anim[i_frames], convert_x(GetX_Icons() + config.molotov_anim.customX1) , convert_y(GetY_Icons() + config.molotov_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.molotov_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.molotov_anim.customY2))
-		end
-		
-		if not standart_icons[0] and satchel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 39 then
-			i_frames_max = #satchel_anim
-			i_delay = config.satchel_anim.delay
-			i_delay_replay = config.satchel_anim.delay_replay
-			display_texture(satchel_anim[i_frames], convert_x(GetX_Icons() + config.satchel_anim.customX1) , convert_y(GetY_Icons() + config.satchel_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.satchel_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.satchel_anim.customY2))
-		end
-		
-		if not standart_icons[0] and spraycan_anim_active and getCurrentCharWeapon(PLAYER_PED) == 41 then
-			i_frames_max = #spraycan_anim
-			i_delay = config.spraycan_anim.delay
-			i_delay_replay = config.spraycan_anim.delay_replay
-			display_texture(spraycan_anim[i_frames], convert_x(GetX_Icons() + config.spraycan_anim.customX1) , convert_y(GetY_Icons() + config.spraycan_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.spraycan_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.spraycan_anim.customY2))
-		end
-		
-		if not standart_icons[0] and fire_ex_anim_active and getCurrentCharWeapon(PLAYER_PED) == 42 then
-			i_frames_max = #fire_ex_anim
-			i_delay = config.fire_ex_anim.delay
-			i_delay_replay = config.fire_ex_anim.delay_replay
-			display_texture(fire_ex_anim[i_frames], convert_x(GetX_Icons() + config.fire_ex_anim.customX1) , convert_y(GetY_Icons() + config.fire_ex_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.fire_ex_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.fire_ex_anim.customY2))
-		end
-		
-		if not standart_icons[0] and camera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 43 then
-			i_frames_max = #camera_anim
-			i_delay = config.camera_anim.delay
-			i_delay_replay = config.camera_anim.delay_replay
-			display_texture(camera_anim[i_frames], convert_x(GetX_Icons() + config.camera_anim.customX1) , convert_y(GetY_Icons() + config.camera_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.camera_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.camera_anim.customY2))
-		end
-		
-		if not standart_icons[0] and gun_dildo1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 10 then
-			i_frames_max = #gun_dildo1_anim
-			i_delay = config.gun_dildo1_anim.delay
-			i_delay_replay = config.gun_dildo1_anim.delay_replay
-			display_texture(gun_dildo1_anim[i_frames], convert_x(GetX_Icons() + config.gun_dildo1_anim.customX1) , convert_y(GetY_Icons() + config.gun_dildo1_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_dildo1_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_dildo1_anim.customY2))
-		end
-		
-		if not standart_icons[0] and gun_dildo2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 11 then
-			i_frames_max = #gun_dildo2_anim
-			i_delay = config.gun_dildo2_anim.delay
-			i_delay_replay = config.gun_dildo2_anim.delay_replay
-			display_texture(gun_dildo2_anim[i_frames], convert_x(GetX_Icons() + config.gun_dildo2_anim.customX1) , convert_y(GetY_Icons() + config.gun_dildo2_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_dildo2_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_dildo2_anim.customY2))
-		end
-		
-		if not standart_icons[0] and gun_vibe1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 12 then
-			i_frames_max = #gun_vibe1_anim
-			i_delay = config.gun_vibe1_anim.delay
-			i_delay_replay = config.gun_vibe1_anim.delay_replay
-			display_texture(gun_vibe1_anim[i_frames], convert_x(GetX_Icons() + config.gun_vibe1_anim.customX1) , convert_y(GetY_Icons() + config.gun_vibe1_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_vibe1_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_vibe1_anim.customY2))
-		end
-		
-		if not standart_icons[0] and gun_vibe2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 13 then
-			i_frames_max = #gun_vibe2_anim
-			i_delay = config.gun_vibe2_anim.delay
-			i_delay_replay = config.gun_vibe2_anim.delay_replay
-			display_texture(gun_vibe2_anim[i_frames], convert_x(GetX_Icons() + config.gun_vibe2_anim.customX1) , convert_y(GetY_Icons() + config.gun_vibe2_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_vibe2_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_vibe2_anim.customY2))
-		end
-		
-		if not standart_icons[0] and flowera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 14 then
-			i_frames_max = #flowera_anim
-			i_delay = config.flowera_anim.delay
-			i_delay_replay = config.flowera_anim.delay_replay
-			display_texture(flowera_anim[i_frames], convert_x(GetX_Icons() + config.flowera_anim.customX1) , convert_y(GetY_Icons() + config.flowera_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.flowera_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.flowera_anim.customY2))
-		end
-		
-		if not standart_icons[0] and gun_cane_anim_active and getCurrentCharWeapon(PLAYER_PED) == 15 then
-			i_frames_max = #gun_cane_anim
-			i_delay = config.gun_cane_anim.delay
-			i_delay_replay = config.gun_cane_anim.delay_replay
-			display_texture(gun_cane_anim[i_frames], convert_x(GetX_Icons() + config.gun_cane_anim.customX1) , convert_y(GetY_Icons() + config.gun_cane_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_cane_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_cane_anim.customY2))
-		end
-		
-		if not standart_icons[0] and nvgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 44 then
-			i_frames_max = #nvgoggles_anim
-			i_delay = config.nvgoggles_anim.delay
-			i_delay_replay = config.nvgoggles_anim.delay_replay
-			display_texture(nvgoggles_anim[i_frames], convert_x(GetX_Icons() + config.nvgoggles_anim.customX1) , convert_y(GetY_Icons() + config.nvgoggles_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.nvgoggles_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.nvgoggles_anim.customY2))
-		end
-		
-		if not standart_icons[0] and irgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 45 then
-			i_frames_max = #irgoggles_anim
-			i_delay = config.irgoggles_anim.delay
-			i_delay_replay = config.irgoggles_anim.delay_replay
-			display_texture(irgoggles_anim[i_frames], convert_x(GetX_Icons() + config.irgoggles_anim.customX1) , convert_y(GetY_Icons() + config.irgoggles_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.irgoggles_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.irgoggles_anim.customY2))
-		end
-		
-		if not standart_icons[0] and gun_para_anim_active and getCurrentCharWeapon(PLAYER_PED) == 46 then
-			i_frames_max = #gun_para_anim
-			i_delay = config.gun_para_anim.delay
-			i_delay_replay = config.gun_para_anim.delay_replay
-			display_texture(gun_para_anim[i_frames], convert_x(GetX_Icons() + config.gun_para_anim.customX1) , convert_y(GetY_Icons() + config.gun_para_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_para_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_para_anim.customY2))
-		end
-		
-		if not standart_icons[0] and bomb_anim_active and getCurrentCharWeapon(PLAYER_PED) == 40 then
-			i_frames_max = #bomb_anim
-			i_delay = config.bomb_anim.delay
-			i_delay_replay = config.bomb_anim.delay_replay
-			display_texture(bomb_anim[i_frames], convert_x(GetX_Icons() + config.bomb_anim.customX1) , convert_y(GetY_Icons() + config.bomb_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.bomb_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.bomb_anim.customY2))
-		end
-		
-
-		if not standart_icons[0]  and outline_anim_active and ((fist_anim_active and getCurrentCharWeapon(PLAYER_PED) == 0) or (brassknuckle_anim_active and getCurrentCharWeapon(PLAYER_PED) == 1) or (golfclub_anim_active and getCurrentCharWeapon(PLAYER_PED) == 2) or (nitestick_anim_active and getCurrentCharWeapon(PLAYER_PED) == 3) or 
-		(knifecur_anim_active and getCurrentCharWeapon(PLAYER_PED) == 4) or (bat_anim_active and getCurrentCharWeapon(PLAYER_PED) == 5) or (shovel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 6) or (poolcue_anim_active and getCurrentCharWeapon(PLAYER_PED) == 7) or
-		(katana_anim_active and getCurrentCharWeapon(PLAYER_PED) == 8) or (chnsaw_anim_active and getCurrentCharWeapon(PLAYER_PED) == 9) or (colt45_anim_active and getCurrentCharWeapon(PLAYER_PED) == 22) or (silenced_anim_active and getCurrentCharWeapon(PLAYER_PED) == 23) or
-		(desert_eagle_active and getCurrentCharWeapon(PLAYER_PED) == 24) or (chromegun_active and getCurrentCharWeapon(PLAYER_PED) == 25) or (sawnoff_anim_active and getCurrentCharWeapon(PLAYER_PED) == 26) or (shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27) or
-		(shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27) or (micro_uzi_anim_active and getCurrentCharWeapon(PLAYER_PED) == 28) or (mp5lng_anim_active and getCurrentCharWeapon(PLAYER_PED) == 29) or (tec9_anim_active and getCurrentCharWeapon(PLAYER_PED) == 32) or
-		(ak47_anim_active and getCurrentCharWeapon(PLAYER_PED) == 30) or (m4_active and getCurrentCharWeapon(PLAYER_PED) == 31) or (cuntgun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 33) or (sniper_anim_active and getCurrentCharWeapon(PLAYER_PED) == 34) or
-		(rocketla_anim_active and getCurrentCharWeapon(PLAYER_PED) == 35) or (heatseek_anim_active and getCurrentCharWeapon(PLAYER_PED) == 36) or (flame_anim_active and getCurrentCharWeapon(PLAYER_PED) == 37) or (minigun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 38) or (grenade_anim_active and getCurrentCharWeapon(PLAYER_PED) == 16) or
-		(teargas_anim_active and getCurrentCharWeapon(PLAYER_PED) == 17) or (molotov_anim_active and getCurrentCharWeapon(PLAYER_PED) == 18) or (satchel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 39) or (spraycan_anim_active and getCurrentCharWeapon(PLAYER_PED) == 41) or (fire_ex_anim_active and getCurrentCharWeapon(PLAYER_PED) == 42) or
-		(camera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 43) or (gun_dildo1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 10) or (gun_dildo2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 11) or (gun_vibe1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 12) or (gun_vibe2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 13) or
-		(flowera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 14) or (gun_cane_anim_active and getCurrentCharWeapon(PLAYER_PED) == 15) or (nvgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 44) or (irgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 45) or (gun_para_anim_active and getCurrentCharWeapon(PLAYER_PED) == 46) or (bomb_anim_active and getCurrentCharWeapon(PLAYER_PED) == 40)) then -- ПОТОМ ОПТИМИЗИРУЮ
-			display_texture(outline_anim[i_outline_anim], convert_x(GetX_Icons() + config.outline_anim.customX1) , convert_y(GetY_Icons() + config.outline_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.outline_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.outline_anim.customY2)) -- обводка
+			if not standart_icons[0]  and outline_anim_active and ((fist_anim_active and getCurrentCharWeapon(PLAYER_PED) == 0) or (brassknuckle_anim_active and getCurrentCharWeapon(PLAYER_PED) == 1) or (golfclub_anim_active and getCurrentCharWeapon(PLAYER_PED) == 2) or (nitestick_anim_active and getCurrentCharWeapon(PLAYER_PED) == 3) or 
+			(knifecur_anim_active and getCurrentCharWeapon(PLAYER_PED) == 4) or (bat_anim_active and getCurrentCharWeapon(PLAYER_PED) == 5) or (shovel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 6) or (poolcue_anim_active and getCurrentCharWeapon(PLAYER_PED) == 7) or
+			(katana_anim_active and getCurrentCharWeapon(PLAYER_PED) == 8) or (chnsaw_anim_active and getCurrentCharWeapon(PLAYER_PED) == 9) or (colt45_anim_active and getCurrentCharWeapon(PLAYER_PED) == 22) or (silenced_anim_active and getCurrentCharWeapon(PLAYER_PED) == 23) or
+			(desert_eagle_active and getCurrentCharWeapon(PLAYER_PED) == 24) or (chromegun_active and getCurrentCharWeapon(PLAYER_PED) == 25) or (sawnoff_anim_active and getCurrentCharWeapon(PLAYER_PED) == 26) or (shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27) or
+			(shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27) or (micro_uzi_anim_active and getCurrentCharWeapon(PLAYER_PED) == 28) or (mp5lng_anim_active and getCurrentCharWeapon(PLAYER_PED) == 29) or (tec9_anim_active and getCurrentCharWeapon(PLAYER_PED) == 32) or
+			(ak47_anim_active and getCurrentCharWeapon(PLAYER_PED) == 30) or (m4_active and getCurrentCharWeapon(PLAYER_PED) == 31) or (cuntgun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 33) or (sniper_anim_active and getCurrentCharWeapon(PLAYER_PED) == 34) or
+			(rocketla_anim_active and getCurrentCharWeapon(PLAYER_PED) == 35) or (heatseek_anim_active and getCurrentCharWeapon(PLAYER_PED) == 36) or (flame_anim_active and getCurrentCharWeapon(PLAYER_PED) == 37) or (minigun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 38) or (grenade_anim_active and getCurrentCharWeapon(PLAYER_PED) == 16) or
+			(teargas_anim_active and getCurrentCharWeapon(PLAYER_PED) == 17) or (molotov_anim_active and getCurrentCharWeapon(PLAYER_PED) == 18) or (satchel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 39) or (spraycan_anim_active and getCurrentCharWeapon(PLAYER_PED) == 41) or (fire_ex_anim_active and getCurrentCharWeapon(PLAYER_PED) == 42) or
+			(camera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 43) or (gun_dildo1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 10) or (gun_dildo2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 11) or (gun_vibe1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 12) or (gun_vibe2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 13) or
+			(flowera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 14) or (gun_cane_anim_active and getCurrentCharWeapon(PLAYER_PED) == 15) or (nvgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 44) or (irgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 45) or (gun_para_anim_active and getCurrentCharWeapon(PLAYER_PED) == 46) or (bomb_anim_active and getCurrentCharWeapon(PLAYER_PED) == 40)) then -- ПОТОМ ОПТИМИЗИРУЮ
+				display_texture(outline_anim[i_outline_anim], convert_x(GetX_Icons() + config.outline_anim.customX1) , convert_y(GetY_Icons() + config.outline_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.outline_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.outline_anim.customY2)) -- обводка
+			end
 		end
 		-- -------------------------------
-
-		-- display_texture(fist_anim[i_fist_anim], convert_x(350), convert_y(100), convert_x(450), convert_y(200))
-		-- display_texture(desert_eagle[i_desert_eagle], convert_x(480), convert_y(100), convert_x(580), convert_y(200))
-		-- display_texture(outline_anim[i_outline_anim], convert_x(465), convert_y(225), convert_x(565), convert_y(325))
-
 	end
 end
 
