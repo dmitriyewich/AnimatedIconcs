@@ -11,7 +11,8 @@
 
 Чтобы добавить недостающие иконки, создайте .txd файл в папке NoNameAnimHUD\Anim с название модель оружия+_anim, например, katana_anim.txd
 
-Активация: /animhud.
+Активация для сампа: /animhud 
+Активация для сингла: чит-код ANIMHUD
 
 Требования: MoonLoader 026.5+, [mimgui](https://github.com/THE-FYP/mimgui), [MoonAdditions](https://github.com/THE-FYP/MoonAdditions). (автоскачивания библиотек нет)
 
