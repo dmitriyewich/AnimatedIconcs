@@ -14,7 +14,7 @@ script_author("deddosouru(идея), dmitriyewich")
 script_url("https://vk.com/dmitriyewichmods")
 script_dependencies("ffi", "memory", "vkeys", "mimgui", "MoonAdditions" )
 script_properties('work-in-pause', 'forced-reloading-only')
-script_version("1.1")
+script_version("1.2")
 
 
 local lvkeys, vkeys = pcall(require, 'vkeys')
@@ -268,7 +268,8 @@ local language = {
 		button_save = "Сохранить",
 		button_reset = "Сброс",
 		checkbox1 = "Включить стандартные иконки",
-		checkbox2 = "Режим широкого экрана"
+		checkbox2 = "Режим широкого экрана",
+		checkbox3 = "Включены анимированные иконки"
 	},
 	EN = {
 		by = 'by dmitriyewich aka Valgard Dmitriyewich.\nDistribution is allowed only with the indication of the author or a link to the post in the VK/mixmods/github\nRMB - Open a group in VK',
@@ -278,7 +279,8 @@ local language = {
 		button_save = "Save",
 		button_reset = "Reset",
 		checkbox1 = "Enable standard icons",
-		checkbox2 = "Widescreen mode"
+		checkbox2 = "Widescreen mode",
+		checkbox3 = "Enabled animated icons"
 	}
 }
 
@@ -293,6 +295,7 @@ else
 		["main"] = {
 			["language"] = "RU",
 			["widescreen"] = false,
+			["main_active"] = true,
 			["standart_icons"] = false},
 		["outline_anim"] = {
 			["delay"] = 0,
@@ -385,14 +388,14 @@ else
 			["customY1"] = 3,
 			["customX2"] = -2.5,
 			["customY2"] = -3},
-		["desert_eagle"] = {
+		["desert_eagle_anim"] = {
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
 			["customY1"] = 3,
 			["customX2"] = -2.5,
 			["customY2"] = -3},
-		["chromegun"] = {
+		["chromegun_anim"] = {
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -441,7 +444,7 @@ else
 			["customY1"] = 3,
 			["customX2"] = -2.5,
 			["customY2"] = -3},
-		["m4"] = {
+		["m4_anim"] = {
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -693,11 +696,11 @@ function Standart()
 	colors[clr.TabUnfocusedActive] = ImVec4(0.33, 0.33, 0.33, 1.00)
 end
 
-local main_window, standart_icons, widescreen_active = new.bool(), new.bool(config.main.standart_icons), new.bool(config.main.widescreen)
+local main_window, standart_icons, widescreen_active, main_active_imgui = new.bool(), new.bool(config.main.standart_icons), new.bool(config.main.widescreen), new.bool(config.main.main_active)
 local sizeX, sizeY = getScreenResolution()
 
 local int_item = new.int(0)
-local item_list = {"outline_anim", "fist_anim", "brassknuckle_anim", "golfclub_anim", "nitestick_anim", "knifecur_anim", "bat_anim", "shovel_anim", "poolcue_anim", "katana_anim", "chnsaw_anim", "colt45_anim", "silenced_anim", "desert_eagle", "chromegun", "sawnoff_anim", "shotgspa_anim", "micro_uzi_anim", "mp5lng_anim", "tec9_anim", "ak47_anim", "m4", "cuntgun_anim", "sniper_anim", "rocketla_anim", "heatseek_anim", "flame_anim", "minigun_anim", "grenade_anim", "teargas_anim", "molotov_anim", "satchel_anim", "spraycan_anim", "fire_ex_anim", "camera_anim", "gun_dildo1_anim", "gun_dildo2_anim", "gun_vibe1_anim", "gun_vibe2_anim", "flowera_anim", "gun_cane_anim", "nvgoggles_anim", "irgoggles_anim", "gun_para_anim", "bomb_anim"}
+local item_list = {"outline_anim"}
 local ImItems = new['const char*'][#item_list](item_list)
 
 local offset_item = new.int(5)
@@ -878,6 +881,10 @@ local mainFrame = imgui.OnFrame(
         if imgui.Checkbox(language[config.main.language].checkbox2.."##2", widescreen_active) then
             config.main.widescreen = widescreen_active[0]
         end
+		
+        if imgui.Checkbox(language[config.main.language].checkbox3.."##3", main_active_imgui) then
+            config.main.main_active = main_active_imgui[0]
+        end
 
         imgui.End()
     end
@@ -896,8 +903,6 @@ local mainFrame = imgui.OnFrame(
 
 
 function main()
-	-- if not isSampfuncsLoaded() or not isSampLoaded() then return end
-	-- while not isSampAvailable() do wait(1000) end
 	local samp = 0
 	
 	if isSampLoaded() then samp = 1 end
@@ -907,12 +912,103 @@ function main()
 		sampRegisterChatCommand('animhud', function() main_window[0] = not main_window[0] end)
 		sampSetClientCommandDescription('animhud', (string.format(u8:decode'Активация/деактивация окна %s, Файл: %s', thisScript().name, thisScript().filename)))
 	end
-	
--- sampDisconnectWithReason(quit)
--- wait(5000)
--- sampSetGamestate(1)
 
-	outline_anim, fist_anim, brassknuckle_anim, golfclub_anim, nitestick_anim, knifecur_anim, bat_anim, shovel_anim, poolcue_anim, katana_anim, chnsaw_anim, colt45_anim, silenced_anim, desert_eagle, chromegun, sawnoff_anim, shotgspa_anim, micro_uzi_anim, mp5lng_anim, tec9_anim, ak47_anim, m4, cuntgun_anim, sniper_anim, rocketla_anim, heatseek_anim, flame_anim, minigun_anim, grenade_anim, teargas_anim, molotov_anim, satchel_anim, spraycan_anim, fire_ex_anim, camera_anim, gun_dildo1_anim, gun_dildo2_anim, gun_vibe1_anim, gun_vibe2_anim, flowera_anim, gun_cane_anim, nvgoggles_anim, irgoggles_anim, gun_para_anim, bomb_anim = {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}
+	active_gun = {
+		[0] = {["name"] ="fist_anim", ["active"] = false, ["frames"] = {}},
+		[1] = {["name"] ="brassknuckle_anim", ["active"] = false, ["frames"] = {}},
+		[2] = {["name"] ="golfclub_anim", ["active"] = false, ["frames"] = {}},
+		[3] = {["name"] ="nitestick_anim", ["active"] = false, ["frames"] = {}},
+		[4] = {["name"] ="knifecur_anim", ["active"] = false, ["frames"] = {}},
+		[5] = {["name"] ="bat_anim", ["active"] = false, ["frames"] = {}},
+		[6] = {["name"] ="shovel_anim", ["active"] = false, ["frames"] = {}},
+		[7] = {["name"] ="poolcue_anim", ["active"] = false, ["frames"] = {}},
+		[8] = {["name"] ="katana_anim", ["active"] = false, ["frames"] = {}},
+		[9] = {["name"] ="chnsaw_anim", ["active"] = false, ["frames"] = {}},
+		[10] = {["name"] ="gun_dildo1_anim", ["active"] = false, ["frames"] = {}},
+		[11] = {["name"] ="gun_dildo2_anim", ["active"] = false, ["frames"] = {}},
+		[12] = {["name"] ="gun_vibe1_anim", ["active"] = false, ["frames"] = {}},
+		[13] = {["name"] ="gun_vibe2_anim", ["active"] = false, ["frames"] = {}},
+		[14] = {["name"] ="flowera_anim", ["active"] = false, ["frames"] = {}},
+		[15] = {["name"] ="gun_cane_anim", ["active"] = false, ["frames"] = {}},
+		[16] = {["name"] ="grenade_anim", ["active"] = false, ["frames"] = {}},
+		[17] = {["name"] ="teargas_anim", ["active"] = false, ["frames"] = {}},
+		[18] = {["name"] ="molotov_anim", ["active"] = false, ["frames"] = {}},
+		[22] = {["name"] ="colt45_anim", ["active"] = false, ["frames"] = {}},
+		[23] = {["name"] ="silenced_anim", ["active"] = false, ["frames"] = {}},
+		[24] = {["name"] ="desert_eagle_anim", ["active"] = false, ["frames"] = {}},
+		[25] = {["name"] ="chromegun_anim", ["active"] = false, ["frames"] = {}},
+		[26] = {["name"] ="sawnoff_anim", ["active"] = false, ["frames"] = {}},
+		[27] = {["name"] ="shotgspa_anim", ["active"] = false, ["frames"] = {}},
+		[28] = {["name"] ="micro_uzi_anim", ["active"] = false, ["frames"] = {}},
+		[29] = {["name"] ="mp5lng_anim", ["active"] = false, ["frames"] = {}},
+		[30] = {["name"] ="ak47_anim", ["active"] = false, ["frames"] = {}},
+		[31] = {["name"] ="m4_anim", ["active"] = false, ["frames"] = {}},
+		[32] = {["name"] ="tec9_anim", ["active"] = false, ["frames"] = {}},
+		[33] = {["name"] ="cuntgun_anim", ["active"] = false, ["frames"] = {}},
+		[34] = {["name"] ="sniper_anim", ["active"] = false, ["frames"] = {}},
+		[35] = {["name"] ="rocketla_anim", ["active"] = false, ["frames"] = {}},
+		[36] = {["name"] ="heatseek_anim", ["active"] = false, ["frames"] = {}},
+		[37] = {["name"] ="flame_anim", ["active"] = false, ["frames"] = {}},
+		[38] = {["name"] ="minigun_anim", ["active"] = false, ["frames"] = {}},
+		[39] = {["name"] ="satchel_anim", ["active"] = false, ["frames"] = {}},
+		[40] = {["name"] ="bomb_anim", ["active"] = false, ["frames"] = {}},
+		[41] = {["name"] ="spraycan_anim", ["active"] = false, ["frames"] = {}},
+		[42] = {["name"] ="fire_ex_anim", ["active"] = false, ["frames"] = {}},
+		[43] = {["name"] ="camera_anim", ["active"] = false, ["frames"] = {}},
+		[44] = {["name"] ="nvgoggles_anim", ["active"] = false, ["frames"] = {}},
+		[45] = {["name"] ="irgoggles_anim", ["active"] = false, ["frames"] = {}},
+		[46] = {["name"] ="gun_para_anim", ["active"] = false, ["frames"] = {}}
+	}
+	
+	
+	tetststs = {
+	["fist_anim"] = 0,
+	["brassknuckle_anim"] = 1,
+	["golfclub_anim"] = 2,
+	["nitestick_anim"] = 3,
+	["knifecur_anim"] = 4,
+	["bat_anim"] = 5,
+	["shovel_anim"] = 6,
+	["poolcue_anim"] = 7,
+	["katana_anim"] = 8,
+	["chnsaw_anim"] = 9,
+	["gun_dildo1_anim"] = 10,
+	["gun_dildo2_anim"] = 11,
+	["gun_vibe1_anim"] = 12,
+	["gun_vibe2_anim"] = 13,
+	["flowera_anim"] = 14,
+	["gun_cane_anim"] = 15,
+	["grenade_anim"] = 16,
+	["teargas_anim"] = 17,
+	["molotov_anim"] = 18,
+	["colt45_anim"] = 22,
+	["silenced_anim"] = 23,
+	["desert_eagle_anim"] = 24,
+	["chromegun_anim"] = 25,
+	["sawnoff_anim"] = 26,
+	["shotgspa_anim"] = 27,
+	["micro_uzi_anim"] = 28,
+	["mp5lng_anim"] = 29,
+	["ak47_anim"] = 30,
+	["m4_anim"] = 31,
+	["tec9_anim"] = 32,
+	["cuntgun_anim"] = 33,
+	["sniper_anim"] = 34,
+	["rocketla_anim"] = 35,
+	["heatseek_anim"] = 36,
+	["flame_anim"] = 37,
+	["minigun_anim"] = 38,
+	["satchel_anim"] = 39,
+	["bomb_anim"] = 40,
+	["spraycan_anim"] = 41,
+	["fire_ex_anim"] = 42,
+	["camera_anim"] = 43,
+	["nvgoggles_anim"] = 44,
+	["irgoggles_anim"] = 45,
+	["gun_para_anim"] = 46
+	}
+	
+	outline_anim, fist_anim, desert_eagle = {}, {}, {}
 
 ---------------txd_outline_anim----------txd_outline_anim--------------
 	if doesFileExist("moonloader/NoNameAnimHUD/Anim/outline_anim.txd") then
@@ -934,889 +1030,40 @@ function main()
 	end
 ---------------txd_outline_anim----------txd_outline_anim---------------
 
----------------fist_anim---------fist_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/fist_anim.txd") then
-		if mad.get_txd('txd_fist_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_fist_anim = mad.get_txd('txd_fist_anim')
-		else
-			txd_fist_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//fist_anim.txd', 'txd_fist_anim')
+-------------------------txd_anim--------------------txd_anim----------
+	local mask = getWorkingDirectory() .. "//NoNameAnimHUD//Anim//*" 
+
+	local handle, file = findFirstFile(mask)
+	
+	while handle and file do
+		if file ~= "." and file ~= ".." and file ~= "outline_anim.txd" then
+			if doesFileExist("moonloader/NoNameAnimHUD/Anim/"..file) then
+				local no_tdx = file:gsub(".txd", "")
+				local no_tdx_tbl = file:gsub(".txd", "")
+				
+				if mad.get_txd(no_tdx) ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
+					txd_file = mad.get_txd(no_tdx)
+				else
+					txd_file = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//'..file, no_tdx)
+				end
+
+				local i_texture = 0
+				repeat
+					no_tdx = txd_file:get_texture(i_texture)
+					active_gun[tetststs[no_tdx_tbl]].frames[i_texture] = no_tdx
+					i_texture = i_texture + 1
+				until no_tdx == nil
+				
+				active_gun[tetststs[no_tdx_tbl]].active = true
+				item_list[#item_list+1] = no_tdx_tbl
+				ImItems = new['const char*'][#item_list](item_list)
+			else
+				active_gun[tetststs[no_tdx_tbl]].active = false
+			end
 		end
-
-		local i_texture_fist_anim = 0
-		repeat
-			texture_from_txd_fist_anim = txd_fist_anim:get_texture(i_texture_fist_anim)
-			fist_anim[i_texture_fist_anim] = texture_from_txd_fist_anim
-			i_texture_fist_anim = i_texture_fist_anim + 1
-		until texture_from_txd_fist_anim == nil
-		fist_anim_active = true
-	else
-		fist_anim_active = false
+		file = findNextFile(handle)
 	end
----------------fist_anim----------fist_anim-------------------------
-
----------------brassknuckle_anim---------brassknuckle_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/brassknuckle_anim.txd") then
-		if mad.get_txd('txd_brassknuckle_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_brassknuckle_anim = mad.get_txd('txd_brassknuckle_anim')
-		else
-			txd_brassknuckle_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//brassknuckle_anim.txd', 'txd_brassknuckle_anim')
-		end
-
-		local i_texture_brassknuckle_anim = 0
-		repeat
-			texture_from_txd_brassknuckle_anim = txd_brassknuckle_anim:get_texture(i_texture_brassknuckle_anim)
-			brassknuckle_anim[i_texture_brassknuckle_anim] = texture_from_txd_brassknuckle_anim
-			i_texture_brassknuckle_anim = i_texture_brassknuckle_anim + 1
-		until texture_from_txd_brassknuckle_anim == nil
-		brassknuckle_anim_active = true
-	else
-		brassknuckle_anim_active = false
-	end
----------------brassknuckle_anim----------brassknuckle_anim-------------------------
-
-------------------------golfclub_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/golfclub_anim.txd") then
-		if mad.get_txd('txd_golfclub_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_golfclub_anim = mad.get_txd('txd_golfclub_anim')
-		else
-			txd_golfclub_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//golfclub_anim.txd', 'txd_golfclub_anim')
-		end
-
-
-		local i_texture_golfclub_anim = 0
-		repeat
-			texture_from_txd_golfclub_anim = txd_golfclub_anim:get_texture(i_texture_golfclub_anim)
-			golfclub_anim[i_texture_golfclub_anim] = texture_from_txd_golfclub_anim
-			i_texture_golfclub_anim = i_texture_golfclub_anim + 1
-		until texture_from_txd_golfclub_anim == nil
-		golfclub_anim_active = true
-	else
-		golfclub_anim_active = false
-	end
----------------golfclub_anim----------golfclub_anim-------------------------
-
----------------nitestick_anim---------nitestick_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/nitestick_anim.txd") then
-		if mad.get_txd('txd_nitestick_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_nitestick_anim = mad.get_txd('txd_nitestick_anim')
-		else
-			txd_nitestick_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//nitestick_anim.txd', 'txd_nitestick_anim')
-		end
-
-
-		local i_texture_nitestick_anim = 0
-		repeat
-			texture_from_txd_nitestick_anim = txd_nitestick_anim:get_texture(i_texture_nitestick_anim)
-			nitestick_anim[i_texture_nitestick_anim] = texture_from_txd_nitestick_anim
-			i_texture_nitestick_anim = i_texture_nitestick_anim + 1
-		until texture_from_txd_nitestick_anim == nil
-		nitestick_anim_active = true
-	else
-		nitestick_anim_active = false
-	end
----------------nitestick_anim----------nitestick_anim-------------------------
-
----------------knifecur_anim---------knifecur_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/knifecur_anim.txd") then
-		if mad.get_txd('txd_knifecur_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_knifecur_anim = mad.get_txd('txd_knifecur_anim')
-		else
-			txd_knifecur_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//knifecur_anim.txd', 'txd_knifecur_anim')
-		end
-
-
-		local i_texture_knifecur_anim = 0
-		repeat
-			texture_from_txd_knifecur_anim = txd_knifecur_anim:get_texture(i_texture_knifecur_anim)
-			knifecur_anim[i_texture_knifecur_anim] = texture_from_txd_knifecur_anim
-			i_texture_knifecur_anim = i_texture_knifecur_anim + 1
-		until texture_from_txd_knifecur_anim == nil
-		knifecur_anim_active = true
-	else
-		knifecur_anim_active = false
-	end
----------------knifecur_anim----------knifecur_anim-------------------------
-
----------------bat_anim---------bat_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/bat_anim.txd") then
-		if mad.get_txd('txd_bat_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_bat_anim = mad.get_txd('txd_bat_anim')
-		else
-			txd_bat_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//bat_anim.txd', 'txd_bat_anim')
-		end
-
-
-		local i_texture_bat_anim = 0
-		repeat
-			texture_from_txd_bat_anim = txd_bat_anim:get_texture(i_texture_bat_anim)
-			bat_anim[i_texture_bat_anim] = texture_from_txd_bat_anim
-			i_texture_bat_anim = i_texture_bat_anim + 1
-		until texture_from_txd_bat_anim == nil
-		bat_anim_active = true
-	else
-		bat_anim_active = false
-	end
----------------bat_anim----------bat_anim-------------------------
-
----------------shovel_anim---------shovel_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/shovel_anim.txd") then
-		if mad.get_txd('txd_shovel_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_shovel_anim = mad.get_txd('txd_shovel_anim')
-		else
-			txd_shovel_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//shovel_anim.txd', 'txd_shovel_anim')
-		end
-
-		local i_texture_shovel_anim = 0
-		repeat
-			texture_from_txd_shovel_anim = txd_shovel_anim:get_texture(i_texture_shovel_anim)
-			shovel_anim[i_texture_shovel_anim] = texture_from_txd_shovel_anim
-			i_texture_shovel_anim = i_texture_shovel_anim + 1
-		until texture_from_txd_shovel_anim == nil
-		shovel_anim_active = true
-	else
-		shovel_anim_active = false
-	end
----------------shovel_anim----------shovel_anim-------------------------
-
----------------poolcue_anim---------poolcue_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/poolcue_anim.txd") then
-		if mad.get_txd('txd_poolcue_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_poolcue_anim = mad.get_txd('txd_poolcue_anim')
-		else
-			txd_poolcue_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//poolcue_anim.txd', 'txd_poolcue_anim')
-		end
-
-		local i_texture_poolcue_anim = 0
-		repeat
-			texture_from_txd_poolcue_anim = txd_poolcue_anim:get_texture(i_texture_poolcue_anim)
-			poolcue_anim[i_texture_poolcue_anim] = texture_from_txd_poolcue_anim
-			i_texture_poolcue_anim = i_texture_poolcue_anim + 1
-		until texture_from_txd_poolcue_anim == nil
-		poolcue_anim_active = true
-	else
-		poolcue_anim_active = false
-	end
----------------poolcue_anim----------poolcue_anim-------------------------
-
----------------katana_anim---------katana_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/katana_anim.txd") then
-		if mad.get_txd('txd_katana_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_katana_anim = mad.get_txd('txd_katana_anim')
-		else
-			txd_katana_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//katana_anim.txd', 'txd_katana_anim')
-		end
-
-		local i_texture_katana_anim = 0
-		repeat
-			texture_from_txd_katana_anim = txd_katana_anim:get_texture(i_texture_katana_anim)
-			katana_anim[i_texture_katana_anim] = texture_from_txd_katana_anim
-			i_texture_katana_anim = i_texture_katana_anim + 1
-		until texture_from_txd_katana_anim == nil
-		katana_anim_active = true
-	else
-		katana_anim_active = false
-	end
----------------katana_anim----------katana_anim-------------------------
-
----------------chnsaw_anim---------chnsaw_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/chnsaw_anim.txd") then
-		if mad.get_txd('txd_chnsaw_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_chnsaw_anim = mad.get_txd('txd_chnsaw_anim')
-		else
-			txd_chnsaw_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//chnsaw_anim.txd', 'txd_chnsaw_anim')
-		end
-
-		local i_texture_chnsaw_anim = 0
-		repeat
-			texture_from_txd_chnsaw_anim = txd_chnsaw_anim:get_texture(i_texture_chnsaw_anim)
-			chnsaw_anim[i_texture_chnsaw_anim] = texture_from_txd_chnsaw_anim
-			i_texture_chnsaw_anim = i_texture_chnsaw_anim + 1
-		until texture_from_txd_chnsaw_anim == nil
-		chnsaw_anim_active = true
-	else
-		chnsaw_anim_active = false
-	end
----------------chnsaw_anim----------chnsaw_anim-------------------------
-
----------------colt45_anim---------colt45_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/colt45_anim.txd") then
-		if mad.get_txd('txd_colt45_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_colt45_anim = mad.get_txd('txd_colt45_anim')
-		else
-			txd_colt45_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//colt45_anim.txd', 'txd_colt45_anim')
-		end
-
-		local i_texture_colt45_anim = 0
-		repeat
-			texture_from_txd_colt45_anim = txd_colt45_anim:get_texture(i_texture_colt45_anim)
-			colt45_anim[i_texture_colt45_anim] = texture_from_txd_colt45_anim
-			i_texture_colt45_anim = i_texture_colt45_anim + 1
-		until texture_from_txd_colt45_anim == nil
-		colt45_anim_active = true
-	else
-		colt45_anim_active = false
-	end
----------------colt45_anim----------colt45_anim-------------------------
-
----------------silenced_anim---------silenced_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/silenced_anim.txd") then
-		if mad.get_txd('txd_silenced_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_silenced_anim = mad.get_txd('txd_silenced_anim')
-		else
-			txd_silenced_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//silenced_anim.txd', 'txd_silenced_anim')
-		end
-
-		local i_texture_silenced_anim = 0
-		repeat
-			texture_from_txd_silenced_anim = txd_silenced_anim:get_texture(i_texture_silenced_anim)
-			silenced_anim[i_texture_silenced_anim] = texture_from_txd_silenced_anim
-			i_texture_silenced_anim = i_texture_silenced_anim + 1
-		until texture_from_txd_silenced_anim == nil
-		silenced_anim_active = true
-	else
-		silenced_anim_active = false
-	end
----------------silenced_anim----------silenced_anim-------------------------
-
----------------desert_eagle_anim----------desert_eagle_anim---------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/desert_eagle_anim.txd") then
-		if mad.get_txd('desert_eagle_anim') ~= nil then
-			desert_eagle_anim = mad.get_txd('desert_eagle_anim')
-		else
-			desert_eagle_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//desert_eagle_anim.txd', 'desert_eagle_anim')
-		end
-		
-		local i_texture_desert_eagle = 0
-		repeat
-			texture_from_txd_desert_eagle = desert_eagle_anim:get_texture(i_texture_desert_eagle)
-			desert_eagle[tonumber(i_texture_desert_eagle)] = texture_from_txd_desert_eagle
-			i_texture_desert_eagle = i_texture_desert_eagle + 1
-		until texture_from_txd_desert_eagle == nil
-		desert_eagle_active = true
-	else
-		desert_eagle_active = false
-	end
----------------desert_eagle_anim----------desert_eagle_anim---------------
-
----------------chromegun_anim----------chromegun_anim---------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/chromegun_anim.txd") then
-		if mad.get_txd('chromegun_anim') ~= nil then
-			chromegun_anim = mad.get_txd('chromegun_anim')
-		else
-			chromegun_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//chromegun_anim.txd', 'chromegun_anim')
-		end
-
-		local i_texture_chromegun = 0
-		repeat
-			texture_from_txd_chromegun = chromegun_anim:get_texture(i_texture_chromegun)
-			chromegun[i_texture_chromegun] = texture_from_txd_chromegun
-			i_texture_chromegun = i_texture_chromegun + 1
-		until texture_from_txd_chromegun == nil
-		chromegun_active = true
-	else
-		chromegun_active = false
-	end
----------------chromegun_anim----------chromegun_anim---------------
-
----------------sawnoff_anim---------sawnoff_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/sawnoff_anim.txd") then
-		if mad.get_txd('txd_sawnoff_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_sawnoff_anim = mad.get_txd('txd_sawnoff_anim')
-		else
-			txd_sawnoff_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//sawnoff_anim.txd', 'txd_sawnoff_anim')
-		end
-
-		local i_texture_sawnoff_anim = 0
-		repeat
-			texture_from_txd_sawnoff_anim = txd_sawnoff_anim:get_texture(i_texture_sawnoff_anim)
-			sawnoff_anim[i_texture_sawnoff_anim] = texture_from_txd_sawnoff_anim
-			i_texture_sawnoff_anim = i_texture_sawnoff_anim + 1
-		until texture_from_txd_sawnoff_anim == nil
-		sawnoff_anim_active = true
-	else
-		sawnoff_anim_active = false
-	end
----------------sawnoff_anim----------sawnoff_anim-------------------------
-
----------------shotgspa_anim---------shotgspa_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/shotgspa_anim.txd") then
-		if mad.get_txd('txd_shotgspa_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_shotgspa_anim = mad.get_txd('txd_shotgspa_anim')
-		else
-			txd_shotgspa_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//shotgspa_anim.txd', 'txd_shotgspa_anim')
-		end
-
-		local i_texture_shotgspa_anim = 0
-		repeat
-			texture_from_txd_shotgspa_anim = txd_shotgspa_anim:get_texture(i_texture_shotgspa_anim)
-			shotgspa_anim[i_texture_shotgspa_anim] = texture_from_txd_shotgspa_anim
-			i_texture_shotgspa_anim = i_texture_shotgspa_anim + 1
-		until texture_from_txd_shotgspa_anim == nil
-		shotgspa_anim_active = true
-	else
-		shotgspa_anim_active = false
-	end
----------------shotgspa_anim----------shotgspa_anim-------------------------
-
----------------micro_uzi_anim---------micro_uzi_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/micro_uzi_anim.txd") then
-		if mad.get_txd('txd_micro_uzi_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_micro_uzi_anim = mad.get_txd('txd_micro_uzi_anim')
-		else
-			txd_micro_uzi_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//micro_uzi_anim.txd', 'txd_micro_uzi_anim')
-		end
-
-		local i_texture_micro_uzi_anim = 0
-		repeat
-			texture_from_txd_micro_uzi_anim = txd_micro_uzi_anim:get_texture(i_texture_micro_uzi_anim)
-			micro_uzi_anim[i_texture_micro_uzi_anim] = texture_from_txd_micro_uzi_anim
-			i_texture_micro_uzi_anim = i_texture_micro_uzi_anim + 1
-		until texture_from_txd_micro_uzi_anim == nil
-		micro_uzi_anim_active = true
-	else
-		micro_uzi_anim_active = false
-	end
----------------micro_uzi_anim----------micro_uzi_anim-------------------------
-
----------------mp5lng_anim---------mp5lng_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/mp5lng_anim.txd") then
-		if mad.get_txd('txd_mp5lng_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_mp5lng_anim = mad.get_txd('txd_mp5lng_anim')
-		else
-			txd_mp5lng_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//mp5lng_anim.txd', 'txd_mp5lng_anim')
-		end
-
-		local i_texture_mp5lng_anim = 0
-		repeat
-			texture_from_txd_mp5lng_anim = txd_mp5lng_anim:get_texture(i_texture_mp5lng_anim)
-			mp5lng_anim[i_texture_mp5lng_anim] = texture_from_txd_mp5lng_anim
-			i_texture_mp5lng_anim = i_texture_mp5lng_anim + 1
-		until texture_from_txd_mp5lng_anim == nil
-		mp5lng_anim_active = true
-	else
-		mp5lng_anim_active = false
-	end
----------------mp5lng_anim----------mp5lng_anim-------------------------
-
----------------tec9_anim---------tec9_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/tec9_anim.txd") then
-		if mad.get_txd('txd_tec9_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_tec9_anim = mad.get_txd('txd_tec9_anim')
-		else
-			txd_tec9_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//tec9_anim.txd', 'txd_tec9_anim')
-		end
-
-		local i_texture_tec9_anim = 0
-		repeat
-			texture_from_txd_tec9_anim = txd_tec9_anim:get_texture(i_texture_tec9_anim)
-			tec9_anim[i_texture_tec9_anim] = texture_from_txd_tec9_anim
-			i_texture_tec9_anim = i_texture_tec9_anim + 1
-		until texture_from_txd_tec9_anim == nil
-		tec9_anim_active = true
-	else
-		tec9_anim_active = false
-	end
----------------tec9_anim----------tec9_anim-------------------------
-
----------------ak47_anim---------ak47_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/ak47_anim.txd") then
-		if mad.get_txd('txd_ak47_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_ak47_anim = mad.get_txd('txd_ak47_anim')
-		else
-			txd_ak47_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//ak47_anim.txd', 'txd_ak47_anim')
-		end
-
-		local i_texture_ak47_anim = 0
-		repeat
-			texture_from_txd_ak47_anim = txd_ak47_anim:get_texture(i_texture_ak47_anim)
-			ak47_anim[i_texture_ak47_anim] = texture_from_txd_ak47_anim
-			i_texture_ak47_anim = i_texture_ak47_anim + 1
-		until texture_from_txd_ak47_anim == nil
-		ak47_anim_active = true
-	else
-		ak47_anim_active = false
-	end
----------------ak47_anim----------ak47_anim-------------------------
-
----------------m4_anim----------m4_anim---------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/m4_anim.txd") then
-		if mad.get_txd('m4_anim') ~= nil then
-			m4_anim = mad.get_txd('m4_anim')
-		else
-			m4_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//m4_anim.txd', 'm4_anim')
-		end
-		
-		local i_texture_m4 = 0
-		repeat
-			texture_from_txd_m4 = m4_anim:get_texture(i_texture_m4)
-			m4[i_texture_m4] = texture_from_txd_m4
-			i_texture_m4 = i_texture_m4 + 1
-		until texture_from_txd_m4 == nil
-		m4_active = true
-	else
-		m4_active = false
-	end
----------------m4_anim----------m4_anim---------------
-
----------------cuntgun_anim---------cuntgun_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/cuntgun_anim.txd") then
-		if mad.get_txd('txd_cuntgun_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_cuntgun_anim = mad.get_txd('txd_cuntgun_anim')
-		else
-			txd_cuntgun_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//cuntgun_anim.txd', 'txd_cuntgun_anim')
-		end
-
-		local i_texture_cuntgun_anim = 0
-		repeat
-			texture_from_txd_cuntgun_anim = txd_cuntgun_anim:get_texture(i_texture_cuntgun_anim)
-			cuntgun_anim[i_texture_cuntgun_anim] = texture_from_txd_cuntgun_anim
-			i_texture_cuntgun_anim = i_texture_cuntgun_anim + 1
-		until texture_from_txd_cuntgun_anim == nil
-		cuntgun_anim_active = true
-	else
-		cuntgun_anim_active = false
-	end
----------------cuntgun_anim----------cuntgun_anim-------------------------
-
----------------sniper_anim---------sniper_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/sniper_anim.txd") then
-		if mad.get_txd('txd_sniper_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_sniper_anim = mad.get_txd('txd_sniper_anim')
-		else
-			txd_sniper_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//sniper_anim.txd', 'txd_sniper_anim')
-		end
-
-		local i_texture_sniper_anim = 0
-		repeat
-			texture_from_txd_sniper_anim = txd_sniper_anim:get_texture(i_texture_sniper_anim)
-			sniper_anim[i_texture_sniper_anim] = texture_from_txd_sniper_anim
-			i_texture_sniper_anim = i_texture_sniper_anim + 1
-		until texture_from_txd_sniper_anim == nil
-		sniper_anim_active = true
-	else
-		sniper_anim_active = false
-	end
----------------sniper_anim----------sniper_anim-------------------------
-
----------------rocketla_anim---------rocketla_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/rocketla_anim.txd") then
-		if mad.get_txd('txd_rocketla_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_rocketla_anim = mad.get_txd('txd_rocketla_anim')
-		else
-			txd_rocketla_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//rocketla_anim.txd', 'txd_rocketla_anim')
-		end
-
-		local i_texture_rocketla_anim = 0
-		repeat
-			texture_from_txd_rocketla_anim = txd_rocketla_anim:get_texture(i_texture_rocketla_anim)
-			rocketla_anim[i_texture_rocketla_anim] = texture_from_txd_rocketla_anim
-			i_texture_rocketla_anim = i_texture_rocketla_anim + 1
-		until texture_from_txd_rocketla_anim == nil
-		rocketla_anim_active = true
-	else
-		rocketla_anim_active = false
-	end
----------------rocketla_anim----------rocketla_anim-------------------------
-
----------------heatseek_anim---------heatseek_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/heatseek_anim.txd") then
-		if mad.get_txd('txd_heatseek_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_heatseek_anim = mad.get_txd('txd_heatseek_anim')
-		else
-			txd_heatseek_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//heatseek_anim.txd', 'txd_heatseek_anim')
-		end
-
-		local i_texture_heatseek_anim = 0
-		repeat
-			texture_from_txd_heatseek_anim = txd_heatseek_anim:get_texture(i_texture_heatseek_anim)
-			heatseek_anim[i_texture_heatseek_anim] = texture_from_txd_heatseek_anim
-			i_texture_heatseek_anim = i_texture_heatseek_anim + 1
-		until texture_from_txd_heatseek_anim == nil
-		heatseek_anim_active = true
-	else
-		heatseek_anim_active = false
-	end
----------------heatseek_anim----------heatseek_anim-------------------------
-
----------------flame_anim---------flame_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/flame_anim.txd") then
-		if mad.get_txd('txd_flame_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_flame_anim = mad.get_txd('txd_flame_anim')
-		else
-			txd_flame_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//flame_anim.txd', 'txd_flame_anim')
-		end
-
-		local i_texture_flame_anim = 0
-		repeat
-			texture_from_txd_flame_anim = txd_flame_anim:get_texture(i_texture_flame_anim)
-			flame_anim[i_texture_flame_anim] = texture_from_txd_flame_anim
-			i_texture_flame_anim = i_texture_flame_anim + 1
-		until texture_from_txd_flame_anim == nil
-		flame_anim_active = true
-	else
-		flame_anim_active = false
-	end
----------------flame_anim----------flame_anim-------------------------
-
----------------minigun_anim---------minigun_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/minigun_anim.txd") then
-		if mad.get_txd('txd_minigun_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_minigun_anim = mad.get_txd('txd_minigun_anim')
-		else
-			txd_minigun_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//minigun_anim.txd', 'txd_minigun_anim')
-		end
-
-		local i_texture_minigun_anim = 0
-		repeat
-			texture_from_txd_minigun_anim = txd_minigun_anim:get_texture(i_texture_minigun_anim)
-			minigun_anim[i_texture_minigun_anim] = texture_from_txd_minigun_anim
-			i_texture_minigun_anim = i_texture_minigun_anim + 1
-		until texture_from_txd_minigun_anim == nil
-		minigun_anim_active = true
-	else
-		minigun_anim_active = false
-	end
----------------minigun_anim----------minigun_anim-------------------------
-
----------------grenade_anim---------grenade_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/grenade_anim.txd") then
-		if mad.get_txd('txd_grenade_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_grenade_anim = mad.get_txd('txd_grenade_anim')
-		else
-			txd_grenade_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//grenade_anim.txd', 'txd_grenade_anim')
-		end
-
-		local i_texture_grenade_anim = 0
-		repeat
-			texture_from_txd_grenade_anim = txd_grenade_anim:get_texture(i_texture_grenade_anim)
-			grenade_anim[i_texture_grenade_anim] = texture_from_txd_grenade_anim
-			i_texture_grenade_anim = i_texture_grenade_anim + 1
-		until texture_from_txd_grenade_anim == nil
-		grenade_anim_active = true
-	else
-		grenade_anim_active = false
-	end
----------------grenade_anim----------grenade_anim-------------------------
-
----------------teargas_anim---------teargas_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/teargas_anim.txd") then
-		if mad.get_txd('txd_teargas_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_teargas_anim = mad.get_txd('txd_teargas_anim')
-		else
-			txd_teargas_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//teargas_anim.txd', 'txd_teargas_anim')
-		end
-
-		local i_texture_teargas_anim = 0
-		repeat
-			texture_from_txd_teargas_anim = txd_teargas_anim:get_texture(i_texture_teargas_anim)
-			teargas_anim[i_texture_teargas_anim] = texture_from_txd_teargas_anim
-			i_texture_teargas_anim = i_texture_teargas_anim + 1
-		until texture_from_txd_teargas_anim == nil
-		teargas_anim_active = true
-	else
-		teargas_anim_active = false
-	end
----------------teargas_anim----------teargas_anim-------------------------
-
----------------molotov_anim---------molotov_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/molotov_anim.txd") then
-		if mad.get_txd('txd_molotov_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_molotov_anim = mad.get_txd('txd_molotov_anim')
-		else
-			txd_molotov_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//molotov_anim.txd', 'txd_molotov_anim')
-		end
-
-		local i_texture_molotov_anim = 0
-		repeat
-			texture_from_txd_molotov_anim = txd_molotov_anim:get_texture(i_texture_molotov_anim)
-			molotov_anim[i_texture_molotov_anim] = texture_from_txd_molotov_anim
-			i_texture_molotov_anim = i_texture_molotov_anim + 1
-		until texture_from_txd_molotov_anim == nil
-		molotov_anim_active = true
-	else
-		molotov_anim_active = false
-	end
----------------molotov_anim----------molotov_anim-------------------------
-
----------------satchel_anim---------satchel_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/satchel_anim.txd") then
-		if mad.get_txd('txd_satchel_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_satchel_anim = mad.get_txd('txd_satchel_anim')
-		else
-			txd_satchel_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//satchel_anim.txd', 'txd_satchel_anim')
-		end
-
-		local i_texture_satchel_anim = 0
-		repeat
-			texture_from_txd_satchel_anim = txd_satchel_anim:get_texture(i_texture_satchel_anim)
-			satchel_anim[i_texture_satchel_anim] = texture_from_txd_satchel_anim
-			i_texture_satchel_anim = i_texture_satchel_anim + 1
-		until texture_from_txd_satchel_anim == nil
-		satchel_anim_active = true
-	else
-		satchel_anim_active = false
-	end
----------------satchel_anim----------satchel_anim-------------------------
-
----------------spraycan_anim---------spraycan_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/spraycan_anim.txd") then
-		if mad.get_txd('txd_spraycan_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_spraycan_anim = mad.get_txd('txd_spraycan_anim')
-		else
-			txd_spraycan_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//spraycan_anim.txd', 'txd_spraycan_anim')
-		end
-
-		local i_texture_spraycan_anim = 0
-		repeat
-			texture_from_txd_spraycan_anim = txd_spraycan_anim:get_texture(i_texture_spraycan_anim)
-			spraycan_anim[i_texture_spraycan_anim] = texture_from_txd_spraycan_anim
-			i_texture_spraycan_anim = i_texture_spraycan_anim + 1
-		until texture_from_txd_spraycan_anim == nil
-		spraycan_anim_active = true
-	else
-		spraycan_anim_active = false
-	end
----------------spraycan_anim----------spraycan_anim-------------------------
-
----------------fire_ex_anim---------fire_ex_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/fire_ex_anim.txd") then
-		if mad.get_txd('txd_fire_ex_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_fire_ex_anim = mad.get_txd('txd_fire_ex_anim')
-		else
-			txd_fire_ex_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//fire_ex_anim.txd', 'txd_fire_ex_anim')
-		end
-
-		local i_texture_fire_ex_anim = 0
-		repeat
-			texture_from_txd_fire_ex_anim = txd_fire_ex_anim:get_texture(i_texture_fire_ex_anim)
-			fire_ex_anim[i_texture_fire_ex_anim] = texture_from_txd_fire_ex_anim
-			i_texture_fire_ex_anim = i_texture_fire_ex_anim + 1
-		until texture_from_txd_fire_ex_anim == nil
-		fire_ex_anim_active = true
-	else
-		fire_ex_anim_active = false
-	end
----------------fire_ex_anim----------fire_ex_anim-------------------------
-
----------------camera_anim---------camera_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/camera_anim.txd") then
-		if mad.get_txd('txd_camera_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_camera_anim = mad.get_txd('txd_camera_anim')
-		else
-			txd_camera_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//camera_anim.txd', 'txd_camera_anim')
-		end
-
-		local i_texture_camera_anim = 0
-		repeat
-			texture_from_txd_camera_anim = txd_camera_anim:get_texture(i_texture_camera_anim)
-			camera_anim[i_texture_camera_anim] = texture_from_txd_camera_anim
-			i_texture_camera_anim = i_texture_camera_anim + 1
-		until texture_from_txd_camera_anim == nil
-		camera_anim_active = true
-	else
-		camera_anim_active = false
-	end
----------------camera_anim----------camera_anim-------------------------
-
----------------gun_dildo1_anim---------gun_dildo1_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/gun_dildo1_anim.txd") then
-		if mad.get_txd('txd_gun_dildo1_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_gun_dildo1_anim = mad.get_txd('txd_gun_dildo1_anim')
-		else
-			txd_gun_dildo1_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//gun_dildo1_anim.txd', 'txd_gun_dildo1_anim')
-		end
-
-		local i_texture_gun_dildo1_anim = 0
-		repeat
-			texture_from_txd_gun_dildo1_anim = txd_gun_dildo1_anim:get_texture(i_texture_gun_dildo1_anim)
-			gun_dildo1_anim[i_texture_gun_dildo1_anim] = texture_from_txd_gun_dildo1_anim
-			i_texture_gun_dildo1_anim = i_texture_gun_dildo1_anim + 1
-		until texture_from_txd_gun_dildo1_anim == nil
-		gun_dildo1_anim_active = true
-	else
-		gun_dildo1_anim_active = false
-	end
----------------gun_dildo1_anim----------gun_dildo1_anim-------------------------
-
----------------gun_dildo2_anim---------gun_dildo2_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/gun_dildo2_anim.txd") then
-		if mad.get_txd('txd_gun_dildo2_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_gun_dildo2_anim = mad.get_txd('txd_gun_dildo2_anim')
-		else
-			txd_gun_dildo2_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//gun_dildo2_anim.txd', 'txd_gun_dildo2_anim')
-		end
-
-		local i_texture_gun_dildo2_anim = 0
-		repeat
-			texture_from_txd_gun_dildo2_anim = txd_gun_dildo2_anim:get_texture(i_texture_gun_dildo2_anim)
-			gun_dildo2_anim[i_texture_gun_dildo2_anim] = texture_from_txd_gun_dildo2_anim
-			i_texture_gun_dildo2_anim = i_texture_gun_dildo2_anim + 1
-		until texture_from_txd_gun_dildo2_anim == nil
-		gun_dildo2_anim_active = true
-	else
-		gun_dildo2_anim_active = false
-	end
----------------gun_dildo2_anim----------gun_dildo2_anim-------------------------
-
----------------gun_vibe1_anim---------gun_vibe1_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/gun_vibe1_anim.txd") then
-		if mad.get_txd('txd_gun_vibe1_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_gun_vibe1_anim = mad.get_txd('txd_gun_vibe1_anim')
-		else
-			txd_gun_vibe1_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//gun_vibe1_anim.txd', 'txd_gun_vibe1_anim')
-		end
-
-		local i_texture_gun_vibe1_anim = 0
-		repeat
-			texture_from_txd_gun_vibe1_anim = txd_gun_vibe1_anim:get_texture(i_texture_gun_vibe1_anim)
-			gun_vibe1_anim[i_texture_gun_vibe1_anim] = texture_from_txd_gun_vibe1_anim
-			i_texture_gun_vibe1_anim = i_texture_gun_vibe1_anim + 1
-		until texture_from_txd_gun_vibe1_anim == nil
-		gun_vibe1_anim_active = true
-	else
-		gun_vibe1_anim_active = false
-	end
----------------gun_vibe1_anim----------gun_vibe1_anim-------------------------
-
----------------gun_vibe2_anim---------gun_vibe2_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/gun_vibe2_anim.txd") then
-		if mad.get_txd('txd_gun_vibe2_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_gun_vibe2_anim = mad.get_txd('txd_gun_vibe2_anim')
-		else
-			txd_gun_vibe2_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//gun_vibe2_anim.txd', 'txd_gun_vibe2_anim')
-		end
-
-		local i_texture_gun_vibe2_anim = 0
-		repeat
-			texture_from_txd_gun_vibe2_anim = txd_gun_vibe2_anim:get_texture(i_texture_gun_vibe2_anim)
-			gun_vibe2_anim[i_texture_gun_vibe2_anim] = texture_from_txd_gun_vibe2_anim
-			i_texture_gun_vibe2_anim = i_texture_gun_vibe2_anim + 1
-		until texture_from_txd_gun_vibe2_anim == nil
-		gun_vibe2_anim_active = true
-	else
-		gun_vibe2_anim_active = false
-	end
----------------gun_vibe2_anim----------gun_vibe2_anim-------------------------
-
----------------flowera_anim---------flowera_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/flowera_anim.txd") then
-		if mad.get_txd('txd_flowera_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_flowera_anim = mad.get_txd('txd_flowera_anim')
-		else
-			txd_flowera_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//flowera_anim.txd', 'txd_flowera_anim')
-		end
-
-		local i_texture_flowera_anim = 0
-		repeat
-			texture_from_txd_flowera_anim = txd_flowera_anim:get_texture(i_texture_flowera_anim)
-			flowera_anim[i_texture_flowera_anim] = texture_from_txd_flowera_anim
-			i_texture_flowera_anim = i_texture_flowera_anim + 1
-		until texture_from_txd_flowera_anim == nil
-		flowera_anim_active = true
-	else
-		flowera_anim_active = false
-	end
----------------flowera_anim----------flowera_anim-------------------------
-
----------------gun_cane_anim---------gun_cane_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/gun_cane_anim.txd") then
-		if mad.get_txd('txd_gun_cane_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_gun_cane_anim = mad.get_txd('txd_gun_cane_anim')
-		else
-			txd_gun_cane_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//gun_cane_anim.txd', 'txd_gun_cane_anim')
-		end
-
-		local i_texture_gun_cane_anim = 0
-		repeat
-			texture_from_txd_gun_cane_anim = txd_gun_cane_anim:get_texture(i_texture_gun_cane_anim)
-			gun_cane_anim[i_texture_gun_cane_anim] = texture_from_txd_gun_cane_anim
-			i_texture_gun_cane_anim = i_texture_gun_cane_anim + 1
-		until texture_from_txd_gun_cane_anim == nil
-		gun_cane_anim_active = true
-	else
-		gun_cane_anim_active = false
-	end
----------------gun_cane_anim----------gun_cane_anim-------------------------
-
----------------nvgoggles_anim---------nvgoggles_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/nvgoggles_anim.txd") then
-		if mad.get_txd('txd_nvgoggles_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_nvgoggles_anim = mad.get_txd('txd_nvgoggles_anim')
-		else
-			txd_nvgoggles_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//nvgoggles_anim.txd', 'txd_nvgoggles_anim')
-		end
-
-		local i_texture_nvgoggles_anim = 0
-		repeat
-			texture_from_txd_nvgoggles_anim = txd_nvgoggles_anim:get_texture(i_texture_nvgoggles_anim)
-			nvgoggles_anim[i_texture_nvgoggles_anim] = texture_from_txd_nvgoggles_anim
-			i_texture_nvgoggles_anim = i_texture_nvgoggles_anim + 1
-		until texture_from_txd_nvgoggles_anim == nil
-		nvgoggles_anim_active = true
-	else
-		nvgoggles_anim_active = false
-	end
----------------nvgoggles_anim----------nvgoggles_anim-------------------------
-
----------------irgoggles_anim---------irgoggles_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/irgoggles_anim.txd") then
-		if mad.get_txd('txd_irgoggles_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_irgoggles_anim = mad.get_txd('txd_irgoggles_anim')
-		else
-			txd_irgoggles_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//irgoggles_anim.txd', 'txd_irgoggles_anim')
-		end
-
-		local i_texture_irgoggles_anim = 0
-		repeat
-			texture_from_txd_irgoggles_anim = txd_irgoggles_anim:get_texture(i_texture_irgoggles_anim)
-			irgoggles_anim[i_texture_irgoggles_anim] = texture_from_txd_irgoggles_anim
-			i_texture_irgoggles_anim = i_texture_irgoggles_anim + 1
-		until texture_from_txd_irgoggles_anim == nil
-		irgoggles_anim_active = true
-	else
-		irgoggles_anim_active = false
-	end
----------------irgoggles_anim----------irgoggles_anim-------------------------
-
----------------gun_para_anim---------gun_para_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/gun_para_anim.txd") then
-		if mad.get_txd('txd_gun_para_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_gun_para_anim = mad.get_txd('txd_gun_para_anim')
-		else
-			txd_gun_para_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//gun_para_anim.txd', 'txd_gun_para_anim')
-		end
-
-		local i_texture_gun_para_anim = 0
-		repeat
-			texture_from_txd_gun_para_anim = txd_gun_para_anim:get_texture(i_texture_gun_para_anim)
-			gun_para_anim[i_texture_gun_para_anim] = texture_from_txd_gun_para_anim
-			i_texture_gun_para_anim = i_texture_gun_para_anim + 1
-		until texture_from_txd_gun_para_anim == nil
-		gun_para_anim_active = true
-	else
-		gun_para_anim_active = false
-	end
----------------gun_para_anim----------gun_para_anim-------------------------
-
----------------bomb_anim---------bomb_anim-----------------------
-	if doesFileExist("moonloader/NoNameAnimHUD/Anim/bomb_anim.txd") then
-		if mad.get_txd('txd_bomb_anim') ~= nil then -- Проверяет наличие txd в памяти, костыль на случай перезапуска скрипта(ов)
-			txd_bomb_anim = mad.get_txd('txd_bomb_anim')
-		else
-			txd_bomb_anim = mad.load_txd(getWorkingDirectory() .. '//NoNameAnimHUD//Anim//bomb_anim.txd', 'txd_bomb_anim')
-		end
-
-		local i_texture_bomb_anim = 0
-		repeat
-			texture_from_txd_bomb_anim = txd_bomb_anim:get_texture(i_texture_bomb_anim)
-			bomb_anim[i_texture_bomb_anim] = texture_from_txd_bomb_anim
-			i_texture_bomb_anim = i_texture_bomb_anim + 1
-		until texture_from_txd_bomb_anim == nil
-		bomb_anim_active = true
-	else
-		bomb_anim_active = false
-	end
----------------bomb_anim----------bomb_anim-------------------------
+-------------------------txd_anim--------------------txd_anim----------
 
 	files = {}
 	local time = get_file_modify_time(string.format("%s/NoNameAnimHUD/NoNameAnimHUD.json",getWorkingDirectory()))
@@ -1837,7 +1084,7 @@ function main()
 			end
 		end
 	end)
-	
+
 	lua_thread.create(function() -- отдельный поток для прогона кадров обводки, если в обычный запихнуть, то будет мигать.
 		i_outline_anim = 0
 		while true do wait(config.outline_anim.delay)
@@ -1889,7 +1136,9 @@ function main()
 	-- print("Y ".. memory.getfloat(testY))
 	-- print("Y ".. GetY_Icons())
 	-----YYYYYYYYYYYYYYYYYY---
-
+	-- print(active_gun[24].active)
+	
+				
 	while true do wait(0)
 	
 		if samp == 0 then
@@ -1904,351 +1153,28 @@ function main()
 		-------------------------------
 		local radar = memory.getint8(0xBA6769)
 		local hud = memory.getint8(0xA444A0)
-		if active and hud == 1 and radar == 1 then
-			if not standart_icons[0] and ((fist_anim_active and getCurrentCharWeapon(PLAYER_PED) == 0) or (brassknuckle_anim_active and getCurrentCharWeapon(PLAYER_PED) == 1) or (golfclub_anim_active and getCurrentCharWeapon(PLAYER_PED) == 2) or (nitestick_anim_active and getCurrentCharWeapon(PLAYER_PED) == 3) or 
-			(knifecur_anim_active and getCurrentCharWeapon(PLAYER_PED) == 4) or (bat_anim_active and getCurrentCharWeapon(PLAYER_PED) == 5) or (shovel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 6) or (poolcue_anim_active and getCurrentCharWeapon(PLAYER_PED) == 7) or
-			(katana_anim_active and getCurrentCharWeapon(PLAYER_PED) == 8) or (chnsaw_anim_active and getCurrentCharWeapon(PLAYER_PED) == 9) or (colt45_anim_active and getCurrentCharWeapon(PLAYER_PED) == 22) or (silenced_anim_active and getCurrentCharWeapon(PLAYER_PED) == 23) or
-			(desert_eagle_active and getCurrentCharWeapon(PLAYER_PED) == 24) or (chromegun_active and getCurrentCharWeapon(PLAYER_PED) == 25) or (sawnoff_anim_active and getCurrentCharWeapon(PLAYER_PED) == 26) or (shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27) or
-			(shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27) or (micro_uzi_anim_active and getCurrentCharWeapon(PLAYER_PED) == 28) or (mp5lng_anim_active and getCurrentCharWeapon(PLAYER_PED) == 29) or (tec9_anim_active and getCurrentCharWeapon(PLAYER_PED) == 32) or
-			(ak47_anim_active and getCurrentCharWeapon(PLAYER_PED) == 30) or (m4_active and getCurrentCharWeapon(PLAYER_PED) == 31) or (cuntgun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 33) or (sniper_anim_active and getCurrentCharWeapon(PLAYER_PED) == 34) or
-			(rocketla_anim_active and getCurrentCharWeapon(PLAYER_PED) == 35) or (heatseek_anim_active and getCurrentCharWeapon(PLAYER_PED) == 36) or (flame_anim_active and getCurrentCharWeapon(PLAYER_PED) == 37) or (minigun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 38) or (grenade_anim_active and getCurrentCharWeapon(PLAYER_PED) == 16) or
-			(teargas_anim_active and getCurrentCharWeapon(PLAYER_PED) == 17) or (molotov_anim_active and getCurrentCharWeapon(PLAYER_PED) == 18) or (satchel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 39) or (spraycan_anim_active and getCurrentCharWeapon(PLAYER_PED) == 41) or (fire_ex_anim_active and getCurrentCharWeapon(PLAYER_PED) == 42) or
-			(camera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 43) or (gun_dildo1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 10) or (gun_dildo2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 11) or (gun_vibe1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 12) or (gun_vibe2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 13) or
-			(flowera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 14) or (gun_cane_anim_active and getCurrentCharWeapon(PLAYER_PED) == 15) or (nvgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 44) or (irgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 45) or (gun_para_anim_active and getCurrentCharWeapon(PLAYER_PED) == 46) or (bomb_anim_active and getCurrentCharWeapon(PLAYER_PED) == 40)) then -- ПОТОМ ОПТИМИЗИРУЮ
+		if config.main.main_active and active and hud == 1 and radar == 1 then
+			local currentGun = getCurrentCharWeapon(PLAYER_PED)
+			if not standart_icons[0] and active_gun[currentGun].active then
 				memory.write(0x58D7D0, 195, 1, true) -- Выключить иконки.
 			else
 				memory.write(0x58D7D0, 161, 1, true) -- Включить иконки.
 			end
 
-			if not standart_icons[0] and fist_anim_active and getCurrentCharWeapon(PLAYER_PED) == 0 then
-				i_frames_max = #fist_anim
-				i_delay = config.fist_anim.delay
-				i_delay_replay = config.fist_anim.delay_replay
+			
+			if active_gun[currentGun].active then
+				i_frames_max = #active_gun[currentGun].frames
+				i_delay = config[''..active_gun[currentGun].name].delay
+				i_delay_replay = config[''..active_gun[currentGun].name].delay_replay
 				
-				display_texture(fist_anim[i_frames], convert_x(GetX_Icons() + config.fist_anim.customX1) , convert_y(GetY_Icons() + config.fist_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.fist_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.fist_anim.customY2))
+				display_texture(active_gun[currentGun].frames[i_frames], convert_x(GetX_Icons() + config[''..active_gun[currentGun].name].customX1) , convert_y(GetY_Icons() + config[''..active_gun[currentGun].name].customY1), convert_x((GetX_Icons() + width_icons().x) + config[''..active_gun[currentGun].name].customX2), convert_y((GetY_Icons() + width_icons().y) + config[''..active_gun[currentGun].name].customY2))
 			end
 
-			if not standart_icons[0] and brassknuckle_anim_active and getCurrentCharWeapon(PLAYER_PED) == 1 then
-				i_delay = config.brassknuckle_anim.delay
-				i_delay_replay = config.brassknuckle_anim.delay_replay
-				i_frames_max = #brassknuckle_anim
-				display_texture(brassknuckle_anim[i_frames], convert_x(GetX_Icons() + config.brassknuckle_anim.customX1) , convert_y(GetY_Icons() + config.brassknuckle_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.brassknuckle_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.brassknuckle_anim.customY2))
-			end
-			
-			if not standart_icons[0] and golfclub_anim_active and getCurrentCharWeapon(PLAYER_PED) == 2 then
-				i_delay = config.golfclub_anim.delay
-				i_delay_replay = config.golfclub_anim.delay_replay
-				i_frames_max = #golfclub_anim
-				display_texture(golfclub_anim[i_frames], convert_x(GetX_Icons() + config.golfclub_anim.customX1) , convert_y(GetY_Icons() + config.golfclub_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.golfclub_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.golfclub_anim.customY2))
-			end
-			
-			if not standart_icons[0] and nitestick_anim_active and getCurrentCharWeapon(PLAYER_PED) == 3 then
-				i_delay = config.nitestick_anim.delay
-				i_delay_replay = config.nitestick_anim.delay_replay
-				i_frames_max = #nitestick_anim
-				display_texture(nitestick_anim[i_frames], convert_x(GetX_Icons() + config.nitestick_anim.customX1) , convert_y(GetY_Icons() + config.nitestick_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.nitestick_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.nitestick_anim.customY2))
-			end
-			
-			if not standart_icons[0] and knifecur_anim_active and getCurrentCharWeapon(PLAYER_PED) == 4 then
-				i_delay = config.knifecur_anim.delay
-				i_delay_replay = config.knifecur_anim.delay_replay
-				i_frames_max = #knifecur_anim
-				display_texture(knifecur_anim[i_frames], convert_x(GetX_Icons() + config.knifecur_anim.customX1) , convert_y(GetY_Icons() + config.knifecur_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.knifecur_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.knifecur_anim.customY2))
-			end
-			
-			if not standart_icons[0] and bat_anim_active and getCurrentCharWeapon(PLAYER_PED) == 5 then
-				i_delay = config.bat_anim.delay
-				i_delay_replay = config.bat_anim.delay_replay
-				i_frames_max = #bat_anim
-				display_texture(bat_anim[i_frames], convert_x(GetX_Icons() + config.bat_anim.customX1) , convert_y(GetY_Icons() + config.bat_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.bat_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.bat_anim.customY2))
-			end
-			
-			if not standart_icons[0] and shovel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 6 then
-				i_delay = config.shovel_anim.delay
-				i_delay_replay = config.shovel_anim.delay_replay
-				i_frames_max = #shovel_anim
-				display_texture(shovel_anim[i_frames], convert_x(GetX_Icons() + config.shovel_anim.customX1) , convert_y(GetY_Icons() + config.shovel_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.shovel_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.shovel_anim.customY2))
-			end
-
-			if not standart_icons[0] and poolcue_anim_active and getCurrentCharWeapon(PLAYER_PED) == 7 then
-				i_delay = config.poolcue_anim.delay
-				i_delay_replay = config.poolcue_anim.delay_replay
-				i_frames_max = #poolcue_anim
-				display_texture(poolcue_anim[i_frames], convert_x(GetX_Icons() + config.poolcue_anim.customX1) , convert_y(GetY_Icons() + config.poolcue_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.poolcue_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.poolcue_anim.customY2))
-			end
-			
-			if not standart_icons[0] and katana_anim_active and getCurrentCharWeapon(PLAYER_PED) == 8 then
-				i_delay = config.katana_anim.delay
-				i_delay_replay = config.katana_anim.delay_replay
-				i_frames_max = #katana_anim
-				display_texture(katana_anim[i_frames], convert_x(GetX_Icons() + config.katana_anim.customX1) , convert_y(GetY_Icons() + config.katana_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.katana_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.katana_anim.customY2))
-			end
-			
-			if not standart_icons[0] and chnsaw_anim_active and getCurrentCharWeapon(PLAYER_PED) == 9 then
-				i_delay = config.chnsaw_anim.delay
-				i_delay_replay = config.chnsaw_anim.delay_replay
-				i_frames_max = #chnsaw_anim
-				display_texture(chnsaw_anim[i_frames], convert_x(GetX_Icons() + config.chnsaw_anim.customX1) , convert_y(GetY_Icons() + config.chnsaw_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.chnsaw_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.chnsaw_anim.customY2))
-			end
-			
-			if not standart_icons[0] and colt45_anim_active and getCurrentCharWeapon(PLAYER_PED) == 22 then
-				i_delay = config.colt45_anim.delay
-				i_delay_replay = config.colt45_anim.delay_replay
-				i_frames_max = #colt45_anim
-				display_texture(colt45_anim[i_frames], convert_x(GetX_Icons() + config.colt45_anim.customX1) , convert_y(GetY_Icons() + config.colt45_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.colt45_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.colt45_anim.customY2))
-			end
-			
-			if not standart_icons[0] and silenced_anim_active and getCurrentCharWeapon(PLAYER_PED) == 23 then
-				i_delay = config.silenced_anim.delay
-				i_delay_replay = config.silenced_anim.delay_replay
-				i_frames_max = #silenced_anim
-				display_texture(silenced_anim[i_frames], convert_x(GetX_Icons() + config.silenced_anim.customX1) , convert_y(GetY_Icons() + config.silenced_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.silenced_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.silenced_anim.customY2))
-			end
-			
-			if not standart_icons[0] and desert_eagle_active and getCurrentCharWeapon(PLAYER_PED) == 24 then
-				i_frames_max = #desert_eagle
-				i_delay = config.desert_eagle.delay
-				i_delay_replay = config.desert_eagle.delay_replay
-				display_texture(desert_eagle[i_frames], convert_x(GetX_Icons() + config.desert_eagle.customX1) , convert_y(GetY_Icons() + config.desert_eagle.customY1), convert_x((GetX_Icons() + width_icons().x) + config.desert_eagle.customX2), convert_y((GetY_Icons() + width_icons().y) + config.desert_eagle.customY2))
-			end
-			
-			if not standart_icons[0] and chromegun_active and getCurrentCharWeapon(PLAYER_PED) == 25 then
-				i_frames_max = #chromegun
-				i_delay = config.chromegun.delay
-				i_delay_replay = config.chromegun.delay_replay
-				display_texture(chromegun[i_frames], convert_x(GetX_Icons() + config.chromegun.customX1) , convert_y(GetY_Icons() + config.chromegun.customY1), convert_x((GetX_Icons() + width_icons().x) + config.chromegun.customX2), convert_y((GetY_Icons() + width_icons().y) + config.chromegun.customY2))
-			end
-			
-			if not standart_icons[0] and sawnoff_anim_active and getCurrentCharWeapon(PLAYER_PED) == 26 then
-				i_frames_max = #sawnoff_anim
-				i_delay = config.sawnoff_anim.delay
-				i_delay_replay = config.sawnoff_anim.delay_replay
-				display_texture(sawnoff_anim[i_frames], convert_x(GetX_Icons() + config.sawnoff_anim.customX1) , convert_y(GetY_Icons() + config.sawnoff_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.sawnoff_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.sawnoff_anim.customY2))
-			end
-			
-			if not standart_icons[0] and shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27 then
-				i_frames_max = #shotgspa_anim
-				i_delay = config.shotgspa_anim.delay
-				i_delay_replay = config.shotgspa_anim.delay_replay
-				display_texture(shotgspa_anim[i_frames], convert_x(GetX_Icons() + config.shotgspa_anim.customX1) , convert_y(GetY_Icons() + config.shotgspa_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.shotgspa_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.shotgspa_anim.customY2))
-			end
-			
-			if not standart_icons[0] and shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27 then
-				i_frames_max = #shotgspa_anim
-				i_delay = config.shotgspa_anim.delay
-				i_delay_replay = config.shotgspa_anim.delay_replay
-				display_texture(shotgspa_anim[i_frames], convert_x(GetX_Icons() + config.shotgspa_anim.customX1) , convert_y(GetY_Icons() + config.shotgspa_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.shotgspa_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.shotgspa_anim.customY2))
-			end
-			
-			if not standart_icons[0] and micro_uzi_anim_active and getCurrentCharWeapon(PLAYER_PED) == 28 then
-				i_frames_max = #micro_uzi_anim
-				i_delay = config.micro_uzi_anim.delay
-				i_delay_replay = config.micro_uzi_anim.delay_replay
-				display_texture(micro_uzi_anim[i_frames], convert_x(GetX_Icons() + config.micro_uzi_anim.customX1) , convert_y(GetY_Icons() + config.micro_uzi_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.micro_uzi_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.micro_uzi_anim.customY2))
-			end
-
-			if not standart_icons[0] and mp5lng_anim_active and getCurrentCharWeapon(PLAYER_PED) == 29 then
-				i_frames_max = #mp5lng_anim
-				i_delay = config.mp5lng_anim.delay
-				i_delay_replay = config.mp5lng_anim.delay_replay
-				display_texture(mp5lng_anim[i_frames], convert_x(GetX_Icons() + config.mp5lng_anim.customX1) , convert_y(GetY_Icons() + config.mp5lng_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.mp5lng_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.mp5lng_anim.customY2))
-			end
-
-			if not standart_icons[0] and tec9_anim_active and getCurrentCharWeapon(PLAYER_PED) == 32 then
-				i_frames_max = #tec9_anim
-				i_delay = config.tec9_anim.delay
-				i_delay_replay = config.tec9_anim.delay_replay
-				display_texture(tec9_anim[i_frames], convert_x(GetX_Icons() + config.tec9_anim.customX1) , convert_y(GetY_Icons() + config.tec9_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.tec9_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.tec9_anim.customY2))
-			end
-
-			if not standart_icons[0] and ak47_anim_active and getCurrentCharWeapon(PLAYER_PED) == 30 then
-				i_frames_max = #ak47_anim
-				i_delay = config.ak47_anim.delay
-				i_delay_replay = config.ak47_anim.delay_replay
-				display_texture(ak47_anim[i_frames], convert_x(GetX_Icons() + config.ak47_anim.customX1) , convert_y(GetY_Icons() + config.ak47_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.ak47_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.ak47_anim.customY2))
-			end
-
-			if not standart_icons[0] and m4_active and getCurrentCharWeapon(PLAYER_PED) == 31 then
-				i_frames_max = #m4
-				i_delay = config.m4.delay
-				i_delay_replay = config.m4.delay_replay
-				display_texture(m4[i_frames], convert_x(GetX_Icons() + config.m4.customX1) , convert_y(GetY_Icons() + config.m4.customY1), convert_x((GetX_Icons() + width_icons().x) + config.m4.customX2), convert_y((GetY_Icons() + width_icons().y) + config.m4.customY2))
-			end
-
-			if not standart_icons[0] and cuntgun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 33 then
-				i_frames_max = #cuntgun_anim
-				i_delay = config.cuntgun_anim.delay
-				i_delay_replay = config.cuntgun_anim.delay_replay
-				display_texture(cuntgun_anim[i_frames], convert_x(GetX_Icons() + config.cuntgun_anim.customX1) , convert_y(GetY_Icons() + config.cuntgun_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.cuntgun_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.cuntgun_anim.customY2))
-			end
-			
-			if not standart_icons[0] and sniper_anim_active and getCurrentCharWeapon(PLAYER_PED) == 34 then
-				i_frames_max = #sniper_anim
-				i_delay = config.sniper_anim.delay
-				i_delay_replay = config.sniper_anim.delay_replay
-				display_texture(sniper_anim[i_frames], convert_x(GetX_Icons() + config.sniper_anim.customX1) , convert_y(GetY_Icons() + config.sniper_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.sniper_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.sniper_anim.customY2))
-			end
-			
-			if not standart_icons[0] and rocketla_anim_active and getCurrentCharWeapon(PLAYER_PED) == 35 then
-				i_frames_max = #rocketla_anim
-				i_delay = config.rocketla_anim.delay
-				i_delay_replay = config.rocketla_anim.delay_replay
-				display_texture(rocketla_anim[i_frames], convert_x(GetX_Icons() + config.rocketla_anim.customX1) , convert_y(GetY_Icons() + config.rocketla_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.rocketla_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.rocketla_anim.customY2))
-			end
-			
-			if not standart_icons[0] and heatseek_anim_active and getCurrentCharWeapon(PLAYER_PED) == 36 then
-				i_frames_max = #heatseek_anim
-				i_delay = config.heatseek_anim.delay
-				i_delay_replay = config.heatseek_anim.delay_replay
-				display_texture(heatseek_anim[i_frames], convert_x(GetX_Icons() + config.heatseek_anim.customX1) , convert_y(GetY_Icons() + config.heatseek_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.heatseek_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.heatseek_anim.customY2))
-			end
-			
-			if not standart_icons[0] and flame_anim_active and getCurrentCharWeapon(PLAYER_PED) == 37 then
-				i_frames_max = #flame_anim
-				i_delay = config.flame_anim.delay
-				i_delay_replay = config.flame_anim.delay_replay
-				display_texture(flame_anim[i_frames], convert_x(GetX_Icons() + config.flame_anim.customX1) , convert_y(GetY_Icons() + config.flame_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.flame_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.flame_anim.customY2))
-			end
-			
-			if not standart_icons[0] and minigun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 38 then
-				i_frames_max = #minigun_anim
-				i_delay = config.minigun_anim.delay
-				i_delay_replay = config.minigun_anim.delay_replay
-				display_texture(minigun_anim[i_frames], convert_x(GetX_Icons() + config.minigun_anim.customX1) , convert_y(GetY_Icons() + config.minigun_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.minigun_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.minigun_anim.customY2))
-			end
-			
-			if not standart_icons[0] and grenade_anim_active and getCurrentCharWeapon(PLAYER_PED) == 16 then
-				i_frames_max = #grenade_anim
-				i_delay = config.grenade_anim.delay
-				i_delay_replay = config.grenade_anim.delay_replay
-				display_texture(grenade_anim[i_frames], convert_x(GetX_Icons() + config.grenade_anim.customX1) , convert_y(GetY_Icons() + config.grenade_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.grenade_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.grenade_anim.customY2))
-			end
-			
-			if not standart_icons[0] and teargas_anim_active and getCurrentCharWeapon(PLAYER_PED) == 17 then
-				i_frames_max = #teargas_anim
-				i_delay = config.teargas_anim.delay
-				i_delay_replay = config.teargas_anim.delay_replay
-				display_texture(teargas_anim[i_frames], convert_x(GetX_Icons() + config.teargas_anim.customX1) , convert_y(GetY_Icons() + config.teargas_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.teargas_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.teargas_anim.customY2))
-			end
-			
-			if not standart_icons[0] and molotov_anim_active and getCurrentCharWeapon(PLAYER_PED) == 18 then
-				i_frames_max = #molotov_anim
-				i_delay = config.molotov_anim.delay
-				i_delay_replay = config.molotov_anim.delay_replay
-				display_texture(molotov_anim[i_frames], convert_x(GetX_Icons() + config.molotov_anim.customX1) , convert_y(GetY_Icons() + config.molotov_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.molotov_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.molotov_anim.customY2))
-			end
-			
-			if not standart_icons[0] and satchel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 39 then
-				i_frames_max = #satchel_anim
-				i_delay = config.satchel_anim.delay
-				i_delay_replay = config.satchel_anim.delay_replay
-				display_texture(satchel_anim[i_frames], convert_x(GetX_Icons() + config.satchel_anim.customX1) , convert_y(GetY_Icons() + config.satchel_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.satchel_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.satchel_anim.customY2))
-			end
-			
-			if not standart_icons[0] and spraycan_anim_active and getCurrentCharWeapon(PLAYER_PED) == 41 then
-				i_frames_max = #spraycan_anim
-				i_delay = config.spraycan_anim.delay
-				i_delay_replay = config.spraycan_anim.delay_replay
-				display_texture(spraycan_anim[i_frames], convert_x(GetX_Icons() + config.spraycan_anim.customX1) , convert_y(GetY_Icons() + config.spraycan_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.spraycan_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.spraycan_anim.customY2))
-			end
-			
-			if not standart_icons[0] and fire_ex_anim_active and getCurrentCharWeapon(PLAYER_PED) == 42 then
-				i_frames_max = #fire_ex_anim
-				i_delay = config.fire_ex_anim.delay
-				i_delay_replay = config.fire_ex_anim.delay_replay
-				display_texture(fire_ex_anim[i_frames], convert_x(GetX_Icons() + config.fire_ex_anim.customX1) , convert_y(GetY_Icons() + config.fire_ex_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.fire_ex_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.fire_ex_anim.customY2))
-			end
-			
-			if not standart_icons[0] and camera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 43 then
-				i_frames_max = #camera_anim
-				i_delay = config.camera_anim.delay
-				i_delay_replay = config.camera_anim.delay_replay
-				display_texture(camera_anim[i_frames], convert_x(GetX_Icons() + config.camera_anim.customX1) , convert_y(GetY_Icons() + config.camera_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.camera_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.camera_anim.customY2))
-			end
-			
-			if not standart_icons[0] and gun_dildo1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 10 then
-				i_frames_max = #gun_dildo1_anim
-				i_delay = config.gun_dildo1_anim.delay
-				i_delay_replay = config.gun_dildo1_anim.delay_replay
-				display_texture(gun_dildo1_anim[i_frames], convert_x(GetX_Icons() + config.gun_dildo1_anim.customX1) , convert_y(GetY_Icons() + config.gun_dildo1_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_dildo1_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_dildo1_anim.customY2))
-			end
-			
-			if not standart_icons[0] and gun_dildo2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 11 then
-				i_frames_max = #gun_dildo2_anim
-				i_delay = config.gun_dildo2_anim.delay
-				i_delay_replay = config.gun_dildo2_anim.delay_replay
-				display_texture(gun_dildo2_anim[i_frames], convert_x(GetX_Icons() + config.gun_dildo2_anim.customX1) , convert_y(GetY_Icons() + config.gun_dildo2_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_dildo2_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_dildo2_anim.customY2))
-			end
-			
-			if not standart_icons[0] and gun_vibe1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 12 then
-				i_frames_max = #gun_vibe1_anim
-				i_delay = config.gun_vibe1_anim.delay
-				i_delay_replay = config.gun_vibe1_anim.delay_replay
-				display_texture(gun_vibe1_anim[i_frames], convert_x(GetX_Icons() + config.gun_vibe1_anim.customX1) , convert_y(GetY_Icons() + config.gun_vibe1_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_vibe1_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_vibe1_anim.customY2))
-			end
-			
-			if not standart_icons[0] and gun_vibe2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 13 then
-				i_frames_max = #gun_vibe2_anim
-				i_delay = config.gun_vibe2_anim.delay
-				i_delay_replay = config.gun_vibe2_anim.delay_replay
-				display_texture(gun_vibe2_anim[i_frames], convert_x(GetX_Icons() + config.gun_vibe2_anim.customX1) , convert_y(GetY_Icons() + config.gun_vibe2_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_vibe2_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_vibe2_anim.customY2))
-			end
-			
-			if not standart_icons[0] and flowera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 14 then
-				i_frames_max = #flowera_anim
-				i_delay = config.flowera_anim.delay
-				i_delay_replay = config.flowera_anim.delay_replay
-				display_texture(flowera_anim[i_frames], convert_x(GetX_Icons() + config.flowera_anim.customX1) , convert_y(GetY_Icons() + config.flowera_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.flowera_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.flowera_anim.customY2))
-			end
-			
-			if not standart_icons[0] and gun_cane_anim_active and getCurrentCharWeapon(PLAYER_PED) == 15 then
-				i_frames_max = #gun_cane_anim
-				i_delay = config.gun_cane_anim.delay
-				i_delay_replay = config.gun_cane_anim.delay_replay
-				display_texture(gun_cane_anim[i_frames], convert_x(GetX_Icons() + config.gun_cane_anim.customX1) , convert_y(GetY_Icons() + config.gun_cane_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_cane_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_cane_anim.customY2))
-			end
-			
-			if not standart_icons[0] and nvgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 44 then
-				i_frames_max = #nvgoggles_anim
-				i_delay = config.nvgoggles_anim.delay
-				i_delay_replay = config.nvgoggles_anim.delay_replay
-				display_texture(nvgoggles_anim[i_frames], convert_x(GetX_Icons() + config.nvgoggles_anim.customX1) , convert_y(GetY_Icons() + config.nvgoggles_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.nvgoggles_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.nvgoggles_anim.customY2))
-			end
-			
-			if not standart_icons[0] and irgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 45 then
-				i_frames_max = #irgoggles_anim
-				i_delay = config.irgoggles_anim.delay
-				i_delay_replay = config.irgoggles_anim.delay_replay
-				display_texture(irgoggles_anim[i_frames], convert_x(GetX_Icons() + config.irgoggles_anim.customX1) , convert_y(GetY_Icons() + config.irgoggles_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.irgoggles_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.irgoggles_anim.customY2))
-			end
-			
-			if not standart_icons[0] and gun_para_anim_active and getCurrentCharWeapon(PLAYER_PED) == 46 then
-				i_frames_max = #gun_para_anim
-				i_delay = config.gun_para_anim.delay
-				i_delay_replay = config.gun_para_anim.delay_replay
-				display_texture(gun_para_anim[i_frames], convert_x(GetX_Icons() + config.gun_para_anim.customX1) , convert_y(GetY_Icons() + config.gun_para_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.gun_para_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.gun_para_anim.customY2))
-			end
-			
-			if not standart_icons[0] and bomb_anim_active and getCurrentCharWeapon(PLAYER_PED) == 40 then
-				i_frames_max = #bomb_anim
-				i_delay = config.bomb_anim.delay
-				i_delay_replay = config.bomb_anim.delay_replay
-				display_texture(bomb_anim[i_frames], convert_x(GetX_Icons() + config.bomb_anim.customX1) , convert_y(GetY_Icons() + config.bomb_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.bomb_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.bomb_anim.customY2))
-			end
-			
-
-			if not standart_icons[0]  and outline_anim_active and ((fist_anim_active and getCurrentCharWeapon(PLAYER_PED) == 0) or (brassknuckle_anim_active and getCurrentCharWeapon(PLAYER_PED) == 1) or (golfclub_anim_active and getCurrentCharWeapon(PLAYER_PED) == 2) or (nitestick_anim_active and getCurrentCharWeapon(PLAYER_PED) == 3) or 
-			(knifecur_anim_active and getCurrentCharWeapon(PLAYER_PED) == 4) or (bat_anim_active and getCurrentCharWeapon(PLAYER_PED) == 5) or (shovel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 6) or (poolcue_anim_active and getCurrentCharWeapon(PLAYER_PED) == 7) or
-			(katana_anim_active and getCurrentCharWeapon(PLAYER_PED) == 8) or (chnsaw_anim_active and getCurrentCharWeapon(PLAYER_PED) == 9) or (colt45_anim_active and getCurrentCharWeapon(PLAYER_PED) == 22) or (silenced_anim_active and getCurrentCharWeapon(PLAYER_PED) == 23) or
-			(desert_eagle_active and getCurrentCharWeapon(PLAYER_PED) == 24) or (chromegun_active and getCurrentCharWeapon(PLAYER_PED) == 25) or (sawnoff_anim_active and getCurrentCharWeapon(PLAYER_PED) == 26) or (shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27) or
-			(shotgspa_anim_active and getCurrentCharWeapon(PLAYER_PED) == 27) or (micro_uzi_anim_active and getCurrentCharWeapon(PLAYER_PED) == 28) or (mp5lng_anim_active and getCurrentCharWeapon(PLAYER_PED) == 29) or (tec9_anim_active and getCurrentCharWeapon(PLAYER_PED) == 32) or
-			(ak47_anim_active and getCurrentCharWeapon(PLAYER_PED) == 30) or (m4_active and getCurrentCharWeapon(PLAYER_PED) == 31) or (cuntgun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 33) or (sniper_anim_active and getCurrentCharWeapon(PLAYER_PED) == 34) or
-			(rocketla_anim_active and getCurrentCharWeapon(PLAYER_PED) == 35) or (heatseek_anim_active and getCurrentCharWeapon(PLAYER_PED) == 36) or (flame_anim_active and getCurrentCharWeapon(PLAYER_PED) == 37) or (minigun_anim_active and getCurrentCharWeapon(PLAYER_PED) == 38) or (grenade_anim_active and getCurrentCharWeapon(PLAYER_PED) == 16) or
-			(teargas_anim_active and getCurrentCharWeapon(PLAYER_PED) == 17) or (molotov_anim_active and getCurrentCharWeapon(PLAYER_PED) == 18) or (satchel_anim_active and getCurrentCharWeapon(PLAYER_PED) == 39) or (spraycan_anim_active and getCurrentCharWeapon(PLAYER_PED) == 41) or (fire_ex_anim_active and getCurrentCharWeapon(PLAYER_PED) == 42) or
-			(camera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 43) or (gun_dildo1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 10) or (gun_dildo2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 11) or (gun_vibe1_anim_active and getCurrentCharWeapon(PLAYER_PED) == 12) or (gun_vibe2_anim_active and getCurrentCharWeapon(PLAYER_PED) == 13) or
-			(flowera_anim_active and getCurrentCharWeapon(PLAYER_PED) == 14) or (gun_cane_anim_active and getCurrentCharWeapon(PLAYER_PED) == 15) or (nvgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 44) or (irgoggles_anim_active and getCurrentCharWeapon(PLAYER_PED) == 45) or (gun_para_anim_active and getCurrentCharWeapon(PLAYER_PED) == 46) or (bomb_anim_active and getCurrentCharWeapon(PLAYER_PED) == 40)) then -- ПОТОМ ОПТИМИЗИРУЮ
+			if outline_anim_active and active_gun[currentGun].active then
 				display_texture(outline_anim[i_outline_anim], convert_x(GetX_Icons() + config.outline_anim.customX1) , convert_y(GetY_Icons() + config.outline_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.outline_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.outline_anim.customY2)) -- обводка
 			end
+		else
+			memory.write(0x58D7D0, 161, 1, true) -- Включить иконки.
 		end
 		-- -------------------------------
 	end
@@ -2406,10 +1332,10 @@ function convert_y(y)
 	return gposY
 end
 
-function onWindowMessage(msg, wparam, lparam) -- Hook "onWindowMessage"
+function onWindowMessage(msg, wparam, lparam)
     if msg == wm.WM_KEYDOWN and wparam == 0x1B and main_window[0] then
-        main_window[0] = false -- Переменную отвечающая за рисование окна ставим в "false", чтобы окно перестало рисоваться
-        consumeWindowMessage(true, false) -- Текущее оконное сообщение помечаем для игнорирования
+        main_window[0] = false
+        consumeWindowMessage(true, false)
     end
 end
 
