@@ -1226,7 +1226,7 @@ function main()
 
 	-----YYYYYYYYYYYYYYYYYY---
 	-- memoryY = allocateMemory(4)
-	-- writeMemory(memoryY, 4, ConvertFistY(448), true)
+	-- writeMemory(memoryY, 4, ConvertFistY(0), true)
 	-- writeMemory(0x58F913, 4, memoryY, true)
 
 	-- testY = memory.getuint32(0x58F913, true) -- WeaponIconX
@@ -1315,18 +1315,22 @@ function GetX_Icons() -- получает игровую X-координату 
 	end
 end
 
--- --Вообще Y переводить не обязательно, вроде как изначально там правильное значение
--- function ConvertFistY(y) -- переводит игровую Y-координату под фист
-	-- if config.main.widescreen then
-		-- local ycy = ((y / 448) * 448) + 135
-		-- local ycy = float2hex(ycy)
-		-- return ycy
-	-- elseif not config.main.widescreen then
-		-- local ycy = ((y / 448) * 448) - 448
-		-- local ycy = float2hex(ycy)
-		-- return ycy
-	-- end
--- end
+--Вообще Y переводить не обязательно, вроде как изначально там правильное значение
+function ConvertFistY(y) -- переводит игровую Y-координату под фист
+	if config.main.widescreen then
+		local ycy = ((y / 448) * 448) + 135
+		local ycy = float2hex(ycy)
+		return ycy
+	elseif config.main.widescreen_Wesser then
+		local ycy = ((y / 448) * 448) + 0
+		local ycy = float2hex(ycy)
+		return ycy
+	elseif not config.main.widescreen then
+		local ycy = ((y / 448) * 448) - 448
+		local ycy = float2hex(ycy)
+		return ycy
+	end
+end
 
 function GetY_Icons() -- получает игровую Y-координату фиста
 	local Fist_Y = memory.getuint32(0x58F913, false) -- WeaponIconY
@@ -1337,7 +1341,7 @@ function GetY_Icons() -- получает игровую Y-координату 
 		local ycy = math.round(ycy, 2) -- округление, не обязательно
 		return ycy
 	elseif config.main.widescreen_Wesser then
-		local ycy = ((fY_Fist / 583) * 583) - 5
+		local ycy = ((fY_Fist / 560) * 560) - 0
 		local ycy = math.round(ycy, 2) -- округление, не обязательно
 		return ycy
 	elseif not config.main.widescreen and not config.main.widescreen_Wesser then
