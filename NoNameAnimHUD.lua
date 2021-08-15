@@ -14,7 +14,7 @@ script_author("deddosouru(идея), dmitriyewich")
 script_url("https://vk.com/dmitriyewichmods")
 script_dependencies("ffi", "memory", "vkeys", "mimgui", "MoonAdditions" )
 script_properties('work-in-pause', 'forced-reloading-only')
-script_version("1.2")
+script_version("1.3")
 
 
 local lvkeys, vkeys = pcall(require, 'vkeys')
@@ -264,23 +264,25 @@ local language = {
 		by = 'by dmitriyewich aka Valgard Dmitriyewich.\nРаспространение допускается только с указанием автора или ссылки на пост в ВК/mixmods/github\nПКМ - Открыть группу в ВК',
 		input_delay = "Задержка кадров",
 		input_delay_replay = "Задержка повтора анимации",
-		text1 = "Шаг смещения",
+		text1 = "Смещение",
 		button_save = "Сохранить",
 		button_reset = "Сброс",
 		checkbox1 = "Включить стандартные иконки",
 		checkbox2 = "Режим широкого экрана",
-		checkbox3 = "Включены анимированные иконки"
+		checkbox3 = "Включены анимированные иконки",
+		checkbox4 = "Поверх\nобводки"
 	},
 	EN = {
 		by = 'by dmitriyewich aka Valgard Dmitriyewich.\nDistribution is allowed only with the indication of the author or a link to the post in the VK/mixmods/github\nRMB - Open a group in VK',
 		input_delay = "Frame delay",
 		input_delay_replay = "Delay in repeating the animation",
-		text1 = "Offset step",
+		text1 = "Offset",
 		button_save = "Save",
 		button_reset = "Reset",
 		checkbox1 = "Enable standard icons",
 		checkbox2 = "Widescreen mode",
-		checkbox3 = "Enabled animated icons"
+		checkbox3 = "Enabled animated icons",
+		checkbox4 = "Foreground"
 	}
 }
 
@@ -298,6 +300,7 @@ else
 			["main_active"] = true,
 			["standart_icons"] = false},
 		["outline_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 0,
@@ -305,6 +308,7 @@ else
 			["customX2"] = 0,
 			["customY2"] = 0},
 		["fist_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -312,6 +316,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["brassknuckle_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -319,6 +324,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["golfclub_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -326,6 +332,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["nitestick_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -333,6 +340,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["knifecur_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -340,6 +348,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["bat_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -347,6 +356,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["shovel_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -354,6 +364,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["poolcue_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -361,6 +372,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["katana_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -368,6 +380,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["chnsaw_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -375,6 +388,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["colt45_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -382,6 +396,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["silenced_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -389,6 +404,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["desert_eagle_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -396,6 +412,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["chromegun_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -403,6 +420,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["sawnoff_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -410,6 +428,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["shotgspa_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -417,6 +436,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["micro_uzi_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -424,6 +444,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["mp5lng_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -431,6 +452,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["tec9_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -438,6 +460,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["ak47_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -445,6 +468,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["m4_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -452,6 +476,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["cuntgun_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -459,6 +484,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["sniper_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -466,6 +492,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["rocketla_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -473,6 +500,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["heatseek_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -480,6 +508,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["flame_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -487,6 +516,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["minigun_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -494,6 +524,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["grenade_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -501,6 +532,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["teargas_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -508,6 +540,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["molotov_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -515,6 +548,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["satchel_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -522,6 +556,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["spraycan_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -529,6 +564,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["fire_ex_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -536,6 +572,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["camera_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -543,6 +580,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["gun_dildo1_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -550,6 +588,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["gun_dildo2_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -557,6 +596,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["gun_vibe1_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -564,6 +604,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["gun_vibe2_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -571,6 +612,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["flowera_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -578,6 +620,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["gun_cane_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -585,6 +628,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["nvgoggles_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -592,6 +636,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["irgoggles_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -599,6 +644,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["gun_para_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -606,6 +652,7 @@ else
 			["customX2"] = -2.5,
 			["customY2"] = -3},
 		["bomb_anim"] = {
+			["foreground"] = false,
 			["delay"] = 0,
 			["delay_replay"] = 0,
 			["customX1"] = 3,
@@ -696,7 +743,7 @@ function Standart()
 	colors[clr.TabUnfocusedActive] = ImVec4(0.33, 0.33, 0.33, 1.00)
 end
 
-local main_window, standart_icons, widescreen_active, main_active_imgui = new.bool(), new.bool(config.main.standart_icons), new.bool(config.main.widescreen), new.bool(config.main.main_active)
+local main_window, standart_icons, widescreen_active, main_active_imgui, icon_foreground = new.bool(), new.bool(config.main.standart_icons), new.bool(config.main.widescreen), new.bool(config.main.main_active), new.bool()
 local sizeX, sizeY = getScreenResolution()
 
 local int_item = new.int(0)
@@ -728,7 +775,7 @@ local mainFrame = imgui.OnFrame(
         imgui.SetNextWindowSize(imgui.ImVec2(247, 230), imgui.Cond.FirstUseEver, imgui.NoResize)
         imgui.Begin("##Main Window", main_window, imgui.WindowFlags.NoCollapse + imgui.WindowFlags.NoResize + imgui.WindowFlags.NoTitleBar + imgui.WindowFlags.NoScrollbar)
 		imgui.SetCursorPosX((imgui.GetWindowWidth() - 220) / 2) 
-		imgui.SetCursorPosY(imgui.GetCursorPosY() - 14)
+		imgui.SetCursorPosY(imgui.GetCursorPosY() - 17)
 		imgui.Image(logo, imgui.ImVec2(220, 52))
 		if imgui.IsItemHovered() then
 			imgui.BeginTooltip()
@@ -748,18 +795,29 @@ local mainFrame = imgui.OnFrame(
 		imgui.PopItemWidth()
 		
 		
-		imgui.PushItemWidth(74)
-		imgui.SetCursorPosX((imgui.GetWindowWidth() - 74 - imgui.CalcTextSize(language[config.main.language].text1).x) / 2)
-		imgui.SetCursorPosY(imgui.GetCursorPosY() - 6)
+		imgui.PushItemWidth(50)
+		imgui.SetCursorPosX((imgui.GetWindowWidth() - 80 - imgui.CalcTextSize(language[config.main.language].text1).x - imgui.CalcTextSize(language[config.main.language].checkbox4).x ) / 2)
+		imgui.SetCursorPosY(imgui.GetCursorPosY() - 4)
 		imgui.Combo("##Combo2", offset_item, offset_ImItems, #offset_list)
 		imgui.SameLine()
 		imgui.Text(language[config.main.language].text1)
+		imgui.SameLine()
+		imgui.TextDisabled("|")
 		imgui.PopItemWidth()
 		---------------------------------------------------------
 		
+		imgui.SameLine()
+		icon_foreground[0] = config[''..item_list[int_item[0] + 1]].foreground
+        if imgui.Checkbox("##4", icon_foreground) then
+            config[''..item_list[int_item[0] + 1]].foreground = icon_foreground[0]
+        end
+		imgui.SameLine()
+		if config.main.language == "RU" then imgui.SetCursorPosY(imgui.GetCursorPosY() - 8) else imgui.SetCursorPosY(imgui.GetCursorPosY() + 1) end
+		imgui.Text(language[config.main.language].checkbox4)
+		
 		---------------------------------------------------------	
 		imgui.SetCursorPosX((imgui.GetWindowWidth() - 128) / 2)
-		imgui.SetCursorPosY(imgui.GetCursorPosY() - 5)
+		if config.main.language == "RU" then imgui.SetCursorPosY(imgui.GetCursorPosY()) else imgui.SetCursorPosY(imgui.GetCursorPosY() - 5) end
 		if imgui.Button("X1+##1", imgui.ImVec2(30, 30)) then
 			config[''..item_list[int_item[0] + 1]].customX1 = config[''..item_list[int_item[0] + 1]].customX1 + offset_list[offset_item[0] + 1]
 		end
@@ -875,6 +933,7 @@ local mainFrame = imgui.OnFrame(
 		imgui.PopStyleVar()
 		---------------------------------------------------------
 		
+		imgui.Separator()
         if imgui.Checkbox(language[config.main.language].checkbox1.."##1", standart_icons) then
             config.main.standart_icons = standart_icons[0]
         end
@@ -1156,11 +1215,14 @@ function main()
 		if config.main.main_active and active and hud == 1 and radar == 1 then
 			local currentGun = getCurrentCharWeapon(PLAYER_PED)
 			if not standart_icons[0] and active_gun[currentGun].active then
-				memory.write(0x58D7D0, 195, 1, true) -- Выключить иконки.
+				memory.fill(0x58D7D0, 195, 1, true) -- Выключить иконки.
 			else
-				memory.write(0x58D7D0, 161, 1, true) -- Включить иконки.
+				memory.fill(0x58D7D0, 161, 1, true) -- Включить иконки.
 			end
 
+			if outline_anim_active and active_gun[currentGun].active and config[''..active_gun[currentGun].name].foreground then
+				display_texture(outline_anim[i_outline_anim], convert_x(GetX_Icons() + config.outline_anim.customX1) , convert_y(GetY_Icons() + config.outline_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.outline_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.outline_anim.customY2)) -- обводка
+			end
 			
 			if active_gun[currentGun].active then
 				i_frames_max = #active_gun[currentGun].frames
@@ -1170,11 +1232,11 @@ function main()
 				display_texture(active_gun[currentGun].frames[i_frames], convert_x(GetX_Icons() + config[''..active_gun[currentGun].name].customX1) , convert_y(GetY_Icons() + config[''..active_gun[currentGun].name].customY1), convert_x((GetX_Icons() + width_icons().x) + config[''..active_gun[currentGun].name].customX2), convert_y((GetY_Icons() + width_icons().y) + config[''..active_gun[currentGun].name].customY2))
 			end
 
-			if outline_anim_active and active_gun[currentGun].active then
+			if outline_anim_active and active_gun[currentGun].active and not config[''..active_gun[currentGun].name].foreground then
 				display_texture(outline_anim[i_outline_anim], convert_x(GetX_Icons() + config.outline_anim.customX1) , convert_y(GetY_Icons() + config.outline_anim.customY1), convert_x((GetX_Icons() + width_icons().x) + config.outline_anim.customX2), convert_y((GetY_Icons() + width_icons().y) + config.outline_anim.customY2)) -- обводка
 			end
 		else
-			memory.write(0x58D7D0, 161, 1, true) -- Включить иконки.
+			memory.fill(0x58D7D0, 161, 1, true) -- Включить иконки.
 		end
 		-- -------------------------------
 	end
@@ -1342,7 +1404,7 @@ end
 function onExitScript()
 	-- freeMemory(memoryX)
 	-- freeMemory(memoryY)
-	memory.write(0x58D7D0, 161, 1, true) -- Включить иконки.
+	memory.fill(0x58D7D0, 161, 1, true) -- Включить иконки.
 end
 
 
