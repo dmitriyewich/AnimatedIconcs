@@ -14,7 +14,7 @@ script_author("deddosouru(идея), dmitriyewich")
 script_url("https://vk.com/dmitriyewichmods")
 script_dependencies("ffi", "memory", "vkeys", "mimgui", "MoonAdditions" )
 script_properties('work-in-pause', 'forced-reloading-only')
-script_version("1.3")
+script_version("1.4")
 
 
 local lvkeys, vkeys = pcall(require, 'vkeys')
@@ -268,7 +268,8 @@ local language = {
 		button_save = "Сохранить",
 		button_reset = "Сброс",
 		checkbox1 = "Включить стандартные иконки",
-		checkbox2 = "Режим широкого экрана",
+		checkbox2 = "sa_widescreenfix_lite.asi",
+		checkbox5 = "Widescreen ThirteenAG + Wesser",
 		checkbox3 = "Включены анимированные иконки",
 		checkbox4 = "Поверх\nобводки"
 	},
@@ -280,7 +281,8 @@ local language = {
 		button_save = "Save",
 		button_reset = "Reset",
 		checkbox1 = "Enable standard icons",
-		checkbox2 = "Widescreen mode",
+		checkbox2 = "sa_widescreenfix_lite.asi",
+		checkbox5 = "Widescreen ThirteenAG + Wesser",
 		checkbox3 = "Enabled animated icons",
 		checkbox4 = "Foreground"
 	}
@@ -297,6 +299,7 @@ else
 		["main"] = {
 			["language"] = "RU",
 			["widescreen"] = false,
+			["widescreen_Wesser"] = false,
 			["main_active"] = true,
 			["standart_icons"] = false},
 		["outline_anim"] = {
@@ -743,7 +746,7 @@ function Standart()
 	colors[clr.TabUnfocusedActive] = ImVec4(0.33, 0.33, 0.33, 1.00)
 end
 
-local main_window, standart_icons, widescreen_active, main_active_imgui, icon_foreground = new.bool(), new.bool(config.main.standart_icons), new.bool(config.main.widescreen), new.bool(config.main.main_active), new.bool()
+local main_window, standart_icons, widescreen_active, widescreen_Wesser_active, main_active_imgui, icon_foreground = new.bool(), new.bool(config.main.standart_icons), new.bool(config.main.widescreen), new.bool(config.main.widescreen_Wesser), new.bool(config.main.main_active), new.bool()
 local sizeX, sizeY = getScreenResolution()
 
 local int_item = new.int(0)
@@ -769,7 +772,7 @@ imgui.OnInitialize(function()
 end)
 
 local mainFrame = imgui.OnFrame(
-    function() return main_window[0] end,
+    function() return main_window[0] and not isPauseMenuActive() end,
     function(player)
         imgui.SetNextWindowPos(imgui.ImVec2(sizeX / 2, sizeY / 2), imgui.Cond.FirstUseEver, imgui.ImVec2(0.5, 0.5))
         imgui.SetNextWindowSize(imgui.ImVec2(247, 230), imgui.Cond.FirstUseEver, imgui.NoResize)
@@ -821,17 +824,29 @@ local mainFrame = imgui.OnFrame(
 		if imgui.Button("X1+##1", imgui.ImVec2(30, 30)) then
 			config[''..item_list[int_item[0] + 1]].customX1 = config[''..item_list[int_item[0] + 1]].customX1 + offset_list[offset_item[0] + 1]
 		end
+		if imgui.IsItemHovered() then 
+			draw_text("X1+ "..config[''..item_list[int_item[0] + 1]].customX1, convert_x(GetX_Icons() + config[''..item_list[int_item[0] + 1]].customX1 - 12), convert_y((GetY_Icons() + config[''..item_list[int_item[0] + 1]].customY1 / 2) + GetY_Icons() + config[''..item_list[int_item[0] + 1]].customY1))
+		end
 		imgui.SameLine()
 		if imgui.Button("X2+##1", imgui.ImVec2(30, 30)) then
 			config[''..item_list[int_item[0] + 1]].customX2 = config[''..item_list[int_item[0] + 1]].customX2 + offset_list[offset_item[0] + 1]
+		end
+		if imgui.IsItemHovered() then 
+			draw_text("X2+ "..config[''..item_list[int_item[0] + 1]].customX2, convert_x(14 + (GetX_Icons() + width_icons().x) + config[''..item_list[int_item[0] + 1]].customX2), convert_y((GetY_Icons() + config[''..item_list[int_item[0] + 1]].customY1 / 2) + GetY_Icons() + config[''..item_list[int_item[0] + 1]].customY1))
 		end
 		imgui.SameLine()
 		if imgui.Button("Y1+##1", imgui.ImVec2(30, 30)) then
 			config[''..item_list[int_item[0] + 1]].customY1 = config[''..item_list[int_item[0] + 1]].customY1 + offset_list[offset_item[0] + 1]
 		end
+		if imgui.IsItemHovered() then 
+			draw_text("Y1+ "..config[''..item_list[int_item[0] + 1]].customY1, convert_x(GetX_Icons() + config[''..item_list[int_item[0] + 1]].customX1 + (width_icons().x / 2)), convert_y(GetY_Icons() + config[''..item_list[int_item[0] + 1]].customY1 - 7))
+		end
 		imgui.SameLine()
 		if imgui.Button("Y2+##1", imgui.ImVec2(30, 30)) then
 			config[''..item_list[int_item[0] + 1]].customY2 = config[''..item_list[int_item[0] + 1]].customY2 + offset_list[offset_item[0] + 1]
+		end
+		if imgui.IsItemHovered() then 
+			draw_text("Y2+ "..config[''..item_list[int_item[0] + 1]].customY2, convert_x(GetX_Icons() + config[''..item_list[int_item[0] + 1]].customX1 + (width_icons().x / 2)), convert_y((GetY_Icons() + width_icons().y) + config[''..item_list[int_item[0] + 1]].customY2))
 		end
 		
 		imgui.SetCursorPosX((imgui.GetWindowWidth() - 128) / 2)
@@ -839,17 +854,29 @@ local mainFrame = imgui.OnFrame(
 		if imgui.Button("X1-##1", imgui.ImVec2(30, 30)) then
 			config[''..item_list[int_item[0] + 1]].customX1 = config[''..item_list[int_item[0] + 1]].customX1 - offset_list[offset_item[0] + 1]
 		end
+		if imgui.IsItemHovered() then 
+			draw_text("X1- "..config[''..item_list[int_item[0] + 1]].customX1, convert_x(GetX_Icons() + config[''..item_list[int_item[0] + 1]].customX1 - 12), convert_y((GetY_Icons() + config[''..item_list[int_item[0] + 1]].customY1 / 2) + GetY_Icons() + config[''..item_list[int_item[0] + 1]].customY1))
+		end
 		imgui.SameLine()
 		if imgui.Button("X2-##1", imgui.ImVec2(30, 30)) then
 			config[''..item_list[int_item[0] + 1]].customX2 = config[''..item_list[int_item[0] + 1]].customX2 - offset_list[offset_item[0] + 1]
+		end
+		if imgui.IsItemHovered() then 
+			draw_text("X2- "..config[''..item_list[int_item[0] + 1]].customX2, convert_x(14 + (GetX_Icons() + width_icons().x) + config[''..item_list[int_item[0] + 1]].customX2), convert_y((GetY_Icons() + config[''..item_list[int_item[0] + 1]].customY1 / 2) + GetY_Icons() + config[''..item_list[int_item[0] + 1]].customY1))
 		end
 		imgui.SameLine()
 		if imgui.Button("Y1-##1", imgui.ImVec2(30, 30)) then
 			config[''..item_list[int_item[0] + 1]].customY1 = config[''..item_list[int_item[0] + 1]].customY1 - offset_list[offset_item[0] + 1]
 		end
+		if imgui.IsItemHovered() then 
+			draw_text("Y1- "..config[''..item_list[int_item[0] + 1]].customY1, convert_x(GetX_Icons() + config[''..item_list[int_item[0] + 1]].customX1 + (width_icons().x / 2)), convert_y(GetY_Icons() + config[''..item_list[int_item[0] + 1]].customY1 - 8))
+		end
 		imgui.SameLine()
 		if imgui.Button("Y2-##1", imgui.ImVec2(30, 30)) then
 			config[''..item_list[int_item[0] + 1]].customY2 = config[''..item_list[int_item[0] + 1]].customY2 - offset_list[offset_item[0] + 1]
+		end
+		if imgui.IsItemHovered() then 
+			draw_text("Y2- "..config[''..item_list[int_item[0] + 1]].customY2, convert_x(GetX_Icons() + config[''..item_list[int_item[0] + 1]].customX1 + (width_icons().x / 2)), convert_y((GetY_Icons() + width_icons().y) + config[''..item_list[int_item[0] + 1]].customY2))
 		end
 		---------------------------------------------------------
 		
@@ -929,7 +956,7 @@ local mainFrame = imgui.OnFrame(
 		else
 			ImageButton_color = imgui.ImVec4(1,1,1,1)
 		end
-		imgui.PopStyleColor()
+		imgui.PopStyleColor(3)
 		imgui.PopStyleVar()
 		---------------------------------------------------------
 		
@@ -937,10 +964,20 @@ local mainFrame = imgui.OnFrame(
         if imgui.Checkbox(language[config.main.language].checkbox1.."##1", standart_icons) then
             config.main.standart_icons = standart_icons[0]
         end
+		imgui.Separator()
         if imgui.Checkbox(language[config.main.language].checkbox2.."##2", widescreen_active) then
             config.main.widescreen = widescreen_active[0]
+			widescreen_Wesser_active[0] = false
+			config.main.widescreen_Wesser = false
+			savejson(convertTableToJsonString(config), "moonloader/NoNameAnimHUD/NoNameAnimHUD.json")
         end
-		
+        if imgui.Checkbox(language[config.main.language].checkbox5.."##5", widescreen_Wesser_active) then
+            config.main.widescreen_Wesser = widescreen_Wesser_active[0]
+			widescreen_active[0] = false
+			config.main.widescreen = false
+			savejson(convertTableToJsonString(config), "moonloader/NoNameAnimHUD/NoNameAnimHUD.json")
+        end
+		imgui.Separator()
         if imgui.Checkbox(language[config.main.language].checkbox3.."##3", main_active_imgui) then
             config.main.main_active = main_active_imgui[0]
         end
@@ -965,7 +1002,8 @@ function main()
 	local samp = 0
 	
 	if isSampLoaded() then samp = 1 end
-	if samp == 1 then
+	if isSampLoaded() and isSampfuncsLoaded() then samp = 2 end
+	if samp == 2 then
 		while not isSampAvailable() do wait(1000) end
 		
 		sampRegisterChatCommand('animhud', function() main_window[0] = not main_window[0] end)
@@ -1021,50 +1059,50 @@ function main()
 	
 	
 	tetststs = {
-	["fist_anim"] = 0,
-	["brassknuckle_anim"] = 1,
-	["golfclub_anim"] = 2,
-	["nitestick_anim"] = 3,
-	["knifecur_anim"] = 4,
-	["bat_anim"] = 5,
-	["shovel_anim"] = 6,
-	["poolcue_anim"] = 7,
-	["katana_anim"] = 8,
-	["chnsaw_anim"] = 9,
-	["gun_dildo1_anim"] = 10,
-	["gun_dildo2_anim"] = 11,
-	["gun_vibe1_anim"] = 12,
-	["gun_vibe2_anim"] = 13,
-	["flowera_anim"] = 14,
-	["gun_cane_anim"] = 15,
-	["grenade_anim"] = 16,
-	["teargas_anim"] = 17,
-	["molotov_anim"] = 18,
-	["colt45_anim"] = 22,
-	["silenced_anim"] = 23,
-	["desert_eagle_anim"] = 24,
-	["chromegun_anim"] = 25,
-	["sawnoff_anim"] = 26,
-	["shotgspa_anim"] = 27,
-	["micro_uzi_anim"] = 28,
-	["mp5lng_anim"] = 29,
-	["ak47_anim"] = 30,
-	["m4_anim"] = 31,
-	["tec9_anim"] = 32,
-	["cuntgun_anim"] = 33,
-	["sniper_anim"] = 34,
-	["rocketla_anim"] = 35,
-	["heatseek_anim"] = 36,
-	["flame_anim"] = 37,
-	["minigun_anim"] = 38,
-	["satchel_anim"] = 39,
-	["bomb_anim"] = 40,
-	["spraycan_anim"] = 41,
-	["fire_ex_anim"] = 42,
-	["camera_anim"] = 43,
-	["nvgoggles_anim"] = 44,
-	["irgoggles_anim"] = 45,
-	["gun_para_anim"] = 46
+		["fist_anim"] = 0,
+		["brassknuckle_anim"] = 1,
+		["golfclub_anim"] = 2,
+		["nitestick_anim"] = 3,
+		["knifecur_anim"] = 4,
+		["bat_anim"] = 5,
+		["shovel_anim"] = 6,
+		["poolcue_anim"] = 7,
+		["katana_anim"] = 8,
+		["chnsaw_anim"] = 9,
+		["gun_dildo1_anim"] = 10,
+		["gun_dildo2_anim"] = 11,
+		["gun_vibe1_anim"] = 12,
+		["gun_vibe2_anim"] = 13,
+		["flowera_anim"] = 14,
+		["gun_cane_anim"] = 15,
+		["grenade_anim"] = 16,
+		["teargas_anim"] = 17,
+		["molotov_anim"] = 18,
+		["colt45_anim"] = 22,
+		["silenced_anim"] = 23,
+		["desert_eagle_anim"] = 24,
+		["chromegun_anim"] = 25,
+		["sawnoff_anim"] = 26,
+		["shotgspa_anim"] = 27,
+		["micro_uzi_anim"] = 28,
+		["mp5lng_anim"] = 29,
+		["ak47_anim"] = 30,
+		["m4_anim"] = 31,
+		["tec9_anim"] = 32,
+		["cuntgun_anim"] = 33,
+		["sniper_anim"] = 34,
+		["rocketla_anim"] = 35,
+		["heatseek_anim"] = 36,
+		["flame_anim"] = 37,
+		["minigun_anim"] = 38,
+		["satchel_anim"] = 39,
+		["bomb_anim"] = 40,
+		["spraycan_anim"] = 41,
+		["fire_ex_anim"] = 42,
+		["camera_anim"] = 43,
+		["nvgoggles_anim"] = 44,
+		["irgoggles_anim"] = 45,
+		["gun_para_anim"] = 46
 	}
 	
 	outline_anim, fist_anim, desert_eagle = {}, {}, {}
@@ -1175,9 +1213,9 @@ function main()
 
 	-- writeMemory(0x589353, 1, 0)
 	-- print(readMemory(0x589353, 1, true))
-	-----XXXXXXXXXXXXXXXXX-----------
+	---XXXXXXXXXXXXXXXXX-----------
 	-- memoryX = allocateMemory(4)
-	-- writeMemory(memoryX, 4, ConvertFistX(497), false)
+	-- writeMemory(memoryX, 4, ConvertFistX(640.0), false)
 	-- writeMemory(0x58F927, 4, memoryX)
 
 	-- testX = memory.getuint32(0x58F927, false) -- WeaponIconX
@@ -1199,13 +1237,13 @@ function main()
 	
 				
 	while true do wait(0)
-	
-		if samp == 0 then
+
+		if samp == 0 or samp == 1 then
 			if testCheat("animhud") then main_window[0] = not main_window[0] end
-			if hasCutsceneLoaded() then active = false else active = true end
+			if samp == 0 and hasCutsceneLoaded() then active = false else active = true end
 		end
 		
-		if samp == 1 then
+		if samp == 2 then
 			if sampGetGamestate() == 3 then active = true else active = false end
 		end
 
@@ -1242,46 +1280,53 @@ function main()
 	end
 end
 
-function ConvertFistX(x) -- Как ни странно - переводит игровую X-координату под фист
-	if config.main.widescreen then
-		local xcx = ((x / 849) * 849) - 529
-		local xcx = float2hex(-xcx)
-		return xcx
-	elseif not config.main.widescreen then
-		local xcx = ((x / 529) * 529) - 529
-		local xcx = float2hex(-xcx)
-		return xcx
-	end
+-- function ConvertFistX(x) -- Как ни странно - переводит игровую X-координату под фист
+	-- if config.main.widescreen then
+		-- local xcx = ((x / 640) * 994) - 994
+		-- local xcx = float2hex(-xcx)
+		-- return xcx
+	-- -- if config.main.widescreen then
+		-- -- local xcx = ((x / 849) * 849) - 529
+		-- -- local xcx = float2hex(-xcx)
+		-- -- return xcx
+	-- elseif not config.main.widescreen then
+		-- local xcx = ((x / 529) * 529) - 529
+		-- local xcx = float2hex(-xcx)
+		-- return xcx
+	-- end
 
-end
+-- end
 
 function GetX_Icons() -- получает игровую X-координату фиста
 	local Fist_X = memory.getuint32(0x58F927, false) -- WeaponIconX
 	local fX_Fist = memory.getfloat(Fist_X)
-
 	if config.main.widescreen then
 		local xcx = ((fX_Fist / 849) * 849) - 576.5
 		local xcx = math.round(-xcx, 2)
 		return xcx
-	elseif not config.main.widescreen then
+	elseif config.main.widescreen_Wesser then
+		local xcx = ((fX_Fist / 994) * 640) - 640
+		local xcx = math.round(-xcx, 2)
+		return xcx
+	elseif not config.main.widescreen and not config.main.widescreen_Wesser then
 		local xcx = ((fX_Fist / 529) * 529) - 529
 		local xcx = math.round(-xcx, 2)
 		return xcx
 	end
 end
 
---Вообще Y переводить не обязательно, вроде как изначально там правильное значение
-function ConvertFistY(y) -- переводит игровую Y-координату под фист
-	if config.main.widescreen then
-		local ycy = ((y / 448) * 448) + 135
-		local ycy = float2hex(ycy)
-		return ycy
-	elseif not config.main.widescreen then
-		local ycy = ((y / 448) * 448) - 448
-		local ycy = float2hex(ycy)
-		return ycy
-	end
-end
+-- --Вообще Y переводить не обязательно, вроде как изначально там правильное значение
+-- function ConvertFistY(y) -- переводит игровую Y-координату под фист
+	-- if config.main.widescreen then
+		-- local ycy = ((y / 448) * 448) + 135
+		-- local ycy = float2hex(ycy)
+		-- return ycy
+	-- elseif not config.main.widescreen then
+		-- local ycy = ((y / 448) * 448) - 448
+		-- local ycy = float2hex(ycy)
+		-- return ycy
+	-- end
+-- end
 
 function GetY_Icons() -- получает игровую Y-координату фиста
 	local Fist_Y = memory.getuint32(0x58F913, false) -- WeaponIconY
@@ -1291,7 +1336,11 @@ function GetY_Icons() -- получает игровую Y-координату 
 		local ycy = ((fY_Fist / 583) * 583) - 5
 		local ycy = math.round(ycy, 2) -- округление, не обязательно
 		return ycy
-	elseif not config.main.widescreen then
+	elseif config.main.widescreen_Wesser then
+		local ycy = ((fY_Fist / 583) * 583) - 5
+		local ycy = math.round(ycy, 2) -- округление, не обязательно
+		return ycy
+	elseif not config.main.widescreen and not config.main.widescreen_Wesser then
 		local ycy = ((fY_Fist / 448) * 448)
 		local ycy = math.round(ycy, 2) -- округление, не обязательно
 		return ycy
@@ -1306,7 +1355,12 @@ function width_icons() --ширина+высота фиста, стандарт 
 		width_table['x'] = fX_Width - 15.5
 		width_table['y'] = fX_Width - 10.5
 		return width_table
-	elseif not config.main.widescreen then
+	elseif config.main.widescreen_Wesser then
+		width_table = {}
+		width_table['x'] = fX_Width - 15.5
+		width_table['y'] = fX_Width - 10.5
+		return width_table
+	elseif not config.main.widescreen and not config.main.widescreen_Wesser then
 		width_table = {}
 		width_table['x'] = fX_Width
 		width_table['y'] = fX_Width
@@ -1382,6 +1436,10 @@ function display_texture(tex, x, y, x2, y2, r, g, b, a, angle)
 	else
 		i_frames = 0
 	end
+end
+
+function draw_text(str, x, y)
+	mad.draw_text(str, x, y, mad.font_style.MENU, 0.47, 0.47 * 2, mad.font_align.CENTER, 100, true, true, 255, 255, 255, 255, 1, 0, 30, 30, 30, false, 0, 0, 0, 0)
 end
 
 function convert_x(x)
