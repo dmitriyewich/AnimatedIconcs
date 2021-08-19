@@ -14,7 +14,7 @@ script_author("deddosouru(идея), dmitriyewich")
 script_url("https://vk.com/dmitriyewichmods")
 script_dependencies("ffi", "memory", "vkeys", "mimgui", "MoonAdditions" )
 script_properties('work-in-pause', 'forced-reloading-only')
-script_version("1.5")
+script_version("1.5.1")
 
 
 local lvkeys, vkeys = pcall(require, 'vkeys')
@@ -751,22 +751,22 @@ function Standart()
 	colors[clr.TabUnfocusedActive] = ImVec4(0.33, 0.33, 0.33, 1.00)
 end
 
-local item_list = {"outline_anim"}
-local offset_list = {'0.1', '0.2', '0.3', '0.4', '0.5', '1.0', '2.0', '4.0', '6.0', '8.0'}
+
+
 if limgui then 
 	main_window, standart_icons, widescreen_active, widescreen_Wesser_active, main_active_imgui, icon_foreground = new.bool(), new.bool(config.main.standart_icons), new.bool(config.main.widescreen), new.bool(config.main.widescreen_Wesser), new.bool(config.main.main_active), new.bool()
 	local sizeX, sizeY = getScreenResolution()
 
 	local int_item = new.int(0)
-	----------------item_list-------------
-	local ImItems = new['const char*'][#item_list](item_list)
-
+	item_list = {"outline_anim"}
+	ImItems = new['const char*'][#item_list](item_list)
+	
 	local offset_item = new.int(5)
-	----------------offset_list-------------
+	offset_list = {'0.1', '0.2', '0.3', '0.4', '0.5', '1.0', '2.0', '4.0', '6.0', '8.0'}
 	local offset_ImItems = new['const char*'][#offset_list](offset_list)
 
 	local ImageButton_color = imgui.ImVec4(1,1,1,1)
-
+	
 	local input_delay = new.char[128]()
 	local input_delay_replay = new.char[128]()
 
