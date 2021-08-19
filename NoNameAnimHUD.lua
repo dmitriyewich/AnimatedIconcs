@@ -27,7 +27,7 @@ local lmad, mad = pcall(require, 'MoonAdditions')
 assert(lmad, 'Library \'MoonAdditions\' not found.')
 local lwm, wm = pcall(require, 'windows.message')
 assert(lwm, 'Library \'windows.message\' not found.')  -- https://github.com/THE-FYP/MoonAdditions
--- local limgui, imgui = pcall(require, 'mimgui') -- https://github.com/THE-FYP/mimgui
+local limgui, imgui = pcall(require, 'mimgui') -- https://github.com/THE-FYP/mimgui
 if not limgui then
 	print('Library \'mimgui\' not found. Download: https://github.com/THE-FYP/mimgui . Without menu active.')
 	main_window_noi = false
