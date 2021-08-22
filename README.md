@@ -62,7 +62,7 @@ gun_para_anim
 Активация для сампа: /aic 
 Активация для сингла: чит-код AIC
 
-Требования: MoonLoader 026.5+, [mimgui](https://github.com/THE-FYP/mimgui), [MoonAdditions](https://github.com/THE-FYP/MoonAdditions). (автоскачивания библиотек нет)
+Требования: MoonLoader 026.5+, SAMPFUNCS(опционально), [mimgui(опционально)](https://github.com/THE-FYP/mimgui), [MoonAdditions](https://github.com/THE-FYP/MoonAdditions). (автоскачивания библиотек нет)
 
 Установка: Всё в moonloader
 
