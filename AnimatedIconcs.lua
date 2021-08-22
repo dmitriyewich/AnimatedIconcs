@@ -14,7 +14,7 @@ script_author("deddosouru(idea), dmitriyewich")
 script_url("https://vk.com/dmitriyewichmods")
 script_dependencies("ffi", "memory", "vkeys", "mimgui", "MoonAdditions" )
 script_properties('work-in-pause', 'forced-reloading-only')
-script_version("1.6")
+script_version("1.6.1")
 
 local lvkeys, vkeys = pcall(require, 'vkeys')
 assert(lvkeys, 'Library \'vkeys\' not found.')
@@ -994,8 +994,9 @@ function main()
 			sizeX_logo, sizeY_logo = renderGetTextureSize(logo_test)
 			x_mouse, y_mouse = 325.0, 225.0
 
-			test1, test2, test3, test4, keyslist = 1, item_list[test1], 6, offset_list[test3], ""
-
+			test1, test3, keyslist = 1, 6, ""
+			test2, test4 = item_list[test1], offset_list[test3]
+			
 			while true do wait(0)
 				if main_window_noi and not isPauseMenuActive() then
 
@@ -1263,7 +1264,7 @@ function main()
 		local radar = memory.getint8(0xBA6769)
 		local hud = memory.getint8(0xA444A0)
 
-		if config.main.main_active and active and hud == 1 and radar == 1 then
+		if config.main.main_active and active and hud == 1 and radar == 1 and not isPauseMenuActive() then
 
 			if config.main.widescreen then
 				fist_game_x = 640 - (ffi.cast("float**", 0x58F925 + 2)[0][0] + 63.5)
