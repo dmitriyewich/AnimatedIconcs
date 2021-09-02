@@ -10,11 +10,11 @@
 
 
 script_name("AnimatedIconcs")
-script_author("deddosouru(idea), dmitriyewich")
+script_authors("deddosouru(idea), dmitriyewich")
 script_url("https://vk.com/dmitriyewichmods")
 script_dependencies("ffi", "memory", "vkeys", "mimgui", "MoonAdditions" )
 script_properties('work-in-pause', 'forced-reloading-only')
-script_version("1.6.1")
+script_version("1.6.2")
 
 local lvkeys, vkeys = pcall(require, 'vkeys')
 assert(lvkeys, 'Library \'vkeys\' not found.')
@@ -276,6 +276,7 @@ local language = {
 		checkbox5 = "Widescreen ThirteenAG + Wesser",
 		checkbox3 = "Анимированные иконки",
 		checkbox4 = "Поверх\nобводки",
+		checkbox6 = "Обводка",
 		text_tooltip = 'Чтобы изменить активацию введите команду без "/"',
 		changecmdtext = 'Поле ввода пустое или содержит символ "/"\nВведите команду без "/"'
 	},
@@ -292,7 +293,8 @@ local language = {
 		checkbox2 = "sa_widescreenfix_lite.asi",
 		checkbox5 = "Widescreen ThirteenAG + Wesser",
 		checkbox3 = "Animated icons",
-		checkbox4 = "Foreground",
+		checkbox4 = "Fore\nground",
+		checkbox6 = "Outline",
 		text_tooltip = 'To change the activation, enter the command without "/"',
 		changecmdtext = 'Input field is empty or contains the char "/"\nEnter without "/"'
 	}
@@ -310,51 +312,51 @@ function defalut_config()
 			["widescreen"] = false,
 			["widescreen_Wesser"] = false,
 			["standart_icons"] = false},
-		["outline_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
-		["fist_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["brassknuckle_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["golfclub_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["nitestick_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["knifecur_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["bat_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["shovel_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["poolcue_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["katana_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["chnsaw_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["colt45_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["silenced_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["desert_eagle_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["chromegun_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["sawnoff_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["shotgspa_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["micro_uzi_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["mp5lng_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["tec9_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["ak47_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["m4_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["cuntgun_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["sniper_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["rocketla_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["heatseek_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["flame_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["minigun_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["grenade_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["teargas_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["molotov_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["satchel_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["spraycan_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["fire_ex_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["camera_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["gun_dildo1_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["gun_dildo2_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["gun_vibe1_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["gun_vibe2_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["flowera_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["gun_cane_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["nvgoggles_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["irgoggles_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["gun_para_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["bomb_anim"] = {["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3};
+		["outline_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["fist_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["brassknuckle_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["golfclub_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["nitestick_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["knifecur_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["bat_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["shovel_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["poolcue_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["katana_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["chnsaw_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["colt45_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["silenced_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["desert_eagle_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["chromegun_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["sawnoff_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["shotgspa_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["micro_uzi_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["mp5lng_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["tec9_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["ak47_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["m4_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["cuntgun_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["sniper_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["rocketla_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["heatseek_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["flame_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["minigun_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["grenade_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["teargas_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["molotov_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["satchel_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["spraycan_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["fire_ex_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["camera_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["gun_dildo1_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["gun_dildo2_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["gun_vibe1_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["gun_vibe2_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["flowera_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["gun_cane_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["nvgoggles_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["irgoggles_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["gun_para_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
+		["bomb_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3};
 	}
     savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 end
@@ -448,7 +450,7 @@ function Standart()
 end
 
 if limgui then
-	main_window, standart_icons, widescreen_active, widescreen_Wesser_active, main_active_imgui, icon_foreground = new.bool(), new.bool(config.main.standart_icons), new.bool(config.main.widescreen), new.bool(config.main.widescreen_Wesser), new.bool(config.main.main_active), new.bool()
+	main_window, standart_icons, widescreen_active, widescreen_Wesser_active, main_active_imgui, icon_foreground, outline_checkbox = new.bool(), new.bool(config.main.standart_icons), new.bool(config.main.widescreen), new.bool(config.main.widescreen_Wesser), new.bool(config.main.main_active), new.bool(), new.bool()
 	local sizeX, sizeY = getScreenResolution()
 
 	local int_item = new.int(0)
@@ -501,32 +503,42 @@ if limgui then
 			imgui.PushItemWidth(215)
 			imgui.Combo("##Combo1", int_item, ImItems, #item_list)
 			imgui.PopItemWidth()
-
-
-			imgui.PushItemWidth(50)
-			imgui.SetCursorPosX((imgui.GetWindowWidth() - 80 - imgui.CalcTextSize(language[config.main.language].text1).x - imgui.CalcTextSize(language[config.main.language].checkbox4).x ) / 2)
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 4)
-			imgui.Combo("##Combo2", offset_item, offset_ImItems, #offset_list)
-			imgui.SameLine()
-			imgui.Text(language[config.main.language].text1)
-			imgui.SameLine()
-			imgui.TextDisabled("|")
-			imgui.PopItemWidth()
 			---------------------------------------------------------
 
+			---------------------------------------------------------
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 2)
+			imgui.SetCursorPosX((imgui.GetWindowWidth() - 100 - imgui.CalcTextSize(language[config.main.language].checkbox6).x - imgui.CalcTextSize(language[config.main.language].checkbox4).x ) / 2)
+
+			imgui.Text(language[config.main.language].checkbox6)
 			imgui.SameLine()
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 3)
+			outline_checkbox[0] = config[''..item_list[int_item[0] + 1]].outline
+			if imgui.Checkbox("##4", outline_checkbox) then
+				config[''..item_list[int_item[0] + 1]].outline = outline_checkbox[0]
+			end
+
+			imgui.SameLine()
+			imgui.PushItemWidth(47)
+			imgui.Combo("##Combo2", offset_item, offset_ImItems, #offset_list)
+			imgui.PopItemWidth()
+
+			imgui.SameLine()
+
 			icon_foreground[0] = config[''..item_list[int_item[0] + 1]].foreground
 			if imgui.Checkbox("##4", icon_foreground) then
 				config[''..item_list[int_item[0] + 1]].foreground = icon_foreground[0]
 			end
 			imgui.SameLine()
-			if config.main.language == "RU" then imgui.SetCursorPosY(imgui.GetCursorPosY() - 8) else imgui.SetCursorPosY(imgui.GetCursorPosY() + 1) end
-
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 7)
 			imgui.Text(language[config.main.language].checkbox4)
+			imgui.SetCursorPosX((imgui.GetWindowWidth() - imgui.CalcTextSize(language[config.main.language].text1).x + 5) / 2)
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 7)
+			imgui.Text(language[config.main.language].text1)
+			---------------------------------------------------------
 
 			---------------------------------------------------------
 			imgui.SetCursorPosX((imgui.GetWindowWidth() - 128) / 2)
-			if config.main.language == "RU" then imgui.SetCursorPosY(imgui.GetCursorPosY()) else imgui.SetCursorPosY(imgui.GetCursorPosY() - 5) end
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 7)
 			if imgui.Button("X1+##1", imgui.ImVec2(30, 30)) then
 				config[''..item_list[int_item[0] + 1]].customX1 = config[''..item_list[int_item[0] + 1]].customX1 + offset_list[offset_item[0] + 1]
 			end
@@ -592,7 +604,7 @@ if limgui then
 			imgui.TextQuestion("?", language[config.main.language].input_delay)
 			imgui.SameLine()
 
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 5)
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 7)
 			imgui.PushItemWidth(74)
 
 			local input_delay_hint = config[''..item_list[int_item[0] + 1]].delay
@@ -620,7 +632,7 @@ if limgui then
 			---------------------------------------------------------
 
 			---------------------------------------------------------
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 2)
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 4)
 			imgui.SetCursorPosX((imgui.GetWindowWidth() - (imgui.CalcTextSize(language[config.main.language].button_save).x + imgui.CalcTextSize(language[config.main.language].button_reset).x) - 23) / 2)
 			if imgui.Button(language[config.main.language].button_save.."##1") then
 				savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
@@ -742,9 +754,9 @@ if limgui then
 
 				imgui.SameLine()
 				if imgui.Button(language[config.main.language].button_сс_save, imgui.ImVec2(130, 0)) then
-				
+
 					config.main.cheatcode = str(cmdbuffer)
-					
+
 					savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 					if str(cmdbuffer) == nil or str(cmdbuffer) == '' or str(cmdbuffer) == ' ' or str(cmdbuffer):find('/.+') then
 						changecmdtext = language[config.main.language].changecmdtext
@@ -906,9 +918,9 @@ function main()
 			outline_anim[i_texture_outline_anim] = texture_from_txd_outline_anim
 			i_texture_outline_anim = i_texture_outline_anim + 1
 		until texture_from_txd_outline_anim == nil
-		outline_anim_active = true
+		config.outline_anim.outline = true
 	else
-		outline_anim_active = false
+		config.outline_anim.outline = false
 	end
 	-----------txd_outline_anim----------txd_outline_anim---------------
 
@@ -996,7 +1008,7 @@ function main()
 
 			test1, test3, keyslist = 1, 6, ""
 			test2, test4 = item_list[test1], offset_list[test3]
-			
+
 			while true do wait(0)
 				if main_window_noi and not isPauseMenuActive() then
 
@@ -1039,7 +1051,7 @@ function main()
 						end
 					end
 
-					if drawClickableText("-", 515, 177, 0.8, 0.8, 155, 255, 5, 5) then
+					if drawClickableText("-", 507, 178, 0.8, 0.8, 155, 255, 5, 5) then
 						test3 = test3 - 1
 						test4 = offset_list[test3]
 						if test3 <= 0 then
@@ -1047,14 +1059,15 @@ function main()
 							test4 = offset_list[test3]
 						end
 					end
-					if drawClickableText(test4.."~n~Offset", 530, 175, 0.4, 0.8, 155, 255, 10, 5) then
+					if drawClickableText(test4.."~n~Offset", 520, 176, 0.4, 0.8, 155, 255, 5, 8) then
 						local text = ""
 						for i, v in pairs(offset_list) do
 							text = text..""..v.."~n~"
 						end
-						printStyledString(text, 2000, 4)
+						printStyledString(text, 1000, 4)
+
 					end
-					if drawClickableText("+", 545, 177, 0.8, 0.8, 155, 255, 5, 5) then
+					if drawClickableText("+", 533, 178, 0.8, 0.8, 155, 255, 5, 5) then
 						test3 = test3 + 1
 						test4 = offset_list[test3]
 						if test3 >= #offset_list + 1 then
@@ -1062,8 +1075,11 @@ function main()
 							test4 = offset_list[test3]
 						end
 					end
-
-					if drawClickableText((config[''..test2].foreground and "Foreground~n~ON" or "Foreground~n~OFF"), 575, 175, 0.4, 0.8, 155, 255, 15, 8) then
+					if drawClickableText((config[''..test2].outline and "Outline~n~ON" or "Outline~n~OFF"), 550, 176, 0.4, 0.8, 155, 255, 15, 10) then
+						config[''..test2].outline = not config[''..test2].outline
+						savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
+					end
+					if drawClickableText((config[''..test2].foreground and "Foreground~n~ON" or "Foreground~n~OFF"), 578, 176, 0.4, 0.8, 155, 255, 15, 10) then
 						config[''..test2].foreground = not config[''..test2].foreground
 						savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 					end
@@ -1211,6 +1227,7 @@ function main()
 
 					if drawClickableText("X", 593, 280, 1.0, 1.0, 64, 255,  10, 8) then
 						main_window_noi = false
+						clearThisPrintBigNow(4)
 						setPlayerControl(PLAYER_HANDLE, true)
 					end
 
@@ -1285,7 +1302,7 @@ function main()
 
 			local currentGun = getCurrentCharWeapon(PLAYER_PED)
 
-			if outline_anim_active and active_gun[currentGun].active and config[''..active_gun[currentGun].name].foreground then
+			if config.outline_anim.outline and active_gun[currentGun].active and config[''..active_gun[currentGun].name].foreground and config[''..active_gun[currentGun].name].outline then
 				display_texture(outline_anim[i_outline_anim], convert_x(fist_game_x + config.outline_anim.customX1) , convert_y(fist_game_y + config.outline_anim.customY1), convert_x((fist_game_x + fist_game_width) + config.outline_anim.customX2), convert_y((fist_game_y + fist_game_height) + config.outline_anim.customY2)) -- обводка
 			end
 
@@ -1296,8 +1313,7 @@ function main()
 
 				display_texture(active_gun[currentGun].frames[i_frames], convert_x(fist_game_x + config[''..active_gun[currentGun].name].customX1) , convert_y(fist_game_y + config[''..active_gun[currentGun].name].customY1), convert_x((fist_game_x + fist_game_width) + config[''..active_gun[currentGun].name].customX2), convert_y((fist_game_y + fist_game_height) + config[''..active_gun[currentGun].name].customY2))
 			end
-
-			if outline_anim_active and active_gun[currentGun].active and not config[''..active_gun[currentGun].name].foreground then
+			if config.outline_anim.outline and active_gun[currentGun].active and not config[''..active_gun[currentGun].name].foreground and config[''..active_gun[currentGun].name].outline then
 				display_texture(outline_anim[i_outline_anim], convert_x(fist_game_x + config.outline_anim.customX1) , convert_y(fist_game_y + config.outline_anim.customY1), convert_x((fist_game_x + fist_game_width) + config.outline_anim.customX2), convert_y((fist_game_y + fist_game_height) + config.outline_anim.customY2))
 			end
 		else
