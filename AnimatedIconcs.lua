@@ -14,7 +14,7 @@ script_authors("deddosouru(idea), dmitriyewich")
 script_url("https://vk.com/dmitriyewichmods")
 script_dependencies("ffi", "memory", "vkeys", "mimgui", "MoonAdditions" )
 script_properties('work-in-pause', 'forced-reloading-only')
-script_version("1.6.3")
+script_version("1.6.4")
 
 local lvkeys, vkeys = pcall(require, 'vkeys')
 assert(lvkeys, 'Library \'vkeys\' not found.')
@@ -28,7 +28,7 @@ local lwm, wm = pcall(require, 'windows.message')
 assert(lwm, 'Library \'windows.message\' not found.')
 local limgui, imgui = pcall(require, 'mimgui') -- https://github.com/THE-FYP/mimgui
 if not limgui then
-	print('Library \'mimgui\' not found. Download: https://github.com/THE-FYP/mimgui . Without menu active.')
+	print('Library \'mimgui\' not found. Download: https://github.com/THE-FYP/mimgui . Lite menu active.')
 	main_window_noi = false
 else
 	new, str, sizeof = imgui.new, ffi.string, ffi.sizeof
@@ -490,13 +490,14 @@ if limgui then
 			imgui.SetCursorPosX((imgui.GetWindowWidth() - 220) / 2)
 			imgui.SetCursorPosY(imgui.GetCursorPosY() - 17)
 			imgui.Image(logo, imgui.ImVec2(220, 52))
-			if imgui.IsItemHovered() then
-				imgui.BeginTooltip()
-				imgui.PushTextWrapPos(500)
-				imgui.TextUnformatted(language[config.main.language].by)
-				imgui.PopTextWrapPos()
-				imgui.EndTooltip()
-			end
+			-- if imgui.IsItemHovered() then
+				-- imgui.BeginTooltip()
+				-- imgui.PushTextWrapPos(500)
+				-- imgui.TextUnformatted(language[config.main.language].by)
+				-- imgui.PopTextWrapPos()
+				-- imgui.EndTooltip()
+			-- end
+			imgui.Hint('hint_by', language[config.main.language].by)
 			if imgui.IsItemClicked(1) then
 				os.execute(('explorer.exe "%s"'):format('https://vk.com/dmitriyewichmods'))
 			end
@@ -509,7 +510,7 @@ if limgui then
 			---------------------------------------------------------
 
 			---------------------------------------------------------
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 2)
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 30)
 			imgui.SetCursorPosX((imgui.GetWindowWidth() - 100 - imgui.CalcTextSize(language[config.main.language].checkbox6).x - imgui.CalcTextSize(language[config.main.language].checkbox4).x ) / 2)
 
 			imgui.Text(language[config.main.language].checkbox6)
@@ -541,7 +542,7 @@ if limgui then
 
 			---------------------------------------------------------
 			imgui.SetCursorPosX((imgui.GetWindowWidth() - 128) / 2)
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 7)
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 6)
 			if imgui.Button("X1+##1", imgui.ImVec2(30, 30)) then
 				config[''..item_list[int_item[0] + 1]].customX1 = config[''..item_list[int_item[0] + 1]].customX1 + offset_list[offset_item[0] + 1]
 			end
@@ -602,7 +603,7 @@ if limgui then
 			---------------------------------------------------------
 
 			---------------------------------------------------------
-			imgui.SetCursorPosX((imgui.GetWindowWidth() - 218) / 2)
+			imgui.SetCursorPosX((imgui.GetWindowWidth() - 205) / 2)
 			imgui.SetCursorPosY(imgui.GetCursorPosY() - 4)
 			imgui.PushItemWidth(60)
 
@@ -616,7 +617,9 @@ if limgui then
 			end
 			imgui.PopItemWidth()
 			imgui.SameLine()
-			imgui.TextQuestion("?", language[config.main.language].input_delay)
+			imgui.Hint('hint_input_delay', language[config.main.language].input_delay)
+			imgui.SameLine()
+			imgui.Text("|")
 			imgui.SameLine()
 			imgui.PushItemWidth(60)
 			local input_delay_replay_hint = config[''..item_list[int_item[0] + 1]].delay_replay
@@ -629,7 +632,9 @@ if limgui then
 			end
 			imgui.PopItemWidth()
 			imgui.SameLine()
-			imgui.TextQuestion("?", language[config.main.language].input_delay_replay)
+			imgui.Hint('hint_input_delay_replay', language[config.main.language].input_delay_replay)
+			imgui.SameLine()
+			imgui.Text("|")
 			imgui.SameLine()
 			imgui.PushItemWidth(60)
 			local input_delay_replay_end_hint = config[''..item_list[int_item[0] + 1]].delay_replay_end
@@ -641,8 +646,7 @@ if limgui then
 				config[''..item_list[int_item[0] + 1]].delay_replay_end = tonumber(str(input_delay_replay_end))
 			end
 			imgui.PopItemWidth()
-			imgui.SameLine()
-			imgui.TextQuestion("?", language[config.main.language].input_delay_replay_end)
+			imgui.Hint('hint_input_delay_replay_end', language[config.main.language].input_delay_replay_end)
 			---------------------------------------------------------
 
 			---------------------------------------------------------
@@ -666,7 +670,7 @@ if limgui then
 			end
 			---------------------------------------------------------
 			imgui.SetCursorPosX(imgui.GetCursorPosX() - 8)
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 20)
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 25)
 			if config.main.language == "RU" then imgui.Text("RU") else imgui.TextDisabled("RU") end
 			if imgui.IsItemClicked(0) then config.main.language = "RU" end
 			imgui.SameLine()
@@ -722,13 +726,7 @@ if limgui then
 				end
 				imgui.PushItemWidth(90)
 				imgui.InputTextWithHint('##Введите3', config.main.command, cmdbuffer, ffi.sizeof(cmdbuffer) - 1, imgui.InputTextFlags.AutoSelectAll)
-					if imgui.IsItemHovered() then
-						imgui.BeginTooltip()
-						imgui.PushTextWrapPos(600)
-							imgui.TextUnformatted(language[config.main.language].text_tooltip)
-						imgui.PopTextWrapPos()
-						imgui.EndTooltip()
-					end
+				imgui.Hint('text_tooltip', language[config.main.language].text_tooltip)
 				imgui.PopItemWidth()
 
 				imgui.SameLine()
@@ -783,20 +781,106 @@ if limgui then
 					end
 				end
 			end
-
 			imgui.End()
 		end
 	)
 
-	function imgui.TextQuestion(label, description)
-		imgui.TextDisabled(label)
-		if imgui.IsItemHovered() then
-			imgui.BeginTooltip()
-				imgui.PushTextWrapPos(600)
-					imgui.TextUnformatted(description)
-				imgui.PopTextWrapPos()
-			imgui.EndTooltip()
+	function imgui.Hint(str_id, hint_text, color, no_center) -- by Cosmo
+		color = color or imgui.GetStyle().Colors[imgui.Col.PopupBg]
+		local p_orig = imgui.GetCursorPos()
+		local hovered = imgui.IsItemHovered()
+		imgui.SameLine(nil, 0)
+
+		local animTime = 0.2
+		local show = true
+
+		if not POOL_HINTS then POOL_HINTS = {} end
+		if not POOL_HINTS[str_id] then
+			POOL_HINTS[str_id] = {
+				status = false,
+				timer = 0
+			}
 		end
+
+		if hovered then
+			for k, v in pairs(POOL_HINTS) do
+				if k ~= str_id and os.clock() - v.timer <= animTime  then
+					show = false
+				end
+			end
+		end
+
+		if show and POOL_HINTS[str_id].status ~= hovered then
+			POOL_HINTS[str_id].status = hovered
+			POOL_HINTS[str_id].timer = os.clock()
+		end
+
+		local getContrastColor = function(col)
+			local luminance = 1 - (0.299 * col.x + 0.587 * col.y + 0.114 * col.z)
+			return luminance < 0.5 and imgui.ImVec4(0, 0, 0, 1) or imgui.ImVec4(1, 1, 1, 1)
+		end
+
+		local rend_window = function(alpha)
+			local size = imgui.GetItemRectSize()
+			local scrPos = imgui.GetCursorScreenPos()
+			local DL = imgui.GetWindowDrawList()
+			local center = imgui.ImVec2( scrPos.x - (size.x / 2), scrPos.y + (size.y / 2) - (alpha * 4) + 10 )
+			local a = imgui.ImVec2( center.x - 7, center.y - size.y - 3 )
+			local b = imgui.ImVec2( center.x + 7, center.y - size.y - 3)
+			local c = imgui.ImVec2( center.x, center.y - size.y + 3 )
+			local col = imgui.ColorConvertFloat4ToU32(imgui.ImVec4(color.x, color.y, color.z, alpha))
+
+			DL:AddTriangleFilled(a, b, c, col)
+			imgui.SetNextWindowPos(imgui.ImVec2(center.x, center.y - size.y - 3), imgui.Cond.Always, imgui.ImVec2(0.5, 1.0))
+			imgui.PushStyleColor(imgui.Col.PopupBg, color)
+			imgui.PushStyleColor(imgui.Col.Border, color)
+			imgui.PushStyleColor(imgui.Col.Text, getContrastColor(color))
+			imgui.PushStyleVarVec2(imgui.StyleVar.WindowPadding, imgui.ImVec2(8, 8))
+			imgui.PushStyleVarFloat(imgui.StyleVar.WindowRounding, 6)
+			imgui.PushStyleVarFloat(imgui.StyleVar.Alpha, alpha)
+
+			local max_width = function(text)
+				local result = 0
+				for line in text:gmatch('[^\n]+') do
+					local len = imgui.CalcTextSize(line).x
+					if len > result then
+						result = len
+					end
+				end
+				return result
+			end
+
+			local hint_width = max_width(hint_text) + (imgui.GetStyle().WindowPadding.x * 2)
+			imgui.SetNextWindowSize(imgui.ImVec2(hint_width, -1), imgui.Cond.Always)
+			imgui.Begin('##' .. str_id, _, imgui.WindowFlags.Tooltip + imgui.WindowFlags.NoResize + imgui.WindowFlags.NoScrollbar + imgui.WindowFlags.NoTitleBar)
+				for line in hint_text:gmatch('[^\n]+') do
+					if no_center then
+						imgui.Text(line)
+					else
+						imgui.SetCursorPosX((hint_width - imgui.CalcTextSize(line).x) / 2)
+						imgui.Text(line)
+					end
+				end
+			imgui.End()
+
+			imgui.PopStyleVar(3)
+			imgui.PopStyleColor(3)
+		end
+
+		if show then
+			local between = os.clock() - POOL_HINTS[str_id].timer
+			if between <= animTime then
+				local s = function(f)
+					return f < 0.0 and 0.0 or (f > 1.0 and 1.0 or f)
+				end
+				local alpha = hovered and s(between / animTime) or s(1.00 - between / animTime)
+				rend_window(alpha)
+			elseif hovered then
+				rend_window(1.00)
+			end
+		end
+
+		imgui.SetCursorPos(p_orig)
 	end
 else
 	item_list = {"outline_anim"}
@@ -1128,20 +1212,34 @@ function main()
 						config[''..test2].customY2 = config[''..test2].customY2 - offset_list[test3]
 					end
 
-					mad.draw_rect(convert_x(515), convert_y(212), convert_x(545), convert_y(223), 10, 10, 10, 155)
+					mad.draw_rect(convert_x(507), convert_y(212), convert_x(532), convert_y(223), 10, 10, 10, 155)
 					if not draw_delay then
-						if drawClickableText(""..config[''..test2].delay, 530, 214, 0.4, 0.8, 155, 255, 10, 8) then
+						if drawClickableText(""..config[''..test2].delay, 519, 214, 0.4, 0.8, 155, 255, 10, 8) then
 							draw_delay = true
+							draw_delay_replay = false
+							draw_delay_replay_end = false
 						end
 					end
 
+					mad.draw_rect(convert_x(537), convert_y(212), convert_x(562), convert_y(223), 10, 10, 10, 155)
 					if not draw_delay_replay then
-						if drawClickableText(""..config[''..test2].delay_replay, 570, 214, 0.4, 0.8, 155, 255, 10, 8) then
+						if drawClickableText(""..config[''..test2].delay_replay, 549.5, 214, 0.4, 0.8, 155, 255, 10, 8) then
+							draw_delay = false
 							draw_delay_replay = true
+							draw_delay_replay_end = false
 						end
 					end
 
-					if draw_delay or draw_delay_replay then
+					mad.draw_rect(convert_x(567), convert_y(212), convert_x(592), convert_y(223), 10, 10, 10, 155)
+					if not draw_delay_replay_end then
+						if drawClickableText(""..config[''..test2].delay_replay_end, 579.5, 214, 0.4, 0.8, 155, 255, 10, 8) then
+							draw_delay = false
+							draw_delay_replay = false
+							draw_delay_replay_end = true
+						end
+					end
+
+					if draw_delay or draw_delay_replay or draw_delay_replay_end then
 					for k, v in pairs(vkeys) do
 							if wasKeyPressed(v) then
 								if v == vkeys.VK_1 or v == vkeys.VK_2 or v == vkeys.VK_3 or v == vkeys.VK_4 or v == vkeys.VK_5 or v == vkeys.VK_6 or v == vkeys.VK_7 or v == vkeys.VK_8 or v == vkeys.VK_9 or v == vkeys.VK_0 or
@@ -1157,47 +1255,61 @@ function main()
 									config[''..test2].delay = 0
 								elseif draw_delay_replay then
 									config[''..test2].delay_replay = 0
+								elseif draw_delay_replay_end then
+									config[''..test2].delay_replay = 0
 								end
 							else
 								if draw_delay then
 									config[''..test2].delay = tonumber(keyslist)
 								elseif draw_delay_replay then
 									config[''..test2].delay_replay = tonumber(keyslist)
+								elseif draw_delay_replay_end then
+									config[''..test2].delay_replay_end = tonumber(keyslist)
 								end
 							end
 							keyslist = ""
 							draw_delay = false
 							draw_delay_replay = false
+							draw_delay_replay_end = false
 						end
 						if wasKeyPressed(vkeys.VK_ESC) then
 							keyslist = ""
 							draw_delay = false
 							draw_delay_replay = false
+							draw_delay_replay_end = false
 						end
-						printStringNow("Press ~y~ENTER ~w~to save the value~n~Press ~y~ESC ~w~to cancel the input.", 0)
+						if draw_delay then
+							printStringNow_text = "~n~ ~y~ACTIVE ~w~ " .. language.EN.input_delay
+						elseif draw_delay_replay then
+							printStringNow_text = "~n~ ~y~ACTIVE ~w~ " .. language.EN.input_delay_replay
+						elseif draw_delay_replay_end then
+							printStringNow_text = "~n~ ~y~ACTIVE ~w~ " .. language.EN.input_delay_replay_end
+						end
+						printStringNow("Press ~y~ENTER ~w~to save the value~n~Press ~y~ESC ~w~to cancel the input." .. printStringNow_text, 0)
 
 						if wasKeyPressed(vkeys.VK_BACK) then
 							keyslist = keyslist:sub(1, -2)
 						end
 						if draw_delay then
-							drawClickableText(""..keyslist, 530, 214, 0.4, 0.8, 155, 255, 10, 8)
+							drawClickableText(""..keyslist, 519, 214, 0.4, 0.8, 155, 255, 10, 8)
 						elseif draw_delay_replay then
-							drawClickableText(""..keyslist, 570, 214, 0.4, 0.8, 155, 255, 10, 8)
+							drawClickableText(""..keyslist, 549.5, 214, 0.4, 0.8, 155, 255, 10, 8)
+						elseif draw_delay_replay_end then
+							drawClickableText(""..keyslist, 579.5, 214, 0.4, 0.8, 155, 255, 10, 8)
 						end
 					end
 
-					mad.draw_rect(convert_x(555), convert_y(212), convert_x(585), convert_y(223), 10, 10, 10, 155)
-
-					if drawClickableText("SAVE", 530, 225,0.6, 1.2, 155, 255,  10, 8) then
+					if drawClickableText("SAVE", 530, 226.5,0.6, 1.2, 155, 255,  10, 8) then
 						savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 					end
-					if drawClickableText("RESET", 570, 225, 0.6, 1.2, 155, 255, 10, 8) then
+					if drawClickableText("RESET", 570, 226.5, 0.6, 1.2, 155, 255, 10, 8) then
 						config[''..test2].customX1 = 0
 						config[''..test2].customX2 = 0
 						config[''..test2].customY1 = 0
 						config[''..test2].customY2 = 0
 						config[''..test2].delay = 0
 						config[''..test2].delay_replay = 0
+						config[''..test2].delay_replay_end = 0
 					end
 
 					if config.main.standart_icons then
@@ -1445,14 +1557,15 @@ function onWindowMessage(msg, wparam, lparam)
 			consumeWindowMessage(true, false)
 		end
 	else
-		if msg == wm.WM_KEYDOWN and wparam == 0x1B and main_window_noi then
+		if msg == wm.WM_KEYDOWN and wparam == 0x1B and main_window_noi and not draw_delay and not draw_delay_replay and not draw_delay_replay_end then
 			main_window_noi = false
 			setPlayerControl(PLAYER_HANDLE, true)
 			consumeWindowMessage(true, false)
 		end
-		if msg == wm.WM_KEYDOWN and wparam == 0x1B and main_window_noi and (draw_delay or draw_delay_replay) then
+		if msg == wm.WM_KEYDOWN and wparam == 0x1B and main_window_noi and (draw_delay or draw_delay_replay or draw_delay_replay_end) then
 			draw_delay = false
 			draw_delay_replay = false
+			draw_delay_replay_end = false
 			keyslist = ""
 			consumeWindowMessage(true, false)
 		end
@@ -1465,7 +1578,6 @@ function onScriptTerminate(LuaScript, quitGame)
 		memory.fill(0x58D7D0, 0xA1, 1, true)
 	end
 end
-
 
 _close ="\x89\x50\x4E\x47\x0D\x0A\x1A\x0A\x00\x00\x00\x0D\x49\x48\x44\x52\x00\x00\x00\x21\x00\x00\x00\x21\x08\x06\x00\x00\x00\x57\xE4\xC2\x6F\x00\x00\x00\x09\x70\x48\x59\x73\x00\x00\x06\xEC\x00\x00\x06\xEC\x01\x1E\x75\x38\x35\x00\x00\x04\xE8\x69\x54\x58\x74\x58\x4D\x4C\x3A\x63\x6F\x6D\x2E\x61\x64\x6F\x62\x65\x2E\x78\x6D\x70\x00\x00\x00\x00\x00\x3C\x3F\x78\x70\x61\x63\x6B\x65\x74\x20\x62\x65\x67\x69\x6E\x3D\x22\xEF\xBB\xBF\x22\x20\x69\x64\x3D\x22\x57\x35\x4D\x30\x4D\x70\x43\x65\x68\x69\x48\x7A\x72\x65\x53\x7A\x4E\x54\x63\x7A\x6B\x63\x39\x64\x22\x3F\x3E\x20\x3C\x78\x3A\x78\x6D\x70\x6D\x65\x74\x61\x20\x78\x6D\x6C\x6E\x73\x3A\x78\x3D\x22\x61\x64\x6F\x62\x65\x3A\x6E\x73\x3A\x6D\x65\x74\x61\x2F\x22\x20\x78\x3A\x78\x6D\x70\x74\x6B\x3D\x22\x41\x64\x6F\x62\x65\x20\x58\x4D\x50\x20\x43\x6F\x72\x65\x20\x36\x2E\x30\x2D\x63\x30\x30\x36\x20\x37\x39\x2E\x64\x61\x62\x61\x63\x62\x62\x2C\x20\x32\x30\x32\x31\x2F\x30\x34\x2F\x31\x34\x2D\x30\x30\x3A\x33\x39\x3A\x34\x34\x20\x20\x20\x20\x20\x20\x20\x20\x22\x3E\x20\x3C\x72\x64\x66\x3A\x52\x44\x46\x20\x78\x6D\x6C\x6E\x73\x3A\x72\x64\x66\x3D\x22\x68\x74\x74\x70\x3A\x2F\x2F\x77\x77\x77\x2E\x77\x33\x2E\x6F\x72\x67\x2F\x31\x39\x39\x39\x2F\x30\x32\x2F\x32\x32\x2D\x72\x64\x66\x2D\x73\x79\x6E\x74\x61\x78\x2D\x6E\x73\x23\x22\x3E\x20\x3C\x72\x64\x66\x3A\x44\x65\x73\x63\x72\x69\x70\x74\x69\x6F\x6E\x20\x72\x64\x66\x3A\x61\x62\x6F\x75\x74\x3D\x22\x22\x20\x78\x6D\x6C\x6E\x73\x3A\x78\x6D\x70\x3D\x22\x68\x74\x74\x70\x3A\x2F\x2F\x6E\x73\x2E\x61\x64\x6F\x62\x65\x2E\x63\x6F\x6D\x2F\x78\x61\x70\x2F\x31\x2E\x30\x2F\x22\x20\x78\x6D\x6C\x6E\x73\x3A\x64\x63\x3D\x22\x68\x74\x74\x70\x3A\x2F\x2F\x70\x75\x72\x6C\x2E\x6F\x72\x67\x2F\x64\x63\x2F\x65\x6C\x65\x6D\x65\x6E\x74\x73\x2F\x31\x2E\x31\x2F\x22\x20\x78\x6D\x6C\x6E\x73\x3A\x70\x68\x6F\x74\x6F\x73\x68\x6F\x70\x3D\x22\x68\x74\x74\x70\x3A\x2F\x2F\x6E\x73\x2E\x61\x64\x6F\x62\x65\x2E\x63\x6F\x6D\x2F\x70\x68\x6F\x74\x6F\x73\x68\x6F\x70\x2F\x31\x2E\x30\x2F\x22\x20\x78\x6D\x6C\x6E\x73\x3A\x78\x6D\x70\x4D\x4D\x3D\x22\x68\x74\x74\x70\x3A\x2F\x2F\x6E\x73\x2E\x61\x64\x6F\x62\x65\x2E\x63\x6F\x6D\x2F\x78\x61\x70\x2F\x31\x2E\x30\x2F\x6D\x6D\x2F\x22\x20\x78\x6D\x6C\x6E\x73\x3A\x73\x74\x45\x76\x74\x3D\x22\x68\x74\x74\x70\x3A\x2F\x2F\x6E\x73\x2E\x61\x64\x6F\x62\x65\x2E\x63\x6F\x6D\x2F\x78\x61\x70\x2F\x31\x2E\x30\x2F\x73\x54\x79\x70\x65\x2F\x52\x65\x73\x6F\x75\x72\x63\x65\x45\x76\x65\x6E\x74\x23\x22\x20\x78\x6D\x70\x3A\x43\x72\x65\x61\x74\x6F\x72\x54\x6F\x6F\x6C\x3D\x22\x41\x64\x6F\x62\x65\x20\x50\x68\x6F\x74\x6F\x73\x68\x6F\x70\x20\x32\x32\x2E\x34\x20\x28\x57\x69\x6E\x64\x6F\x77\x73\x29\x22\x20\x78\x6D\x70\x3A\x43\x72\x65\x61\x74\x65\x44\x61\x74\x65\x3D\x22\x32\x30\x32\x31\x2D\x30\x38\x2D\x31\x33\x54\x31\x39\x3A\x30\x30\x3A\x34\x30\x2B\x30\x33\x3A\x30\x30\x22\x20\x78\x6D\x70\x3A\x4D\x6F\x64\x69\x66\x79\x44\x61\x74\x65\x3D\x22\x32\x30\x32\x31\x2D\x30\x38\x2D\x31\x33\x54\x31\x39\x3A\x30\x37\x2B\x30\x33\x3A\x30\x30\x22\x20\x78\x6D\x70\x3A\x4D\x65\x74\x61\x64\x61\x74\x61\x44\x61\x74\x65\x3D\x22\x32\x30\x32\x31\x2D\x30\x38\x2D\x31\x33\x54\x31\x39\x3A\x30\x37\x2B\x30\x33\x3A\x30\x30\x22\x20\x64\x63\x3A\x66\x6F\x72\x6D\x61\x74\x3D\x22\x69\x6D\x61\x67\x65\x2F\x70\x6E\x67\x22\x20\x70\x68\x6F\x74\x6F\x73\x68\x6F\x70\x3A\x43\x6F\x6C\x6F\x72\x4D\x6F\x64\x65\x3D\x22\x33\x22\x20\x78\x6D\x70\x4D\x4D\x3A\x49\x6E\x73\x74\x61\x6E\x63\x65\x49\x44\x3D\x22\x78\x6D\x70\x2E\x69\x69\x64\x3A\x32\x31\x36\x36\x32\x61\x65\x62\x2D\x64\x66\x61\x32\x2D\x62\x35\x34\x31\x2D\x62\x30\x64\x37\x2D\x63\x66\x32\x39\x35\x34\x32\x34\x66\x37\x32\x35\x22\x20\x78\x6D\x70\x4D\x4D\x3A\x44\x6F\x63\x75\x6D\x65\x6E\x74\x49\x44\x3D\x22\x78\x6D\x70\x2E\x64\x69\x64\x3A\x32\x31\x36\x36\x32\x61\x65\x62\x2D\x64\x66\x61\x32\x2D\x62\x35\x34\x31\x2D\x62\x30\x64\x37\x2D\x63\x66\x32\x39\x35\x34\x32\x34\x66\x37\x32\x35\x22\x20\x78\x6D\x70\x4D\x4D\x3A\x4F\x72\x69\x67\x69\x6E\x61\x6C\x44\x6F\x63\x75\x6D\x65\x6E\x74\x49\x44\x3D\x22\x78\x6D\x70\x2E\x64\x69\x64\x3A\x32\x31\x36\x36\x32\x61\x65\x62\x2D\x64\x66\x61\x32\x2D\x62\x35\x34\x31\x2D\x62\x30\x64\x37\x2D\x63\x66\x32\x39\x35\x34\x32\x34\x66\x37\x32\x35\x22\x3E\x20\x3C\x78\x6D\x70\x4D\x4D\x3A\x48\x69\x73\x74\x6F\x72\x79\x3E\x20\x3C\x72\x64\x66\x3A\x53\x65\x71\x3E\x20\x3C\x72\x64\x66\x3A\x6C\x69\x20\x73\x74\x45\x76\x74\x3A\x61\x63\x74\x69\x6F\x6E\x3D\x22\x63\x72\x65\x61\x74\x65\x64\x22\x20\x73\x74\x45\x76\x74\x3A\x69\x6E\x73\x74\x61\x6E\x63\x65\x49\x44\x3D\x22\x78\x6D\x70\x2E\x69\x69\x64\x3A\x32\x31\x36\x36\x32\x61\x65\x62\x2D\x64\x66\x61\x32\x2D\x62\x35\x34\x31\x2D\x62\x30\x64\x37\x2D\x63\x66\x32\x39\x35\x34\x32\x34\x66\x37\x32\x35\x22\x20\x73\x74\x45\x76\x74\x3A\x77\x68\x65\x6E\x3D\x22\x32\x30\x32\x31\x2D\x30\x38\x2D\x31\x33\x54\x31\x39\x3A\x30\x30\x3A\x34\x30\x2B\x30\x33\x3A\x30\x30\x22\x20\x73\x74\x45\x76\x74\x3A\x73\x6F\x66\x74\x77\x61\x72\x65\x41\x67\x65\x6E\x74\x3D\x22\x41\x64\x6F\x62\x65\x20\x50\x68\x6F\x74\x6F\x73\x68\x6F\x70\x20\x32\x32\x2E\x34\x20\x28\x57\x69\x6E\x64\x6F\x77\x73\x29\x22\x2F\x3E\x20\x3C\x2F\x72\x64\x66\x3A\x53\x65\x71\x3E\x20\x3C\x2F\x78\x6D\x70\x4D\x4D\x3A\x48\x69\x73\x74\x6F\x72\x79\x3E\x20\x3C\x2F\x72\x64\x66\x3A\x44\x65\x73\x63\x72\x69\x70\x74\x69\x6F\x6E\x3E\x20\x3C\x2F\x72\x64\x66\x3A\x52\x44\x46\x3E\x20\x3C\x2F\x78\x3A\x78\x6D\x70\x6D\x65\x74\x61\x3E\x20\x3C\x3F\x78\x70\x61\x63\x6B\x65\x74\x20\x65\x6E\x64\x3D\x22\x72\x22\x3F\x3E\xCF\x38\xDC\x53\x00\x00\x04\x73\x49\x44\x41\x54\x58\x85\xC5\x97\x4B\x6F\x1B\x55\x14\xC7\x03\x02\x04\xE2\x0B\xC0\x9E\x25\xAB\x0A\xE8\x86\x45\x58\x20\x40\x15\x12\xB1\x33\x1E\x3F\xE2\x47\xD3\xD4\x6E\x43\x1B\x52\x1A\xE2\xF8\x3D\x63\x8F\x5F\xB1\xF3\x7E\xB6\x85\x0F\xC5\x82\x47\x85\xC4\x02\x54\x21\xB1\x8A\xED\x48\x14\x55\xE8\x72\xFE\xD7\x3E\xCE\x9D\x71\xC6\x8F\xA4\x6A\x17\x47\xE3\x99\xB9\x73\xCE\xCF\xFF\x7B\xEE\x39\xF7\x4E\x09\x21\xA6\x5E\xB6\xBD\x74\x00\x57\x08\x5D\xF7\x5C\xF1\xF9\xBD\x4B\x9A\xDF\x73\x4D\xD3\xB4\xB7\x2E\x1B\x04\x3E\x66\xF5\xD9\x2F\x66\x75\xCF\x5D\xF8\x9E\x9A\x9A\x7A\xC5\x15\x82\x06\xBF\xE3\x0F\xCE\xFE\x19\x8A\x06\x4E\x6E\x7F\x9D\x78\x1A\x9B\x8F\xB6\xF5\x80\xF6\x17\x3D\xFF\xE8\xA2\x00\xBA\x3E\xF3\xBE\x1E\xF0\xFD\x11\x9D\x8F\xB4\x6F\x2D\xDE\x7C\x1A\x0A\x07\x5B\xE4\xF3\x89\x67\xCE\xF3\xEE\x00\x04\x05\x7A\xC3\x1F\xD0\x7E\x5C\x5A\xBE\xF3\xAC\x52\x2B\x09\x58\xB5\x6E\x89\x54\x66\x55\xD0\x47\x1D\x7A\xFF\xF1\xE4\x00\x9E\x2B\xFE\x80\xAF\x95\x4C\x7F\x27\x6A\xEB\x65\xE9\x0F\x7E\x97\xBF\xBD\xFB\x8C\x62\xFD\x12\x8B\xC5\xDE\xB4\x43\x04\x66\x3E\x0D\x47\x82\x1D\x15\x00\x1F\xD6\x1B\x15\x91\x2F\x64\x84\x3F\x38\x19\x08\x03\x64\xF3\x29\xB1\xDE\xAC\x4A\x3F\x2A\x48\x24\x36\xD7\xA6\x98\x9F\xDB\x21\xFC\x9E\x60\x3C\x71\xA3\x0F\xC1\x00\x70\xD0\xD8\xA8\x89\x82\x99\x1B\x1B\x84\x01\x72\x46\x5A\x34\x37\xEB\xF2\x7B\x15\x04\xFE\xE3\xB7\x16\x3A\x14\x33\xE6\x84\xB8\x16\xB9\x3E\xD7\x56\x55\x60\x00\x38\xDA\xD8\x5A\x17\x66\x31\x4F\x20\xBE\xA1\x20\x0C\x50\x30\x33\x62\x73\xBB\x21\xBF\x53\x41\x58\x0D\x52\xA2\xE5\xF3\x79\xBF\xB2\x41\x20\x63\xF5\x90\xF6\x53\x72\x6D\xC5\xA6\x02\x03\xC0\xE1\xD6\x4E\x53\x14\x2D\xC3\x15\x84\x01\x8C\x62\x4E\x6C\xEF\x6E\xC8\xF1\x2A\x08\xAB\x91\x4C\xAF\x50\x9E\xF9\x7E\xE6\x55\x62\x73\xE2\xF5\x7B\x3F\xD0\x83\x5A\x3B\xD3\x9B\x47\x56\x81\x01\xE0\x78\x67\x6F\x53\x58\x65\x73\x00\x84\x01\x4C\x2B\x2F\x76\xF7\xB7\xE4\x38\x15\x84\xD5\xC8\x19\x19\x81\x18\x88\xE5\x5A\x27\xE0\x18\x83\x30\x58\x55\x81\x01\x10\x60\xEF\x60\x5B\x94\xAB\xA5\x3E\x88\x04\x08\xFA\x5A\xA5\xB2\x21\xF6\x0F\x77\xE4\x7B\x15\x84\xD5\x28\x98\x59\x09\xE0\x54\xD1\xAD\xB8\x48\x90\x82\x91\xB5\xA9\xC0\x00\x08\x74\x70\xB4\x2B\xAA\x35\x4B\x82\x00\xC0\xAA\x9A\xE2\xF0\x78\x4F\x3E\x57\x41\x58\x0D\x4C\xD1\x79\x00\xAE\x10\x7D\x90\x80\xAF\x63\x98\x79\xE9\x84\x55\x60\x00\x04\x3C\x7E\x78\x40\x12\x93\xCC\xCD\x9A\xFC\x0D\x53\x41\x58\x0D\x24\x34\x7C\xB9\x25\xF4\xA8\x72\x2B\x41\xCC\x52\x41\x3A\x53\x55\x38\x7A\xB0\x2F\x83\x3E\xFC\xFE\xA8\x6F\xB8\xC7\x73\x80\xB0\x1A\x48\xE4\x61\x00\x23\x21\x54\x90\xA2\x55\xE8\x43\x20\x08\x82\x3D\x78\x74\x28\x83\x3F\xFA\xE1\x58\x5E\x71\xAF\x42\x94\x2A\xE6\x48\x80\xB1\x20\xCE\x72\xC4\xD7\x29\x59\xC6\x80\x12\x0C\x82\x2B\x2B\x81\xF7\x56\x65\x70\x05\x5D\x0A\x82\x41\x68\x09\x9E\xA2\xD0\x40\x11\xCE\x7C\xCC\x3B\x82\xAA\x53\x51\xA7\x3A\x83\xB1\xE3\x96\xF9\x89\x21\x72\xF9\x34\x2D\xCF\xA2\xB0\x60\xF4\x6F\x61\xB8\x07\x1C\x6A\x0B\x0C\x4B\xF1\xB9\x43\x30\x40\x3A\x97\x94\x75\xBF\x0C\xA3\xC0\xA8\x15\xB8\xDA\x9A\x5E\xBD\x2C\x2B\x6E\x36\x97\x12\xFA\xF3\x9A\x0E\x06\xC8\xE4\xD6\x7A\x1D\xD0\x92\x57\xE7\xEF\x6E\x4F\x00\x40\x45\x96\x66\x58\x96\x54\xBB\x74\x62\xF6\x01\xF2\x5D\x80\xEA\x7A\xF7\x5F\x9E\x05\x54\xED\x2C\x78\xD7\xBA\x7D\x22\x97\xCF\x5C\x7C\x89\xAA\x00\x1C\x88\x03\xD4\x7A\x57\xCC\x3F\xEA\x00\x8C\xF3\x41\x5A\xA3\x6A\xBB\x1F\x05\x32\x04\x40\x93\x53\xA0\xFE\x3B\xEE\x82\xD2\x39\xF6\x18\x45\xEC\x31\xF4\x53\x82\xED\x14\xA8\xD7\xA0\x41\xB1\x71\x03\x64\xCB\x15\xD2\xE3\x97\xED\x1E\x40\x27\x95\x5D\xB5\xB5\x74\xB6\xC6\x46\xD7\xB9\xD1\x03\xC0\xEE\x88\x0B\x5A\x9E\x56\x45\x83\x9A\x5E\xB3\x67\x2A\x10\xFC\xA0\x3B\x8F\x6C\x60\xD4\x5E\xAF\xEA\x3D\x00\x75\x87\x35\xB0\xCB\x52\x00\x6C\x05\x0D\x20\xD4\xF4\x9C\xC1\xCF\xF2\xC8\x12\xE9\xEC\x9A\x7B\x2B\xC7\xB6\x9C\x5E\x3E\x49\xA6\x56\xFA\x00\xE7\xED\x37\xD1\xE2\xA9\x12\xDA\x00\x9C\x20\xC8\x81\x7E\xFE\x28\xFB\x4A\xB6\x55\x8A\x41\xCB\xF7\xF7\x78\x3C\xFE\xBA\x0D\x82\xB6\x5A\x9F\xC5\xE6\x23\x27\x4E\x00\x15\xA4\x3B\xAF\xE7\x03\x38\x41\x50\x27\xCE\x03\x60\xA3\x58\x2D\x3A\x8B\x68\x36\x08\x7A\x90\x48\x2C\xDE\xFC\xC7\x0D\x42\xCE\x67\x60\x38\x80\x0D\x84\x24\x87\xF4\x6E\xFE\x12\x8B\x0B\xA7\x14\x73\xC1\xA1\x84\xE7\x93\x70\x34\xD4\xBA\x2C\xC0\xB8\x20\xB4\xA9\xEE\x90\xFA\x5E\x1B\x04\xE6\x87\x92\xF2\xF1\xBD\xFB\x4B\xFF\xA9\x83\xD3\x99\xE4\xC4\x00\x4E\x10\x67\x9E\xDD\xBB\xBF\x2C\xFC\x21\xED\x37\xC3\x30\x5E\x1D\x58\x1D\xF4\xD1\x7B\x34\xE7\xBF\x86\x69\x3B\x7E\xFB\x4E\xE2\xDF\xF9\x1B\xD1\x13\x02\xFB\x1B\x2A\x4D\x0A\xC0\x46\xFB\xCF\x0F\x91\x84\xD1\xEB\x91\x16\xCE\x1A\x38\xF4\xD0\xF9\xE5\x31\x8E\x87\xAE\x75\x62\x7A\x7A\xFA\x35\x24\xA9\xA6\x7B\xBF\xA1\xB3\xC8\x4C\x38\x1C\x7E\xFB\xA2\x00\x0E\x9F\x5E\x1C\x76\xE8\xFA\x25\x2B\x30\xB4\x62\xBE\x68\xFB\x1F\xF7\x5C\xF7\xCB\x56\x46\x99\xC0\x00\x00\x00\x00\x49\x45\x4E\x44\xAE\x42\x60\x82"
 
