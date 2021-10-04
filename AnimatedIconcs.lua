@@ -7,40 +7,100 @@
   \__,_||_| |_| |_||_| \__||_|   |_| \__, | \___|  \_/\_/  |_| \___||_| |_|
                                       __/ |
                                      |___/                                 ]]
-
-
 script_name("AnimatedIconcs")
 script_authors("deddosouru(idea), dmitriyewich")
 script_url("https://vk.com/dmitriyewichmods")
-script_dependencies("ffi", "memory", "vkeys", "mimgui", "MoonAdditions" )
+script_dependencies("mimgui", "MoonAdditions" )
 script_properties('work-in-pause', 'forced-reloading-only')
-script_version("1.6.4")
+script_version("1.7.0")
+
+changelog = [[
+	NoNameAnimHud 0.1beta
+		- Релиз
+	NoNameAnimHud v1.0
+		- Код стал большим, лучше на него не смотреть, когда-нибудь оптимизирую
+		- Количество кадров в .txd определяется автоматически
+		- Реализована задержка кадров, повтора анимации(настраивается через конфиг или /animhud)
+		- Добавлена проверка на наличие файла анимации(Если его нет, то будет стандартная иконка)
+		- Добавил проверку на изменение конфига(мне так удобней настраивать😄)
+		- Что-то ещё добавил, исправил
+	NoNameAnimHud v1.2
+		- Оптимизировал код, он стал легче на 50%
+		- Добавил кнопку полного выключения анимированных иконок
+		- Кнопка "Включить стандартные иконки" не выключает анимацию
+		- В списке выбора иконок отображаются только существующие .txd
+		- Что-то ещё исправлено, что-то добавлено
+	NoNameAnimHud v1.3
+		- Добавлена кнопка переключения анимации на передний/задний фон
+		- Микрофиксы
+	NoNameAnimHud v1.4
+		- Добавлена поддержка связки Widescreen Fix by ThirteenAG + Widescreen HOR+ Support by Wesser
+		- Добавлено отображение позиции редактируемой стороны
+		- При отсутствии SAMPFUNCS окно открывается чит-кодом ANIMHUD
+		- Микрофиксы
+	NoNameAnimHud v1.5
+		- Добавлено альтернативное окно настроек, при условии отсутствии mimgui.
+		- Исправлена ситуация, когда крашило скрипт, если в папке с анимацией была папка или другие файлы.
+		- Микрофиксы
+	NoNameAnimHud v1.5.2
+		- Исправлена ошибка с combo в окне mimgui
+		- Исправлена ошибка при поиске файлов, если название будет указано неправильно, то такой файл будет игнорироваться.
+		- Микрофиксы
+	AnimatedIconcs v1.6
+		- Изменено название скрипта на AnimatedIconcs, так же изменено название папки и .json с NoNameAnimHUD на AnimatedIconcs
+		- Изменены команда акцивации на /aic и чит-код AIC
+		- Добавлена функция изменения команды или чит-кода.(только для версии с mimgui)
+		- Нужно больше потоков! Шутка. Серьёзно, не знаю зачем, но вывел отключение стандартных иконок в отдельный поток, так в 2 раза быстрее скрываются стандартные иконки. (Хуки делать я ещё не научился)
+		- Изменён метод получения координат иконки
+		- Микрофиксы
+	AnimatedIconcs v1.6.1
+		- Исправлен краш при открытии окна настроек без mimgui
+		- Микрофиксы
+	AnimatedIconcs v1.6.2
+		- Добавлена одна функция. Обводка - при выбранном outline_anim отключает обводку на всех оружиях, при выбранном оружии отключает обводку только у выбранного оружия.
+	AnimatedIconcs v1.6.3
+		- Добавлена одна функция. Задержка после завершения анимации(последний кард).
+		- Исправлена ошибка когда не работал checkbox на "Поверх обводки".
+	AnimatedIconcs v1.6.4 FINAL
+		- Задержка после завершения анимации(последний кард) теперь и в меню без mimgui
+		- Мелкие графические изменения в mimgui
+		- Микрофиксы
+	AnimatedIconcs v1.7.0
+		- Добавлено оповещение если нет необходимых библиотек
+		- При выборе иконки для редактирования, так же переключается оружие, при условии, что оно у вас есть.
+		- Появление стандартной иконки при переключении оружия сведено к минимуму.
+		- Используется тестовая функция для сампа на проверку коннекта и спавна (что-то вроде sampIsLocalPlayerSpawned() опкод 0B61 из SAMPFUNCS)
+		- Изменена система позиционирования иконки, 4 режима:
+			ручная настройка
+			координаты заданный игрой(оригинальные)(по умолчанию)
+			координаты с учетом sa_widescreenfix_lite.asi/Widescreen ThirteenAG
+			координаты с учетом Widescreen ThirteenAG + Wesser
+		- те же изменение, которые выше, для lite window
+		- Мелкие графические изменения в mimgui
+		- Мелкие графические изменения в lite window
+		- Микрофиксы
+]]
 
 local lvkeys, vkeys = pcall(require, 'vkeys')
-assert(lvkeys, 'Library \'vkeys\' not found.')
 local lffi, ffi = pcall(require, 'ffi')
-assert(lffi, 'Library \'ffi\' not found.')
 local lmemory, memory = pcall(require, 'memory')
-assert(lmemory, 'Library \'memory\' not found.')
 local lmad, mad = pcall(require, 'MoonAdditions')   -- https://github.com/THE-FYP/MoonAdditions
-assert(lmad, 'Library \'MoonAdditions\' not found. Download: https://github.com/THE-FYP/MoonAdditions .')
 local lwm, wm = pcall(require, 'windows.message')
-assert(lwm, 'Library \'windows.message\' not found.')
 local limgui, imgui = pcall(require, 'mimgui') -- https://github.com/THE-FYP/mimgui
-if not limgui then
-	print('Library \'mimgui\' not found. Download: https://github.com/THE-FYP/mimgui . Lite menu active.')
-	main_window_noi = false
-else
-	new, str, sizeof = imgui.new, ffi.string, ffi.sizeof
-end
-
-local active = true
+	if not limgui then
+		print('Library \'mimgui\' not found. Download: https://github.com/THE-FYP/mimgui . Lite menu active.')
+		main_window_noi = false
+	else
+		new, str, sizeof = imgui.new, ffi.string, ffi.sizeof
+	end
 
 local lencoding, encoding = pcall(require, 'encoding')
-assert(lencoding, 'Library \'encoding\' not found.')
+
 encoding.default = 'CP1251'
 u8 = encoding.UTF8
 CP1251 = encoding.CP1251
+
+local active = true
 
 ffi.cdef[[
 	typedef void* HANDLE;
@@ -261,104 +321,56 @@ function convertTableToJsonString(config)
 	return (neatJSON(config, { wrap = 40, short = true, sort = true, aligned = true, arrayPadding = 1, afterComma = 1, beforeColon1 = 1 }))
 end
 
-local language = {
-	RU = {
-		by = 'by dmitriyewich aka Valgard Dmitriyewich.\nРаспространение допускается только с указанием автора или ссылки на пост в ВК/mixmods/github\nПКМ - Открыть группу в ВК',
-		input_delay = "Задержка между кадрами",
-		input_delay_replay = "Задержка перед началом анимации",
-		input_delay_replay_end = "Задержка по окончанию анимации",
-		text1 = "Смещение",
-		button_save = "Сохранить",
-		button_cmd_save = "Сохранить комманду",
-		button_сс_save = "Сохранить чит-код",
-		button_reset = "Сброс",
-		checkbox1 = "Стандартные иконки",
-		checkbox2 = "sa_widescreenfix_lite.asi",
-		checkbox5 = "Widescreen ThirteenAG + Wesser",
-		checkbox3 = "Анимированные иконки",
-		checkbox4 = "Поверх\nобводки",
-		checkbox6 = "Обводка",
-		text_tooltip = 'Чтобы изменить активацию введите команду без "/"',
-		changecmdtext = 'Поле ввода пустое или содержит символ "/"\nВведите команду без "/"'
-	},
-	EN = {
-		by = 'by dmitriyewich aka Valgard Dmitriyewich.\nDistribution is allowed only with the indication of the author or a link to the post in the VK/mixmods/github\nRMB - Open a group in VK',
-		input_delay = "Delay between frames",
-		input_delay_replay = "Delay before animation starts",
-		input_delay_replay_end = "Delay at end animation",
-		text1 = "Offset",
-		button_save = "Save",
-		button_cmd_save = "Save command",
-		button_сс_save = "Save cheat-code",
-		button_reset = "Reset",
-		checkbox1 = "Standard icons",
-		checkbox2 = "sa_widescreenfix_lite.asi",
-		checkbox5 = "Widescreen ThirteenAG + Wesser",
-		checkbox3 = "Animated icons",
-		checkbox4 = "Fore\nground",
-		checkbox6 = "Outline",
-		text_tooltip = 'To change the activation, enter the command without "/"',
-		changecmdtext = 'Input field is empty or contains the char "/"\nEnter without "/"'
-	}
-}
-
 local config = {}
 
 function defalut_config()
 	config = {
-		["main"] = {
-			["main_active"] = true,
-			["command"] = "aic",
-			["cheatcode"] = "AIC",
-			["language"] = "RU",
-			["widescreen"] = false,
-			["widescreen_Wesser"] = false,
-			["standart_icons"] = false},
-		["outline_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
-		["fist_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["brassknuckle_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["golfclub_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["nitestick_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["knifecur_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["bat_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["shovel_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["poolcue_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["katana_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["chnsaw_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["colt45_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["silenced_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["desert_eagle_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["chromegun_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["sawnoff_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["shotgspa_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["micro_uzi_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["mp5lng_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["tec9_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["ak47_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["m4_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["cuntgun_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["sniper_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["rocketla_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["heatseek_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["flame_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["minigun_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["grenade_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["teargas_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["molotov_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["satchel_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["spraycan_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["fire_ex_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["camera_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["gun_dildo1_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["gun_dildo2_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["gun_vibe1_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["gun_vibe2_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["flowera_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["gun_cane_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["nvgoggles_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["irgoggles_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["gun_para_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3},
-		["bomb_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["customX1"] = 3, ["customY1"] = 3, ["customX2"] = -2.5, ["customY2"] = -3};
+		["MAIN"] = {["main_active"] = true, ["command"] = "aic", ["cheatcode"] = "AIC", ["language"] = "RU", ["standard_icons"] = false},
+		["outline_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["fist_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["brassknuckle_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["golfclub_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["nitestick_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["knifecur_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["bat_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["shovel_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["poolcue_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["katana_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["chnsaw_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["colt45_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["silenced_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["desert_eagle_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["chromegun_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["sawnoff_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["shotgspa_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["micro_uzi_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["mp5lng_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["tec9_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["ak47_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["m4_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["cuntgun_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["sniper_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["rocketla_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["heatseek_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["flame_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["minigun_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["grenade_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["teargas_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["molotov_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["satchel_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["spraycan_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["fire_ex_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["camera_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["gun_dildo1_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["gun_dildo2_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["gun_vibe1_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["gun_vibe2_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["flowera_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["gun_cane_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["nvgoggles_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["irgoggles_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["gun_para_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0},
+		["bomb_anim"] = {["outline"] = true, ["foreground"] = false, ["delay"] = 0, ["delay_replay"] = 0, ["delay_replay_end"] = 0, ["posX"] = 497, ["posY"] = 20, ["posW"] = 47, ["posH"] = 47, ["customX1"] = 0, ["customY1"] = 0, ["customX2"] = 0, ["customY2"] = 0};
 	}
     savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 end
@@ -380,79 +392,82 @@ function Standart()
 	local ImVec2 = imgui.ImVec2
 
     style.WindowPadding = ImVec2(15, 15)
-	style.WindowRounding = 10.0
-    style.WindowBorderSize = 0.7;
+	style.WindowRounding = 4.7
+    style.WindowBorderSize = 1.0
 	style.WindowMinSize = ImVec2(1.5, 1.5)
 	style.WindowTitleAlign = ImVec2(0.5, 0.5)
-	style.ChildRounding = 3
-	style.ChildBorderSize = 1;
-	style.PopupRounding = 3;
-	style.PopupBorderSize  = 1;
+	style.ChildRounding = 4.7
+	style.ChildBorderSize = 1
+	style.PopupRounding = 4.7
+	style.PopupBorderSize  = 1
 	style.FramePadding = ImVec2(5, 5)
-	style.FrameRounding = 6.0
-	style.FrameBorderSize  = 0.8;
+	style.FrameRounding = 4.7
+	style.FrameBorderSize  = 1.0
 	style.ItemSpacing = ImVec2(2, 7)
 	style.ItemInnerSpacing = ImVec2(8, 6)
 	style.ScrollbarSize = 8.0
 	style.ScrollbarRounding = 15.0
 	style.GrabMinSize = 15.0
-	style.GrabRounding = 7.0
+	style.GrabRounding = 4.7
 	style.IndentSpacing = 25.0
 	style.ButtonTextAlign = ImVec2(0.5, 0.5)
 	style.SelectableTextAlign = ImVec2(0.5, 0.5)
+	style.TouchExtraPadding = ImVec2(0.00, 0.00)
+	style.TabBorderSize = 1
+	style.TabRounding = 4
 
 	colors[clr.Text] = ImVec4(1.00, 1.00, 1.00, 1.00)
-	colors[clr.TextDisabled] = ImVec4(0.40, 0.40, 0.40, 1.00)
-	colors[clr.ChildBg] = ImVec4(0.25, 0.25, 0.25, 1.00)
-	colors[clr.WindowBg] = ImVec4(0.25, 0.25, 0.25, 1.00)
-	colors[clr.PopupBg] = ImVec4(0.25, 0.25, 0.25, 1.00)
-	colors[clr.Border] = ImVec4(0.12, 0.12, 0.12, 0.71)
-	colors[clr.BorderShadow] = ImVec4(1.00, 1.00, 1.00, 0.06)
-	colors[clr.FrameBg] = ImVec4(0.42, 0.42, 0.42, 0.54)
-	colors[clr.FrameBgHovered] = ImVec4(0.42, 0.42, 0.42, 0.40)
-	colors[clr.FrameBgActive] = ImVec4(0.56, 0.56, 0.56, 0.67)
-	colors[clr.TitleBg] = ImVec4(0.19, 0.19, 0.19, 1.00)
-	colors[clr.TitleBgActive] = ImVec4(0.22, 0.22, 0.22, 1.00)
-	colors[clr.TitleBgCollapsed] = ImVec4(0.17, 0.17, 0.17, 0.90)
-	colors[clr.MenuBarBg] = ImVec4(0.335, 0.335, 0.335, 1.000)
-	colors[clr.ScrollbarBg] = ImVec4(0.24, 0.24, 0.24, 0.00)
-	colors[clr.ScrollbarGrab] = ImVec4(0.41, 0.41, 0.41, 0.00)
-	colors[clr.ScrollbarGrabHovered] = ImVec4(0.52, 0.52, 0.52, 0.00)
-	colors[clr.ScrollbarGrabActive] = ImVec4(0.76, 0.76, 0.76, 0.00)
-	colors[clr.CheckMark] = ImVec4(0.65, 0.65, 0.65, 1.00)
-	colors[clr.SliderGrab] = ImVec4(0.52, 0.52, 0.52, 1.00)
-	colors[clr.SliderGrabActive] = ImVec4(0.64, 0.64, 0.64, 1.00)
-	colors[clr.Button] = ImVec4(0.54, 0.54, 0.54, 0.35)
-	colors[clr.ButtonHovered] = ImVec4(0.52, 0.52, 0.52, 0.59)
-	colors[clr.ButtonActive] = ImVec4(0.76, 0.76, 0.76, 1.00)
-	colors[clr.Header] = ImVec4(0.38, 0.38, 0.38, 1.00)
-	colors[clr.HeaderHovered] = ImVec4(0.47, 0.47, 0.47, 1.00)
-	colors[clr.HeaderActive] = ImVec4(0.76, 0.76, 0.76, 0.77)
-	colors[clr.Separator] = ImVec4(0.000, 0.000, 0.000, 0.137)
-	colors[clr.SeparatorHovered] = ImVec4(0.700, 0.671, 0.600, 0.290)
-	colors[clr.SeparatorActive] = ImVec4(0.702, 0.671, 0.600, 0.674)
-	colors[clr.ResizeGrip] = ImVec4(0.26, 0.59, 0.98, 0.25)
-	colors[clr.ResizeGripHovered] = ImVec4(0.26, 0.59, 0.98, 0.67)
-	colors[clr.ResizeGripActive] = ImVec4(0.26, 0.59, 0.98, 0.95)
-	colors[clr.PlotLines] = ImVec4(0.61, 0.61, 0.61, 1.00)
-	colors[clr.PlotLinesHovered] = ImVec4(1.00, 0.43, 0.35, 1.00)
-	colors[clr.PlotHistogram] = ImVec4(0.90, 0.70, 0.00, 1.00)
-	colors[clr.PlotHistogramHovered] = ImVec4(1.00, 0.60, 0.00, 1.00)
-	colors[clr.TextSelectedBg] = ImVec4(0.73, 0.73, 0.73, 0.35)
-	colors[clr.ModalWindowDimBg] = ImVec4(0.80, 0.80, 0.80, 0.35)
-	colors[clr.DragDropTarget] = ImVec4(1.00, 1.00, 0.00, 0.90)
-	colors[clr.NavHighlight] = ImVec4(0.26, 0.59, 0.98, 1.00)
-	colors[clr.NavWindowingHighlight] = ImVec4(1.00, 1.00, 1.00, 0.70)
-	colors[clr.NavWindowingDimBg] = ImVec4(0.80, 0.80, 0.80, 0.20)
-	colors[clr.Tab] = ImVec4(0.25, 0.25, 0.25, 1.00)
-	colors[clr.TabHovered] = ImVec4(0.40, 0.40, 0.40, 1.00)
-	colors[clr.TabActive] = ImVec4(0.33, 0.33, 0.33, 1.00)
-	colors[clr.TabUnfocused] = ImVec4(0.25, 0.25, 0.25, 1.00)
-	colors[clr.TabUnfocusedActive] = ImVec4(0.33, 0.33, 0.33, 1.00)
+	colors[clr.TextDisabled] = ImVec4(0.50, 0.50, 0.50, 1.00)
+	colors[clr.WindowBg] = ImVec4(0.15, 0.15, 0.15, 1.00)
+	colors[clr.ChildBg] = ImVec4(0.00, 0.00, 0.00, 0.00)
+	colors[clr.PopupBg] = ImVec4(0.19, 0.19, 0.19, 0.92)
+	colors[clr.Border] = ImVec4(0.19, 0.19, 0.19, 0.29)
+	colors[clr.BorderShadow] = ImVec4(0.00, 0.00, 0.00, 0.24)
+	colors[clr.FrameBg] = ImVec4(0.05, 0.05, 0.05, 0.54)
+	colors[clr.FrameBgHovered] = ImVec4(0.19, 0.19, 0.19, 0.54)
+	colors[clr.FrameBgActive] = ImVec4(0.20, 0.22, 0.23, 1.00)
+	colors[clr.TitleBg] = ImVec4(0.00, 0.00, 0.00, 1.00)
+	colors[clr.TitleBgActive] = ImVec4(0.06, 0.06, 0.06, 1.00)
+	colors[clr.TitleBgCollapsed] = ImVec4(0.00, 0.00, 0.00, 1.00)
+	colors[clr.MenuBarBg] = ImVec4(0.14, 0.14, 0.14, 1.00)
+	colors[clr.ScrollbarBg] = ImVec4(0.05, 0.05, 0.05, 0.54)
+	colors[clr.ScrollbarGrab] = ImVec4(0.34, 0.34, 0.34, 0.54)
+	colors[clr.ScrollbarGrabHovered] = ImVec4(0.40, 0.40, 0.40, 0.54)
+	colors[clr.ScrollbarGrabActive] = ImVec4(0.56, 0.56, 0.56, 0.54)
+	colors[clr.CheckMark] = ImVec4(0.33, 0.67, 0.86, 1.00)
+	colors[clr.SliderGrab] = ImVec4(0.34, 0.34, 0.34, 0.54)
+	colors[clr.SliderGrabActive] = ImVec4(0.56, 0.56, 0.56, 0.54)
+	colors[clr.Button] = ImVec4(0.05, 0.05, 0.05, 0.54)
+	colors[clr.ButtonHovered] = ImVec4(0.19, 0.19, 0.19, 0.54)
+	colors[clr.ButtonActive] = ImVec4(0.20, 0.22, 0.23, 1.00)
+	colors[clr.Header] = ImVec4(0.00, 0.00, 0.00, 0.52)
+	colors[clr.HeaderHovered] = ImVec4(0.00, 0.00, 0.00, 0.36)
+	colors[clr.HeaderActive] = ImVec4(0.20, 0.22, 0.23, 0.33)
+	colors[clr.Separator] = ImVec4(0.28, 0.28, 0.28, 0.29)
+	colors[clr.SeparatorHovered] = ImVec4(0.44, 0.44, 0.44, 0.29)
+	colors[clr.SeparatorActive] = ImVec4(0.40, 0.44, 0.47, 1.00)
+	colors[clr.ResizeGrip] = ImVec4(0.28, 0.28, 0.28, 0.29)
+	colors[clr.ResizeGripHovered] = ImVec4(0.44, 0.44, 0.44, 0.29)
+	colors[clr.ResizeGripActive] = ImVec4(0.40, 0.44, 0.47, 1.00)
+	colors[clr.Tab]  = ImVec4(0.00, 0.00, 0.00, 0.52)
+	colors[clr.TabHovered] = ImVec4(0.14, 0.14, 0.14, 1.00)
+	colors[clr.TabActive] = ImVec4(0.20, 0.20, 0.20, 0.36)
+	colors[clr.TabUnfocused] = ImVec4(0.00, 0.00, 0.00, 0.52)
+	colors[clr.TabUnfocusedActive] = ImVec4(0.14, 0.14, 0.14, 1.00)
+	colors[clr.PlotLines] = ImVec4(1.00, 0.00, 0.00, 1.00)
+	colors[clr.PlotLinesHovered] = ImVec4(1.00, 0.00, 0.00, 1.00)
+	colors[clr.PlotHistogram] = ImVec4(1.00, 0.00, 0.00, 1.00)
+	colors[clr.PlotHistogramHovered] = ImVec4(1.00, 0.00, 0.00, 1.00)
+	colors[clr.TextSelectedBg] = ImVec4(0.20, 0.22, 0.23, 1.00)
+	colors[clr.DragDropTarget] = ImVec4(0.33, 0.67, 0.86, 1.00)
+	colors[clr.NavHighlight] = ImVec4(1.00, 0.00, 0.00, 1.00)
+	colors[clr.NavWindowingHighlight]  = ImVec4(1.00, 0.00, 0.00, 0.70)
+	colors[clr.NavWindowingDimBg] = ImVec4(1.00, 0.00, 0.00, 0.20)
+	colors[clr.ModalWindowDimBg] = ImVec4(1.00, 0.00, 0.00, 0.35)
 end
 
 if limgui then
-	main_window, standart_icons, widescreen_active, widescreen_Wesser_active, main_active_imgui, icon_foreground, outline_checkbox = new.bool(), new.bool(config.main.standart_icons), new.bool(config.main.widescreen), new.bool(config.main.widescreen_Wesser), new.bool(config.main.main_active), new.bool(), new.bool()
+	main_window, standard_icons, main_active_imgui, icon_foreground, outline_checkbox = new.bool(), new.bool(config.MAIN.standard_icons), new.bool(config.MAIN.main_active), new.bool(), new.bool()
 	local sizeX, sizeY = getScreenResolution()
 
 	local int_item = new.int(0)
@@ -485,207 +500,20 @@ if limgui then
 		function() return main_window[0] and not isPauseMenuActive() end,
 		function(player)
 			imgui.SetNextWindowPos(imgui.ImVec2(sizeX / 2, sizeY / 2), imgui.Cond.FirstUseEver, imgui.ImVec2(0.5, 0.5))
-			imgui.SetNextWindowSize(imgui.ImVec2(247, 230), imgui.Cond.FirstUseEver, imgui.NoResize)
+			imgui.SetNextWindowSize(imgui.ImVec2(247, 227), imgui.Cond.FirstUseEver, imgui.NoResize)
 			imgui.Begin("##Main Window", main_window, imgui.WindowFlags.NoCollapse + imgui.WindowFlags.NoResize + imgui.WindowFlags.NoTitleBar + imgui.WindowFlags.NoScrollbar)
 			imgui.SetCursorPosX((imgui.GetWindowWidth() - 220) / 2)
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 17)
-			imgui.Image(logo, imgui.ImVec2(220, 52))
-			-- if imgui.IsItemHovered() then
-				-- imgui.BeginTooltip()
-				-- imgui.PushTextWrapPos(500)
-				-- imgui.TextUnformatted(language[config.main.language].by)
-				-- imgui.PopTextWrapPos()
-				-- imgui.EndTooltip()
-			-- end
-			imgui.Hint('hint_by', language[config.main.language].by)
-			if imgui.IsItemClicked(1) then
-				os.execute(('explorer.exe "%s"'):format('https://vk.com/dmitriyewichmods'))
-			end
-			---------------------------------------------------------
-			imgui.SetCursorPosX((imgui.GetWindowWidth() - 215) / 2)
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 6)
-			imgui.PushItemWidth(215)
-			imgui.Combo("##Combo1", int_item, ImItems, #item_list)
-			imgui.PopItemWidth()
-			---------------------------------------------------------
-
-			---------------------------------------------------------
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 30)
-			imgui.SetCursorPosX((imgui.GetWindowWidth() - 100 - imgui.CalcTextSize(language[config.main.language].checkbox6).x - imgui.CalcTextSize(language[config.main.language].checkbox4).x ) / 2)
-
-			imgui.Text(language[config.main.language].checkbox6)
-			imgui.SameLine()
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 3)
-			outline_checkbox[0] = config[''..item_list[int_item[0] + 1]].outline
-			if imgui.Checkbox("##6", outline_checkbox) then
-				config[''..item_list[int_item[0] + 1]].outline = outline_checkbox[0]
-			end
-
-			imgui.SameLine()
-			imgui.PushItemWidth(47)
-			imgui.Combo("##Combo2", offset_item, offset_ImItems, #offset_list)
-			imgui.PopItemWidth()
-
-			imgui.SameLine()
-
-			icon_foreground[0] = config[''..item_list[int_item[0] + 1]].foreground
-			if imgui.Checkbox("##4", icon_foreground) then
-				config[''..item_list[int_item[0] + 1]].foreground = icon_foreground[0]
-			end
-			imgui.SameLine()
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 7)
-			imgui.Text(language[config.main.language].checkbox4)
-			imgui.SetCursorPosX((imgui.GetWindowWidth() - imgui.CalcTextSize(language[config.main.language].text1).x + 5) / 2)
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 7)
-			imgui.Text(language[config.main.language].text1)
-			---------------------------------------------------------
-
-			---------------------------------------------------------
-			imgui.SetCursorPosX((imgui.GetWindowWidth() - 128) / 2)
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 6)
-			if imgui.Button("X1+##1", imgui.ImVec2(30, 30)) then
-				config[''..item_list[int_item[0] + 1]].customX1 = config[''..item_list[int_item[0] + 1]].customX1 + offset_list[offset_item[0] + 1]
-			end
-			if imgui.IsItemHovered() then
-				draw_text("X1+ "..config[''..item_list[int_item[0] + 1]].customX1, convert_x(fist_game_x + config[''..item_list[int_item[0] + 1]].customX1 - 12), convert_y((fist_game_y + config[''..item_list[int_item[0] + 1]].customY1 / 2) + fist_game_y + config[''..item_list[int_item[0] + 1]].customY1))
-			end
-			imgui.SameLine()
-			if imgui.Button("X2+##1", imgui.ImVec2(30, 30)) then
-				config[''..item_list[int_item[0] + 1]].customX2 = config[''..item_list[int_item[0] + 1]].customX2 + offset_list[offset_item[0] + 1]
-			end
-			if imgui.IsItemHovered() then
-				draw_text("X2+ "..config[''..item_list[int_item[0] + 1]].customX2, convert_x(14 + (fist_game_x + fist_game_width) + config[''..item_list[int_item[0] + 1]].customX2), convert_y((fist_game_y + config[''..item_list[int_item[0] + 1]].customY1 / 2) + fist_game_y + config[''..item_list[int_item[0] + 1]].customY1))
-			end
-			imgui.SameLine()
-			if imgui.Button("Y1+##1", imgui.ImVec2(30, 30)) then
-				config[''..item_list[int_item[0] + 1]].customY1 = config[''..item_list[int_item[0] + 1]].customY1 + offset_list[offset_item[0] + 1]
-			end
-			if imgui.IsItemHovered() then
-				draw_text("Y1+ "..config[''..item_list[int_item[0] + 1]].customY1, convert_x(fist_game_x + config[''..item_list[int_item[0] + 1]].customX1 + (fist_game_width / 2)), convert_y(fist_game_y + config[''..item_list[int_item[0] + 1]].customY1 - 7))
-			end
-			imgui.SameLine()
-			if imgui.Button("Y2+##1", imgui.ImVec2(30, 30)) then
-				config[''..item_list[int_item[0] + 1]].customY2 = config[''..item_list[int_item[0] + 1]].customY2 + offset_list[offset_item[0] + 1]
-			end
-			if imgui.IsItemHovered() then
-				draw_text("Y2+ "..config[''..item_list[int_item[0] + 1]].customY2, convert_x(fist_game_x + config[''..item_list[int_item[0] + 1]].customX1 + (fist_game_width / 2)), convert_y((fist_game_y + fist_game_height) + config[''..item_list[int_item[0] + 1]].customY2))
-			end
-
-			imgui.SetCursorPosX((imgui.GetWindowWidth() - 128) / 2)
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 7)
-			if imgui.Button("X1-##1", imgui.ImVec2(30, 30)) then
-				config[''..item_list[int_item[0] + 1]].customX1 = config[''..item_list[int_item[0] + 1]].customX1 - offset_list[offset_item[0] + 1]
-			end
-			if imgui.IsItemHovered() then
-				draw_text("X1- "..config[''..item_list[int_item[0] + 1]].customX1, convert_x(fist_game_x + config[''..item_list[int_item[0] + 1]].customX1 - 12), convert_y((fist_game_y + config[''..item_list[int_item[0] + 1]].customY1 / 2) + fist_game_y + config[''..item_list[int_item[0] + 1]].customY1))
-			end
-			imgui.SameLine()
-			if imgui.Button("X2-##1", imgui.ImVec2(30, 30)) then
-				config[''..item_list[int_item[0] + 1]].customX2 = config[''..item_list[int_item[0] + 1]].customX2 - offset_list[offset_item[0] + 1]
-			end
-			if imgui.IsItemHovered() then
-				draw_text("X2- "..config[''..item_list[int_item[0] + 1]].customX2, convert_x(14 + (fist_game_x + fist_game_width) + config[''..item_list[int_item[0] + 1]].customX2), convert_y((fist_game_y + config[''..item_list[int_item[0] + 1]].customY1 / 2) + fist_game_y + config[''..item_list[int_item[0] + 1]].customY1))
-			end
-			imgui.SameLine()
-			if imgui.Button("Y1-##1", imgui.ImVec2(30, 30)) then
-				config[''..item_list[int_item[0] + 1]].customY1 = config[''..item_list[int_item[0] + 1]].customY1 - offset_list[offset_item[0] + 1]
-			end
-			if imgui.IsItemHovered() then
-				draw_text("Y1- "..config[''..item_list[int_item[0] + 1]].customY1, convert_x(fist_game_x + config[''..item_list[int_item[0] + 1]].customX1 + (fist_game_width / 2)), convert_y(fist_game_y + config[''..item_list[int_item[0] + 1]].customY1 - 8))
-			end
-			imgui.SameLine()
-			if imgui.Button("Y2-##1", imgui.ImVec2(30, 30)) then
-				config[''..item_list[int_item[0] + 1]].customY2 = config[''..item_list[int_item[0] + 1]].customY2 - offset_list[offset_item[0] + 1]
-			end
-			if imgui.IsItemHovered() then
-				draw_text("Y2- "..config[''..item_list[int_item[0] + 1]].customY2, convert_x(fist_game_x + config[''..item_list[int_item[0] + 1]].customX1 + (fist_game_width / 2)), convert_y((fist_game_y + fist_game_height) + config[''..item_list[int_item[0] + 1]].customY2))
-			end
-			---------------------------------------------------------
-
-			---------------------------------------------------------
-			imgui.SetCursorPosX((imgui.GetWindowWidth() - 205) / 2)
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 4)
-			imgui.PushItemWidth(60)
-
-			local input_delay_hint = config[''..item_list[int_item[0] + 1]].delay
-				imgui.StrCopy(input_delay, ''..config[''..item_list[int_item[0] + 1]].delay)
-			if imgui.InputTextWithHint('##input_delay', ''..input_delay_hint, input_delay, sizeof(input_delay) - 1, imgui.InputTextFlags.CharsDecimal) then
-				if str(input_delay) == nil or str(input_delay) == "" then
-					imgui.StrCopy(input_delay, '0')
-				end
-				config[''..item_list[int_item[0] + 1]].delay = tonumber(str(input_delay))
-			end
-			imgui.PopItemWidth()
-			imgui.SameLine()
-			imgui.Hint('hint_input_delay', language[config.main.language].input_delay)
-			imgui.SameLine()
-			imgui.Text("|")
-			imgui.SameLine()
-			imgui.PushItemWidth(60)
-			local input_delay_replay_hint = config[''..item_list[int_item[0] + 1]].delay_replay
-				imgui.StrCopy(input_delay_replay, ''..config[''..item_list[int_item[0] + 1]].delay_replay)
-			if imgui.InputTextWithHint('##input_delay_replay', ''..input_delay_replay_hint, input_delay_replay, sizeof(input_delay_replay) - 1, imgui.InputTextFlags.CharsDecimal) then
-				if str(input_delay_replay) == nil or str(input_delay_replay) == "" then
-					imgui.StrCopy(input_delay_replay, '0')
-				end
-				config[''..item_list[int_item[0] + 1]].delay_replay = tonumber(str(input_delay_replay))
-			end
-			imgui.PopItemWidth()
-			imgui.SameLine()
-			imgui.Hint('hint_input_delay_replay', language[config.main.language].input_delay_replay)
-			imgui.SameLine()
-			imgui.Text("|")
-			imgui.SameLine()
-			imgui.PushItemWidth(60)
-			local input_delay_replay_end_hint = config[''..item_list[int_item[0] + 1]].delay_replay_end
-				imgui.StrCopy(input_delay_replay_end, ''..config[''..item_list[int_item[0] + 1]].delay_replay_end)
-			if imgui.InputTextWithHint('##input_delay_replay_end', ''..input_delay_replay_hint, input_delay_replay_end, sizeof(input_delay_replay_end) - 1, imgui.InputTextFlags.CharsDecimal) then
-				if str(input_delay_replay_end) == nil or str(input_delay_replay_end) == "" then
-					imgui.StrCopy(input_delay_replay_end, '0')
-				end
-				config[''..item_list[int_item[0] + 1]].delay_replay_end = tonumber(str(input_delay_replay_end))
-			end
-			imgui.PopItemWidth()
-			imgui.Hint('hint_input_delay_replay_end', language[config.main.language].input_delay_replay_end)
-			---------------------------------------------------------
-
-			---------------------------------------------------------
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 4)
-			imgui.SetCursorPosX((imgui.GetWindowWidth() - (imgui.CalcTextSize(language[config.main.language].button_save).x + imgui.CalcTextSize(language[config.main.language].button_reset).x) - 23) / 2)
-			if imgui.Button(language[config.main.language].button_save.."##1") then
-				savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
-			end
-			imgui.SameLine()
-			if imgui.Button(language[config.main.language].button_reset.."##2") then
-				config[''..item_list[int_item[0] + 1]].customX1 = 0
-				config[''..item_list[int_item[0] + 1]].customX2 = 0
-				config[''..item_list[int_item[0] + 1]].customY1 = 0
-				config[''..item_list[int_item[0] + 1]].customY2 = 0
-				config[''..item_list[int_item[0] + 1]].delay = 0
-				imgui.StrCopy(input_delay, '0')
-				config[''..item_list[int_item[0] + 1]].delay_replay = 0
-				imgui.StrCopy(input_delay_replay, '0')
-				config[''..item_list[int_item[0] + 1]].delay_replay_end = 0
-				imgui.StrCopy(input_delay_replay_end, '0')
-			end
-			---------------------------------------------------------
-			imgui.SetCursorPosX(imgui.GetCursorPosX() - 8)
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 25)
-			if config.main.language == "RU" then imgui.Text("RU") else imgui.TextDisabled("RU") end
-			if imgui.IsItemClicked(0) then config.main.language = "RU" end
-			imgui.SameLine()
-			imgui.Text("|")
-			imgui.SameLine()
-			if config.main.language == "EN" then imgui.Text("EN") else imgui.TextDisabled("EN") end
-			if imgui.IsItemClicked(0) then config.main.language = "EN" end
-
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 18)
+			imgui.Image(logo, imgui.ImVec2(210, 50))
+			imgui.Hint('hint_by', config.MAIN.language == "RU" and 'by dmitriyewich aka Valgard Dmitriyewich.\nРаспространение допускается только с указанием автора или ссылки на пост в ВК/mixmods/github\nПКМ - Открыть группу в ВК' or 'by dmitriyewich aka Valgard Dmitriyewich.\nDistribution is allowed only with the indication of the author or a link to the post in the VK/mixmods/github\nRMB - Open a group in VK')
+			if imgui.IsItemClicked(1) then os.execute(('explorer.exe "%s"'):format('https://vk.com/dmitriyewichmods')) end
 			---------------------------------------------------------
 			imgui.PushStyleVarFloat(imgui.StyleVar.FrameBorderSize, 0.0)
 			imgui.PushStyleColor(imgui.Col.Button, imgui.ImVec4(0.00, 0.00, 0.00, 0.0))
 			imgui.PushStyleColor(imgui.Col.ButtonHovered, imgui.ImVec4(0.00, 0.00, 0.00, 0.00))
 			imgui.PushStyleColor(imgui.Col.ButtonActive, imgui.ImVec4(0.76, 0.76, 0.76, 1.00))
-			imgui.SetCursorPosX((imgui.GetWindowWidth() - 25))
-			imgui.SetCursorPosY(imgui.GetCursorPosY() - 25)
+			imgui.SetCursorPosX((imgui.GetWindowWidth() - 24))
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 50)
 			if imgui.ImageButton(close_window, imgui.ImVec2(16, 16), _,  _, 1, imgui.ImVec4(0,0,0,0), ImageButton_color) then
 				main_window[0] = false
 			end
@@ -698,53 +526,282 @@ if limgui then
 			imgui.PopStyleVar()
 			---------------------------------------------------------
 
-			imgui.Separator()
-			if imgui.Checkbox(string.format("%s: %s##1", language[config.main.language].checkbox1, config.main.standart_icons), standart_icons) then
-				config.main.standart_icons = standart_icons[0]
-			end
-			imgui.Separator()
-			if imgui.Checkbox(language[config.main.language].checkbox2.."##2", widescreen_active) then
-				config.main.widescreen = widescreen_active[0]
-				widescreen_Wesser_active[0] = false
-				config.main.widescreen_Wesser = false
+			imgui.SetCursorPosX(imgui.GetCursorPosX() + 0)
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 32)
+			if config.MAIN.language == "RU" then imgui.Text("RU") else imgui.TextDisabled("RU") end
+			if imgui.IsItemClicked(0) then 
+				config.MAIN.language = "RU" 
 				savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 			end
-			if imgui.Checkbox(language[config.main.language].checkbox5.."##5", widescreen_Wesser_active) then
-				config.main.widescreen_Wesser = widescreen_Wesser_active[0]
-				widescreen_active[0] = false
-				config.main.widescreen = false
+			imgui.SameLine(nil, 0)
+			imgui.Text("|")
+			imgui.SameLine(nil, 0)
+			if config.MAIN.language == "EN" then imgui.Text("EN") else imgui.TextDisabled("EN") end
+			if imgui.IsItemClicked(0) then 
+				config.MAIN.language = "EN"
 				savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 			end
-			imgui.Separator()
-			if imgui.Checkbox(string.format("%s: %s##3", language[config.main.language].checkbox3, config.main.main_active), main_active_imgui) then
-				config.main.main_active = main_active_imgui[0]
+
+			---------------------------------------------------------
+			imgui.SetCursorPosX((imgui.GetWindowWidth() - 215) / 2)
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 4)
+			imgui.PushItemWidth(215)
+			if imgui.Combo("##Combo1", int_item, ImItems, #item_list, -1) then
+				if hasCharGotWeapon(PLAYER_PED, id_gun[item_list[int_item[0] + 1]]) then
+					setCurrentCharWeapon(PLAYER_PED, id_gun[item_list[int_item[0] + 1]])
+				end
 			end
+			imgui.PopItemWidth()
+			---------------------------------------------------------
+
+			---------------------------------------------------------
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 5)
+			imgui.BeginChild('##settings', imgui.ImVec2(220, 25), false, imgui.WindowFlags.NoCollapse + imgui.WindowFlags.NoResize + imgui.WindowFlags.NoTitleBar + imgui.WindowFlags.NoBackground)
+				outline_checkbox[0] = config[''..item_list[int_item[0] + 1]].outline
+				imgui.SetCursorPosX((imgui.GetWindowWidth() - imgui.CalcTextSize(config.MAIN.language == "RU" and 'Обводка' or 'Outline').x - imgui.CalcTextSize(config.MAIN.language == "RU" and 'Поверх обводки' or 'Foreground').x - 69) / 2)
+				if imgui.Checkbox("##6", outline_checkbox) then
+					config[''..item_list[int_item[0] + 1]].outline = outline_checkbox[0]
+				end
+				imgui.SameLine(nil, 0)
+				imgui.SetCursorPosX(imgui.GetCursorPosX() + 4.7)
+				imgui.Text(config.MAIN.language == "RU" and 'Обводка' or 'Outline')
+				imgui.SameLine(nil, 0)
+				imgui.TextDisabled("|")
+				imgui.SameLine(nil, 0)
+				icon_foreground[0] = config[''..item_list[int_item[0] + 1]].foreground
+				if imgui.Checkbox("##4", icon_foreground) then
+					config[''..item_list[int_item[0] + 1]].foreground = icon_foreground[0]
+				end
+				imgui.SameLine(nil, 0)
+				imgui.SetCursorPosX(imgui.GetCursorPosX() + 4.7)
+				imgui.Text(config.MAIN.language == "RU" and 'Поверх обводки' or 'Foreground')
+
+			imgui.EndChild()
+			---------------------------------------------------------
+			imgui.BeginChild('##settings2', imgui.ImVec2(80, 52), false, imgui.WindowFlags.NoCollapse + imgui.WindowFlags.NoResize + imgui.WindowFlags.NoTitleBar + imgui.WindowFlags.NoBackground)
+				imgui.SetCursorPosX((imgui.GetWindowWidth() - 74) / 2)
+				imgui.PushItemWidth(74)
+				imgui.Combo("##Combo2", offset_item, offset_ImItems, #offset_list)
+				imgui.PopItemWidth()
+
+				imgui.SetCursorPosX((imgui.GetWindowWidth() - imgui.CalcTextSize(config.MAIN.language == "RU" and '  Размер\nсмещения' or 'Offset\n  size').x) / 2)
+				imgui.SetCursorPosY(imgui.GetCursorPosY() - 8)
+				imgui.Text(config.MAIN.language == "RU" and '  Размер\nсмещения' or 'Offset\n  size')
+			imgui.EndChild()
+			imgui.SameLine(nil, 0)
+			---------------------------------------------------------
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 6)
+			imgui.BeginChild('##settings3', imgui.ImVec2(220, 68), false, imgui.WindowFlags.NoCollapse + imgui.WindowFlags.NoResize + imgui.WindowFlags.NoTitleBar + imgui.WindowFlags.NoBackground)
+				if imgui.DegradeButton("X1+##1", imgui.ImVec2(32, 32)) then
+					config[''..item_list[int_item[0] + 1]].customX1 = config[''..item_list[int_item[0] + 1]].customX1 + offset_list[offset_item[0] + 1]
+				end
+				if imgui.IsItemHovered() then
+					draw_text("X1+ "..config[''..item_list[int_item[0] + 1]].customX1, convert(config[''..item_list[int_item[0] + 1]].posX + config[''..item_list[int_item[0] + 1]].customX1 - 10)[1], convert(config[''..item_list[int_item[0] + 1]].posY + (config[''..item_list[int_item[0] + 1]].posH / 2))[2])
+				end
+				imgui.SameLine(nil, 0)
+				if imgui.DegradeButton("X2+##1", imgui.ImVec2(32, 32)) then
+					config[''..item_list[int_item[0] + 1]].customX2 = config[''..item_list[int_item[0] + 1]].customX2 + offset_list[offset_item[0] + 1]
+				end
+				if imgui.IsItemHovered() then
+					draw_text("X2+ "..config[''..item_list[int_item[0] + 1]].customX2, convert(config[''..item_list[int_item[0] + 1]].posX + config[''..item_list[int_item[0] + 1]].customX2 + config[''..item_list[int_item[0] + 1]].posW + 10)[1], convert(config[''..item_list[int_item[0] + 1]].posY + (config[''..item_list[int_item[0] + 1]].posH / 2))[2])
+				end
+				imgui.SameLine(nil, 0)
+				if imgui.DegradeButton("Y1+##1", imgui.ImVec2(32, 32)) then
+					config[''..item_list[int_item[0] + 1]].customY1 = config[''..item_list[int_item[0] + 1]].customY1 + offset_list[offset_item[0] + 1]
+				end
+				if imgui.IsItemHovered() then
+					draw_text("Y1+ "..config[''..item_list[int_item[0] + 1]].customY1, convert(config[''..item_list[int_item[0] + 1]].posX + config[''..item_list[int_item[0] + 1]].customX1 + (config[''..item_list[int_item[0] + 1]].posW / 2))[1], convert(config[''..item_list[int_item[0] + 1]].posY + config[''..item_list[int_item[0] + 1]].customY1 - 7)[2])
+				end
+				imgui.SameLine(nil, 0)
+				if imgui.DegradeButton("Y2+##1", imgui.ImVec2(32, 32)) then
+					config[''..item_list[int_item[0] + 1]].customY2 = config[''..item_list[int_item[0] + 1]].customY2 + offset_list[offset_item[0] + 1]
+				end
+				if imgui.IsItemHovered() then
+					draw_text("Y2+ "..config[''..item_list[int_item[0] + 1]].customY2, convert(config[''..item_list[int_item[0] + 1]].posX + config[''..item_list[int_item[0] + 1]].customX1 + (config[''..item_list[int_item[0] + 1]].posW / 2))[1], convert((config[''..item_list[int_item[0] + 1]].posY + config[''..item_list[int_item[0] + 1]].posH) + config[''..item_list[int_item[0] + 1]].customY2)[2])
+				end
+
+				imgui.SetCursorPosY(imgui.GetCursorPosY() - 6)
+				if imgui.DegradeButton("X1-##1", imgui.ImVec2(32, 32)) then
+					config[''..item_list[int_item[0] + 1]].customX1 = config[''..item_list[int_item[0] + 1]].customX1 - offset_list[offset_item[0] + 1]
+				end
+				if imgui.IsItemHovered() then
+					draw_text("X1- "..config[''..item_list[int_item[0] + 1]].customX1, convert(config[''..item_list[int_item[0] + 1]].posX + config[''..item_list[int_item[0] + 1]].customX1 - 10)[1], convert(config[''..item_list[int_item[0] + 1]].posY + (config[''..item_list[int_item[0] + 1]].posH / 2))[2])
+				end
+				imgui.SameLine(nil, 0)
+				if imgui.DegradeButton("X2-##1", imgui.ImVec2(32, 32)) then
+					config[''..item_list[int_item[0] + 1]].customX2 = config[''..item_list[int_item[0] + 1]].customX2 - offset_list[offset_item[0] + 1]
+				end
+				if imgui.IsItemHovered() then
+					draw_text("X2- "..config[''..item_list[int_item[0] + 1]].customX2, convert(config[''..item_list[int_item[0] + 1]].posX + config[''..item_list[int_item[0] + 1]].customX2 + config[''..item_list[int_item[0] + 1]].posW + 10)[1], convert(config[''..item_list[int_item[0] + 1]].posY + (config[''..item_list[int_item[0] + 1]].posH / 2))[2])
+				end
+				imgui.SameLine(nil, 0)
+				if imgui.DegradeButton("Y1-##1", imgui.ImVec2(32, 32)) then
+					config[''..item_list[int_item[0] + 1]].customY1 = config[''..item_list[int_item[0] + 1]].customY1 - offset_list[offset_item[0] + 1]
+				end
+				if imgui.IsItemHovered() then
+					draw_text("Y1- "..config[''..item_list[int_item[0] + 1]].customY1, convert(config[''..item_list[int_item[0] + 1]].posX + config[''..item_list[int_item[0] + 1]].customX1 + (config[''..item_list[int_item[0] + 1]].posW / 2))[1], convert(config[''..item_list[int_item[0] + 1]].posY + config[''..item_list[int_item[0] + 1]].customY1 - 8)[2])
+				end
+				imgui.SameLine(nil, 0)
+				if imgui.DegradeButton("Y2-##1", imgui.ImVec2(32, 32)) then
+					config[''..item_list[int_item[0] + 1]].customY2 = config[''..item_list[int_item[0] + 1]].customY2 - offset_list[offset_item[0] + 1]
+				end
+				if imgui.IsItemHovered() then
+					draw_text("Y2- "..config[''..item_list[int_item[0] + 1]].customY2, convert(config[''..item_list[int_item[0] + 1]].posX + config[''..item_list[int_item[0] + 1]].customX1 + (config[''..item_list[int_item[0] + 1]].posW / 2))[1], convert((config[''..item_list[int_item[0] + 1]].posY + config[''..item_list[int_item[0] + 1]].posH) + config[''..item_list[int_item[0] + 1]].customY2)[2])
+				end
+			imgui.EndChild()
+			---------------------------------------------------------
+
+			---------------------------------------------------------
+			imgui.SetCursorPosX((imgui.GetWindowWidth() - 205) / 2)
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 8)
+			imgui.PushItemWidth(60)
+
+			local input_delay_hint = config[''..item_list[int_item[0] + 1]].delay
+				imgui.StrCopy(input_delay, ''..config[''..item_list[int_item[0] + 1]].delay)
+			if imgui.InputTextWithHint('##input_delay', ''..input_delay_hint, input_delay, sizeof(input_delay) - 1, imgui.InputTextFlags.CharsDecimal) then
+				if str(input_delay) == nil or str(input_delay) == "" then
+					imgui.StrCopy(input_delay, '0')
+				end
+				config[''..item_list[int_item[0] + 1]].delay = tonumber(str(input_delay))
+			end
+			imgui.PopItemWidth()
+			imgui.SameLine(nil, 0)
+			imgui.Hint('hint_input_delay', config.MAIN.language == "RU" and 'Задержка между кадрами' or 'Delay between frames')
+			imgui.SameLine(nil, 0)
+			imgui.Text(" |")
+			imgui.SameLine(nil, 0)
+			imgui.PushItemWidth(60)
+			local input_delay_replay_hint = config[''..item_list[int_item[0] + 1]].delay_replay
+				imgui.StrCopy(input_delay_replay, ''..config[''..item_list[int_item[0] + 1]].delay_replay)
+			if imgui.InputTextWithHint('##input_delay_replay', ''..input_delay_replay_hint, input_delay_replay, sizeof(input_delay_replay) - 1, imgui.InputTextFlags.CharsDecimal) then
+				if str(input_delay_replay) == nil or str(input_delay_replay) == "" then
+					imgui.StrCopy(input_delay_replay, '0')
+				end
+				config[''..item_list[int_item[0] + 1]].delay_replay = tonumber(str(input_delay_replay))
+			end
+			imgui.PopItemWidth()
+			imgui.SameLine(nil, 0)
+			imgui.Hint('hint_input_delay_replay', config.MAIN.language == "RU" and 'Задержка перед началом анимации' or 'Delay before animation starts')
+			imgui.SameLine(nil, 0)
+			imgui.Text(" |")
+			imgui.SameLine(nil, 0)
+			imgui.PushItemWidth(60)
+			local input_delay_replay_end_hint = config[''..item_list[int_item[0] + 1]].delay_replay_end
+				imgui.StrCopy(input_delay_replay_end, ''..config[''..item_list[int_item[0] + 1]].delay_replay_end)
+			if imgui.InputTextWithHint('##input_delay_replay_end', ''..input_delay_replay_hint, input_delay_replay_end, sizeof(input_delay_replay_end) - 1, imgui.InputTextFlags.CharsDecimal) then
+				if str(input_delay_replay_end) == nil or str(input_delay_replay_end) == "" then
+					imgui.StrCopy(input_delay_replay_end, '0')
+				end
+				config[''..item_list[int_item[0] + 1]].delay_replay_end = tonumber(str(input_delay_replay_end))
+			end
+			imgui.PopItemWidth()
+			imgui.Hint('hint_input_delay_replay_end', config.MAIN.language == "RU" and 'Задержка по окончанию анимации' or 'Delay at end animation')
+			---------------------------------------------------------
+
+			---------------------------------------------------------
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 4)
+			imgui.SetCursorPosX((imgui.GetWindowWidth() - 205) / 2)
+			if imgui.DegradeButton(config.MAIN.language == "RU" and 'Сохранить' or 'Save'.."##1", imgui.ImVec2(100, 30)) then
+				savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
+			end
+			imgui.SameLine(nil, 0)
+			if imgui.DegradeButton(config.MAIN.language == "RU" and 'Сброс' or 'Reset'.."##2", imgui.ImVec2(100, 30)) then
+				config[''..item_list[int_item[0] + 1]].customX1 = 0
+				config[''..item_list[int_item[0] + 1]].customX2 = 0
+				config[''..item_list[int_item[0] + 1]].customY1 = 0
+				config[''..item_list[int_item[0] + 1]].customY2 = 0
+				config[''..item_list[int_item[0] + 1]].delay = 0
+				imgui.StrCopy(input_delay, '0')
+				config[''..item_list[int_item[0] + 1]].delay_replay = 0
+				imgui.StrCopy(input_delay_replay, '0')
+				config[''..item_list[int_item[0] + 1]].delay_replay_end = 0
+				imgui.StrCopy(input_delay_replay_end, '0')
+			end
+			---------------------------------------------------------
+
+			imgui.SetCursorPosY(imgui.GetCursorPosY() + 3)
+			imgui.Separator()
+			if imgui.Checkbox(string.format("%s: %s##1", config.MAIN.language == "RU" and 'Стандартные иконки' or 'Standard icons', config.MAIN.standard_icons), standard_icons) then
+				config.MAIN.standard_icons = standard_icons[0]
+			end
+			imgui.Separator()
+			imgui.SetCursorPosX((imgui.GetWindowWidth() - 223) / 2)
+			if imgui.DegradeButton(config.MAIN.language == "RU" and 'Ручная позиция' or 'Manual position'.."##1", imgui.ImVec2(225, 25)) then
+				main_window[0] = false
+				pos_active = true
+				pos_active_thread:run()
+			end
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 7)
+			imgui.SetCursorPosX((imgui.GetWindowWidth() - 223) / 2)
+			if imgui.DegradeButton((config.MAIN.language == "RU" and 'Позиция оригинала' or 'Standard position').."##1", imgui.ImVec2(225, 25)) then
+				for k, v in pairs(config) do
+					if k ~= "MAIN" then
+						v.posX = currentXYWH("standard").x
+						v.posY = currentXYWH("standard").y
+						v.posW = currentXYWH("standard").w
+						v.posH = currentXYWH("standard").h
+					end
+				end
+				savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
+			end
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 7)
+			imgui.SetCursorPosX((imgui.GetWindowWidth() - 223) / 2)
+			if imgui.DegradeButton((config.MAIN.language == "RU" and 'sa_widescreenfix_lite.asi/ThirteenAG' or 'sa_widescreenfix_lite.asi/ThirteenAG').."##1", imgui.ImVec2(225, 25)) then
+				for k, v in pairs(config) do
+					if k ~= "MAIN" then
+						v.posX = currentXYWH("widescreen").x
+						v.posY = currentXYWH("widescreen").y
+						v.posW = currentXYWH("widescreen").w
+						v.posH = currentXYWH("widescreen").h
+					end
+				end
+				savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
+			end
+			imgui.SetCursorPosY(imgui.GetCursorPosY() - 7)
+			imgui.SetCursorPosX((imgui.GetWindowWidth() - 223) / 2)
+			if imgui.DegradeButton(config.MAIN.language == "RU" and 'Widescreen ThirteenAG + Wesser' or 'Widescreen ThirteenAG + Wesser'.."##1", imgui.ImVec2(225, 25)) then
+				for k, v in pairs(config) do
+					if k ~= "MAIN" then
+						v.posX = currentXYWH("widescreen_Wesser").x
+						v.posY = currentXYWH("widescreen_Wesser").y
+						v.posW = currentXYWH("widescreen_Wesser").w
+						v.posH = currentXYWH("widescreen_Wesser").h
+					end
+				end
+				savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
+			end
+
+			imgui.Separator()
+			if imgui.Checkbox(string.format("%s: %s##3", config.MAIN.language == "RU" and 'Анимированные иконки' or 'Animated icons', config.MAIN.main_active), main_active_imgui) then
+				config.MAIN.main_active = main_active_imgui[0]
+			end
+
 			if samp == 2 then
 				imgui.Separator()
 				if changecmdtext ~= "" then
 					imgui.TextWrapped(""..changecmdtext)
 				end
 				imgui.PushItemWidth(90)
-				imgui.InputTextWithHint('##Введите3', config.main.command, cmdbuffer, ffi.sizeof(cmdbuffer) - 1, imgui.InputTextFlags.AutoSelectAll)
-				imgui.Hint('text_tooltip', language[config.main.language].text_tooltip)
+				imgui.InputTextWithHint('##Введите3', config.MAIN.command, cmdbuffer, ffi.sizeof(cmdbuffer) - 1, imgui.InputTextFlags.AutoSelectAll)
+				imgui.Hint('text_tooltip', config.MAIN.language == "RU" and 'Чтобы изменить активацию введите команду без "/"' or 'To change the activation, enter the command without "/"', nil, false)
 				imgui.PopItemWidth()
 
-				imgui.SameLine()
-				if imgui.Button(language[config.main.language].button_cmd_save, imgui.ImVec2(130, 0)) then
-					sampUnregisterChatCommand(config.main.command)
-					config.main.command = str(cmdbuffer)
-					sampRegisterChatCommand(config.main.command, function()
+				imgui.SameLine(nil, 0)
+				if imgui.DegradeButton(config.MAIN.language == "RU" and 'Сохранить комманду' or 'Save command', imgui.ImVec2(130, 0)) then
+					sampUnregisterChatCommand(config.MAIN.command)
+					config.MAIN.command = str(cmdbuffer)
+					sampRegisterChatCommand(config.MAIN.command, function()
 						if limgui then
 							main_window[0] = not main_window[0]
 						else
 							main_window_noi = not main_window_noi
 						end
 					end)
-					sampSetClientCommandDescription(config.main.command, (string.format(u8:decode'Activating/deactivating the window %s, File: %s', thisScript().name, thisScript().filename)))
+					sampSetClientCommandDescription(config.MAIN.command, (string.format(u8:decode'Activating/deactivating the window %s, File: %s', thisScript().name, thisScript().filename)))
 					savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 					if str(cmdbuffer) == nil or str(cmdbuffer) == '' or str(cmdbuffer) == ' ' or str(cmdbuffer):find('/.+') then
-						changecmdtext = language[config.main.language].changecmdtext
-						config.main.command = 'aic'
+						changecmdtext = config.MAIN.language == "RU" and 'Поле ввода пустое или содержит символ "/"\nВведите команду без "/"' or 'Input field is empty or contains the char "/"\nEnter without "/"'
+						config.MAIN.command = 'aic'
 						savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 					else
 						changecmdtext = ''
@@ -756,25 +813,25 @@ if limgui then
 					imgui.TextWrapped(""..changecmdtext)
 				end
 				imgui.PushItemWidth(90)
-				imgui.InputTextWithHint('##Введите4', config.main.cheatcode, cmdbuffer, ffi.sizeof(cmdbuffer) - 1, imgui.InputTextFlags.AutoSelectAll)
+				imgui.InputTextWithHint('##Введите4', config.MAIN.cheatcode, cmdbuffer, ffi.sizeof(cmdbuffer) - 1, imgui.InputTextFlags.AutoSelectAll)
 					if imgui.IsItemHovered() then
 						imgui.BeginTooltip()
 						imgui.PushTextWrapPos(600)
-							imgui.TextUnformatted(language[config.main.language].text_tooltip)
+							imgui.TextUnformatted(config.MAIN.language == "RU" and 'Чтобы изменить активацию введите команду без "/"' or 'To change the activation, enter the command without "/"')
 						imgui.PopTextWrapPos()
 						imgui.EndTooltip()
 					end
 				imgui.PopItemWidth()
 
-				imgui.SameLine()
-				if imgui.Button(language[config.main.language].button_сс_save, imgui.ImVec2(130, 0)) then
+				imgui.SameLine(nil, 0)
+				if imgui.DegradeButton(config.MAIN.language == "RU" and 'Сохранить чит-код' or 'Save cheat-code', imgui.ImVec2(130, 0)) then
 
-					config.main.cheatcode = str(cmdbuffer)
+					config.MAIN.cheatcode = str(cmdbuffer)
 
 					savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 					if str(cmdbuffer) == nil or str(cmdbuffer) == '' or str(cmdbuffer) == ' ' or str(cmdbuffer):find('/.+') then
-						changecmdtext = language[config.main.language].changecmdtext
-						config.main.cheatcode = 'aic'
+						changecmdtext = config.MAIN.language == "RU" and 'Поле ввода пустое или содержит символ "/"\nВведите чит-код' or 'Input field is empty or contains the char "/"'
+						config.MAIN.cheatcode = 'aic'
 						savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 					else
 						changecmdtext = ''
@@ -795,18 +852,11 @@ if limgui then
 		local show = true
 
 		if not POOL_HINTS then POOL_HINTS = {} end
-		if not POOL_HINTS[str_id] then
-			POOL_HINTS[str_id] = {
-				status = false,
-				timer = 0
-			}
-		end
+		if not POOL_HINTS[str_id] then POOL_HINTS[str_id] = {status = false, timer = 0} end
 
 		if hovered then
 			for k, v in pairs(POOL_HINTS) do
-				if k ~= str_id and os.clock() - v.timer <= animTime  then
-					show = false
-				end
+				if k ~= str_id and os.clock() - v.timer <= animTime  then show = false end
 			end
 		end
 
@@ -843,9 +893,7 @@ if limgui then
 				local result = 0
 				for line in text:gmatch('[^\n]+') do
 					local len = imgui.CalcTextSize(line).x
-					if len > result then
-						result = len
-					end
+					if len > result then result = len end
 				end
 				return result
 			end
@@ -875,136 +923,118 @@ if limgui then
 				end
 				local alpha = hovered and s(between / animTime) or s(1.00 - between / animTime)
 				rend_window(alpha)
-			elseif hovered then
-				rend_window(1.00)
+			elseif hovered then rend_window(1.00) end
+		end
+		imgui.SetCursorPos(p_orig)
+	end
+
+	function imgui.DegradeButton(label, size) -- by Cosmo
+		local duration = {0.7, 0.2}
+
+		local cols = {default = imgui.ImVec4(imgui.GetStyle().Colors[imgui.Col.Button]),
+			hovered = imgui.ImVec4(imgui.GetStyle().Colors[imgui.Col.ButtonHovered]),
+			active  = imgui.ImVec4(imgui.GetStyle().Colors[imgui.Col.ButtonActive])}
+
+		if not FBUTPOOL then FBUTPOOL = {} end
+		if not FBUTPOOL[label] then FBUTPOOL[label] = {color = cols.default, clicked = { nil, nil }, hovered = {cur = false, old = false, clock = nil,}} end
+
+		local degrade = function(before, after, start_time, duration)
+			local result_vec4 = before
+			local timer = os.clock() - start_time
+			if timer >= 0.00 then
+				local offs = {x = after.x - before.x, y = after.y - before.y, z = after.z - before.z, w = after.w - before.w}
+
+				result_vec4.x = result_vec4.x + ( (offs.x / duration) * timer )
+				result_vec4.y = result_vec4.y + ( (offs.y / duration) * timer )
+				result_vec4.z = result_vec4.z + ( (offs.z / duration) * timer )
+				result_vec4.w = result_vec4.w + ( (offs.w / duration) * timer )
+			end
+			return result_vec4
+		end
+
+		if FBUTPOOL[label]['clicked'][1] and FBUTPOOL[label]['clicked'][2] then
+			if os.clock() - FBUTPOOL[label]['clicked'][1] <= duration[2] then
+				FBUTPOOL[label]['color'] = degrade(FBUTPOOL[label]['color'], cols.active, FBUTPOOL[label]['clicked'][1], duration[2])
+				goto no_hovered
+			end
+
+			if os.clock() - FBUTPOOL[label]['clicked'][2] <= duration[2] then
+				FBUTPOOL[label]['color'] = degrade( FBUTPOOL[label]['color'], FBUTPOOL[label]['hovered']['cur'] and cols.hovered or cols.default,FBUTPOOL[label]['clicked'][2], duration[2])
+				goto no_hovered
 			end
 		end
 
-		imgui.SetCursorPos(p_orig)
+		if FBUTPOOL[label]['hovered']['clock'] ~= nil then
+			if os.clock() - FBUTPOOL[label]['hovered']['clock'] <= duration[1] then
+				FBUTPOOL[label]['color'] = degrade( FBUTPOOL[label]['color'], FBUTPOOL[label]['hovered']['cur'] and cols.hovered or cols.default, FBUTPOOL[label]['hovered']['clock'], duration[1])
+			else
+				FBUTPOOL[label]['color'] = FBUTPOOL[label]['hovered']['cur'] and cols.hovered or cols.default
+			end
+		end
+
+		::no_hovered::
+
+		imgui.PushStyleColor(imgui.Col.Button, imgui.ImVec4(FBUTPOOL[label]['color']))
+		imgui.PushStyleColor(imgui.Col.ButtonHovered, imgui.ImVec4(FBUTPOOL[label]['color']))
+		imgui.PushStyleColor(imgui.Col.ButtonActive, imgui.ImVec4(FBUTPOOL[label]['color']))
+		local result = imgui.Button(label, size or imgui.ImVec2(0, 0))
+		imgui.PopStyleColor(3)
+
+		if result then
+			FBUTPOOL[label]['clicked'] = {os.clock(), os.clock() + duration[2]}
+		end
+
+		FBUTPOOL[label]['hovered']['cur'] = imgui.IsItemHovered()
+		if FBUTPOOL[label]['hovered']['old'] ~= FBUTPOOL[label]['hovered']['cur'] then
+			FBUTPOOL[label]['hovered']['old'] = FBUTPOOL[label]['hovered']['cur']
+			FBUTPOOL[label]['hovered']['clock'] = os.clock()
+		end
+
+		return result
 	end
 else
 	item_list = {"outline_anim"}
 	offset_list = {'0.1', '0.2', '0.3', '0.4', '0.5', '1.0', '2.0', '4.0', '6.0', '8.0'}
 end
 
-
-
 function main()
-	samp = 0
+	repeat wait(0) until memory.read(0xC8D4C0, 4, false) == 9
+
+	assert(lvkeys, 'Library \'vkeys\' not found.')
+	assert(lffi, 'Library \'ffi\' not found.')
+	assert(lmemory, 'Library \'memory\' not found.')
+	assert(lmad, 'Library \'MoonAdditions\' not found. Download: https://github.com/THE-FYP/MoonAdditions .')
+	if not limgui then
+		printString("Library ~y~\'mimgui\' ~r~not found.~n~~w~Download: ~y~ https://github.com/THE-FYP/mimgui.~n~~r~Copy link in~y~ moonloader.log.~n~~w~Lite menu active.", 5000)
+	end
+	assert(lwm, 'Library \'windows.message\' not found.')
+	assert(lencoding, 'Library \'encoding\' not found.')
+
+	samp, hud_test = 0, true
 
 	if isSampLoaded() then samp = 1 end
 	if isSampLoaded() and isSampfuncsLoaded() then samp = 2 end
 	if samp == 2 then
+		while not isSampAvailable() do wait(1000) end
 
-	while not isSampAvailable() do wait(1000) end
-
-	sampRegisterChatCommand(config.main.command, function()
-		if limgui then
-			main_window[0] = not main_window[0]
-		else
-			main_window_noi = not main_window_noi
-		end
-	end)
-	sampSetClientCommandDescription(config.main.command, (string.format(u8:decode'Activating/deactivating the window %s, File: %s', thisScript().name, thisScript().filename)))
+		sampRegisterChatCommand(config.MAIN.command, function()
+			if limgui then
+				main_window[0] = not main_window[0]
+			else
+				main_window_noi = not main_window_noi
+			end
+		end)
+		sampSetClientCommandDescription(config.MAIN.command, (string.format(u8:decode'Activating/deactivating the window %s, File: %s', thisScript().name, thisScript().filename)))
 	end
 
-	active_gun = {
-		[0] = {["name"] ="fist_anim", ["active"] = false, ["frames"] = {}},
-		[1] = {["name"] ="brassknuckle_anim", ["active"] = false, ["frames"] = {}},
-		[2] = {["name"] ="golfclub_anim", ["active"] = false, ["frames"] = {}},
-		[3] = {["name"] ="nitestick_anim", ["active"] = false, ["frames"] = {}},
-		[4] = {["name"] ="knifecur_anim", ["active"] = false, ["frames"] = {}},
-		[5] = {["name"] ="bat_anim", ["active"] = false, ["frames"] = {}},
-		[6] = {["name"] ="shovel_anim", ["active"] = false, ["frames"] = {}},
-		[7] = {["name"] ="poolcue_anim", ["active"] = false, ["frames"] = {}},
-		[8] = {["name"] ="katana_anim", ["active"] = false, ["frames"] = {}},
-		[9] = {["name"] ="chnsaw_anim", ["active"] = false, ["frames"] = {}},
-		[10] = {["name"] ="gun_dildo1_anim", ["active"] = false, ["frames"] = {}},
-		[11] = {["name"] ="gun_dildo2_anim", ["active"] = false, ["frames"] = {}},
-		[12] = {["name"] ="gun_vibe1_anim", ["active"] = false, ["frames"] = {}},
-		[13] = {["name"] ="gun_vibe2_anim", ["active"] = false, ["frames"] = {}},
-		[14] = {["name"] ="flowera_anim", ["active"] = false, ["frames"] = {}},
-		[15] = {["name"] ="gun_cane_anim", ["active"] = false, ["frames"] = {}},
-		[16] = {["name"] ="grenade_anim", ["active"] = false, ["frames"] = {}},
-		[17] = {["name"] ="teargas_anim", ["active"] = false, ["frames"] = {}},
-		[18] = {["name"] ="molotov_anim", ["active"] = false, ["frames"] = {}},
-		[22] = {["name"] ="colt45_anim", ["active"] = false, ["frames"] = {}},
-		[23] = {["name"] ="silenced_anim", ["active"] = false, ["frames"] = {}},
-		[24] = {["name"] ="desert_eagle_anim", ["active"] = false, ["frames"] = {}},
-		[25] = {["name"] ="chromegun_anim", ["active"] = false, ["frames"] = {}},
-		[26] = {["name"] ="sawnoff_anim", ["active"] = false, ["frames"] = {}},
-		[27] = {["name"] ="shotgspa_anim", ["active"] = false, ["frames"] = {}},
-		[28] = {["name"] ="micro_uzi_anim", ["active"] = false, ["frames"] = {}},
-		[29] = {["name"] ="mp5lng_anim", ["active"] = false, ["frames"] = {}},
-		[30] = {["name"] ="ak47_anim", ["active"] = false, ["frames"] = {}},
-		[31] = {["name"] ="m4_anim", ["active"] = false, ["frames"] = {}},
-		[32] = {["name"] ="tec9_anim", ["active"] = false, ["frames"] = {}},
-		[33] = {["name"] ="cuntgun_anim", ["active"] = false, ["frames"] = {}},
-		[34] = {["name"] ="sniper_anim", ["active"] = false, ["frames"] = {}},
-		[35] = {["name"] ="rocketla_anim", ["active"] = false, ["frames"] = {}},
-		[36] = {["name"] ="heatseek_anim", ["active"] = false, ["frames"] = {}},
-		[37] = {["name"] ="flame_anim", ["active"] = false, ["frames"] = {}},
-		[38] = {["name"] ="minigun_anim", ["active"] = false, ["frames"] = {}},
-		[39] = {["name"] ="satchel_anim", ["active"] = false, ["frames"] = {}},
-		[40] = {["name"] ="bomb_anim", ["active"] = false, ["frames"] = {}},
-		[41] = {["name"] ="spraycan_anim", ["active"] = false, ["frames"] = {}},
-		[42] = {["name"] ="fire_ex_anim", ["active"] = false, ["frames"] = {}},
-		[43] = {["name"] ="camera_anim", ["active"] = false, ["frames"] = {}},
-		[44] = {["name"] ="nvgoggles_anim", ["active"] = false, ["frames"] = {}},
-		[45] = {["name"] ="irgoggles_anim", ["active"] = false, ["frames"] = {}},
-		[46] = {["name"] ="gun_para_anim", ["active"] = false, ["frames"] = {}}
-	}
 
-	id_gun = {
-		["fist_anim"] = 0,
-		["brassknuckle_anim"] = 1,
-		["golfclub_anim"] = 2,
-		["nitestick_anim"] = 3,
-		["knifecur_anim"] = 4,
-		["bat_anim"] = 5,
-		["shovel_anim"] = 6,
-		["poolcue_anim"] = 7,
-		["katana_anim"] = 8,
-		["chnsaw_anim"] = 9,
-		["gun_dildo1_anim"] = 10,
-		["gun_dildo2_anim"] = 11,
-		["gun_vibe1_anim"] = 12,
-		["gun_vibe2_anim"] = 13,
-		["flowera_anim"] = 14,
-		["gun_cane_anim"] = 15,
-		["grenade_anim"] = 16,
-		["teargas_anim"] = 17,
-		["molotov_anim"] = 18,
-		["colt45_anim"] = 22,
-		["silenced_anim"] = 23,
-		["desert_eagle_anim"] = 24,
-		["chromegun_anim"] = 25,
-		["sawnoff_anim"] = 26,
-		["shotgspa_anim"] = 27,
-		["micro_uzi_anim"] = 28,
-		["mp5lng_anim"] = 29,
-		["ak47_anim"] = 30,
-		["m4_anim"] = 31,
-		["tec9_anim"] = 32,
-		["cuntgun_anim"] = 33,
-		["sniper_anim"] = 34,
-		["rocketla_anim"] = 35,
-		["heatseek_anim"] = 36,
-		["flame_anim"] = 37,
-		["minigun_anim"] = 38,
-		["satchel_anim"] = 39,
-		["bomb_anim"] = 40,
-		["spraycan_anim"] = 41,
-		["fire_ex_anim"] = 42,
-		["camera_anim"] = 43,
-		["nvgoggles_anim"] = 44,
-		["irgoggles_anim"] = 45,
-		["gun_para_anim"] = 46
-	}
+	active_gun = {[0] = {["name"] ="fist_anim", ["active"] = false, ["frames"] = {}},[1] = {["name"] ="brassknuckle_anim", ["active"] = false, ["frames"] = {}}, [2] = {["name"] ="golfclub_anim", ["active"] = false, ["frames"] = {}}, [3] = {["name"] ="nitestick_anim", ["active"] = false, ["frames"] = {}}, [4] = {["name"] ="knifecur_anim", ["active"] = false, ["frames"] = {}}, [5] = {["name"] ="bat_anim", ["active"] = false, ["frames"] = {}}, [6] = {["name"] ="shovel_anim", ["active"] = false, ["frames"] = {}}, [7] = {["name"] ="poolcue_anim", ["active"] = false, ["frames"] = {}}, [8] = {["name"] ="katana_anim", ["active"] = false, ["frames"] = {}}, [9] = {["name"] ="chnsaw_anim", ["active"] = false, ["frames"] = {}}, [10] = {["name"] ="gun_dildo1_anim", ["active"] = false, ["frames"] = {}}, [11] = {["name"] ="gun_dildo2_anim", ["active"] = false, ["frames"] = {}}, [12] = {["name"] ="gun_vibe1_anim", ["active"] = false, ["frames"] = {}}, [13] = {["name"] ="gun_vibe2_anim", ["active"] = false, ["frames"] = {}}, [14] = {["name"] ="flowera_anim", ["active"] = false, ["frames"] = {}}, [15] = {["name"] ="gun_cane_anim", ["active"] = false, ["frames"] = {}}, [16] = {["name"] ="grenade_anim", ["active"] = false, ["frames"] = {}}, [17] = {["name"] ="teargas_anim", ["active"] = false, ["frames"] = {}}, [18] = {["name"] ="molotov_anim", ["active"] = false, ["frames"] = {}}, [22] = {["name"] ="colt45_anim", ["active"] = false, ["frames"] = {}}, [23] = {["name"] ="silenced_anim", ["active"] = false, ["frames"] = {}}, [24] = {["name"] ="desert_eagle_anim", ["active"] = false, ["frames"] = {}}, [25] = {["name"] ="chromegun_anim", ["active"] = false, ["frames"] = {}}, [26] = {["name"] ="sawnoff_anim", ["active"] = false, ["frames"] = {}}, [27] = {["name"] ="shotgspa_anim", ["active"] = false, ["frames"] = {}}, [28] = {["name"] ="micro_uzi_anim", ["active"] = false, ["frames"] = {}}, [29] = {["name"] ="mp5lng_anim", ["active"] = false, ["frames"] = {}}, [30] = {["name"] ="ak47_anim", ["active"] = false, ["frames"] = {}}, [31] = {["name"] ="m4_anim", ["active"] = false, ["frames"] = {}}, [32] = {["name"] ="tec9_anim", ["active"] = false, ["frames"] = {}}, [33] = {["name"] ="cuntgun_anim", ["active"] = false, ["frames"] = {}}, [34] = {["name"] ="sniper_anim", ["active"] = false, ["frames"] = {}}, [35] = {["name"] ="rocketla_anim", ["active"] = false, ["frames"] = {}}, [36] = {["name"] ="heatseek_anim", ["active"] = false, ["frames"] = {}}, [37] = {["name"] ="flame_anim", ["active"] = false, ["frames"] = {}}, [38] = {["name"] ="minigun_anim", ["active"] = false, ["frames"] = {}}, [39] = {["name"] ="satchel_anim", ["active"] = false, ["frames"] = {}}, [40] = {["name"] ="bomb_anim", ["active"] = false, ["frames"] = {}}, [41] = {["name"] ="spraycan_anim", ["active"] = false, ["frames"] = {}}, [42] = {["name"] ="fire_ex_anim", ["active"] = false, ["frames"] = {}}, [43] = {["name"] ="camera_anim", ["active"] = false, ["frames"] = {}}, [44] = {["name"] ="nvgoggles_anim", ["active"] = false, ["frames"] = {}}, [45] = {["name"] ="irgoggles_anim", ["active"] = false, ["frames"] = {}}, [46] = {["name"] ="gun_para_anim", ["active"] = false, ["frames"] = {}}}
 
-	outline_anim = {}
+	id_gun = {["fist_anim"] = 0, ["brassknuckle_anim"] = 1, ["golfclub_anim"] = 2, ["nitestick_anim"] = 3, ["knifecur_anim"] = 4, ["bat_anim"] = 5, ["shovel_anim"] = 6, ["poolcue_anim"] = 7, ["katana_anim"] = 8, ["chnsaw_anim"] = 9, ["gun_dildo1_anim"] = 10, ["gun_dildo2_anim"] = 11, ["gun_vibe1_anim"] = 12, ["gun_vibe2_anim"] = 13, ["flowera_anim"] = 14, ["gun_cane_anim"] = 15, ["grenade_anim"] = 16, ["teargas_anim"] = 17, ["molotov_anim"] = 18, ["colt45_anim"] = 22, ["silenced_anim"] = 23, ["desert_eagle_anim"] = 24, ["chromegun_anim"] = 25, ["sawnoff_anim"] = 26, ["shotgspa_anim"] = 27, ["micro_uzi_anim"] = 28, ["mp5lng_anim"] = 29, ["ak47_anim"] = 30, ["m4_anim"] = 31, ["tec9_anim"] = 32, ["cuntgun_anim"] = 33, ["sniper_anim"] = 34, ["rocketla_anim"] = 35, ["heatseek_anim"] = 36, ["flame_anim"] = 37, ["minigun_anim"] = 38, ["satchel_anim"] = 39, ["bomb_anim"] = 40, ["spraycan_anim"] = 41, ["fire_ex_anim"] = 42, ["camera_anim"] = 43, ["nvgoggles_anim"] = 44, ["irgoggles_anim"] = 45, ["gun_para_anim"] = 46}
 
 	-----------txd_outline_anim----------txd_outline_anim--------------
+	outline_anim = {}
+
 	if doesFileExist("moonloader/AnimatedIconcs/Anim/outline_anim.txd") then
 		if mad.get_txd('txd_outline_anim') ~= nil then
 			txd_outline_anim = mad.get_txd('txd_outline_anim')
@@ -1063,19 +1093,20 @@ function main()
 
 	lua_thread.create(function() -- отдельный поток для прогона кадров обводки, если в обычный запихнуть, то будет мигать.
 		i_outline_anim = 0
-		while true do wait(config.outline_anim.delay)
+		while true do
 			i_outline_anim = i_outline_anim + 1
 			if i_outline_anim >= #outline_anim then
 				wait(config.outline_anim.delay_replay_end)
 				i_outline_anim = 0
 				wait(config.outline_anim.delay_replay)
 			end
+			wait(config.outline_anim.delay)
 		end
     end)
 
 	lua_thread.create(function() -- отдельный поток для прогона кадров иконок
 		i_delay, i_delay_replay, i_delay_replay_end, i_frames_max, i_frames = 0, 0, 0, 0, 0
-		while true do wait(i_delay)
+		while true do
 			if i_frames > i_frames_max then
 				i_frames = 0
 			else
@@ -1086,19 +1117,84 @@ function main()
 					wait(i_delay_replay)
 				end
 			end
+			wait(i_delay)
 		end
     end)
 
 	lua_thread.create(function() -- отдельный поток для скрытия иконок
-		while true do wait(0)
+		while true do 
 			local currentGun = getCurrentCharWeapon(PLAYER_PED)
-			if not config.main.standart_icons and active_gun[currentGun].active and config.main.main_active then
+			if not config.MAIN.standard_icons and active_gun[currentGun].active and config.MAIN.main_active then
 				memory.fill(0x58D7D0, 0xC3, 1, false) -- Выключить иконки.
 			else
 				memory.fill(0x58D7D0, 0xA1, 1, false) -- Включить иконки.
 			end
+			wait(0)
 		end
     end)
+
+	pos_active_thread = lua_thread.create_suspended(function() -- отдельный поток настройки позиции обводки/иконки
+		posx_mouse, posy_mouse = 325.0, 225.0
+		while true do wait(0)
+			if pos_active then
+				posx_mouse_Pc, posy_mouse_PC = getPcMouseMovement()
+				posx_mouse = posx_mouse + posx_mouse_Pc
+				posy_mouse = posy_mouse + -posy_mouse_PC
+				if posx_mouse > 640.0 then posx_mouse= 600.0 end
+				if -50.0 > posx_mouse then posx_mouse = 0.0 end
+				if posy_mouse > 448.0 then posy_mouse = 408.0 end
+				if -50.0 > posy_mouse then posy_mouse = 0.0 end
+
+				setPlayerControl(PLAYER_HANDLE, false)
+
+				printStringNow("Press ~y~ENTER ~w~to save~n~Press ~y~ARROW ~w~edit size~n~Scroll ~y~WheelMouse ~w~total size.", 0)
+
+				local currentGun = getCurrentCharWeapon(PLAYER_PED)
+
+				config.outline_anim.posX, config.outline_anim.posY = posx_mouse, posy_mouse
+				config[''..active_gun[currentGun].name].posX, config[''..active_gun[currentGun].name].posY = posx_mouse, posy_mouse
+				local delta = getMousewheelDelta()
+				config.outline_anim.posW, config.outline_anim.posH = (config.outline_anim.posW + (delta)), (config.outline_anim.posH + (delta))
+				config[''..active_gun[currentGun].name].posW, config[''..active_gun[currentGun].name].posH = (config[''..active_gun[currentGun].name].posW + (delta)), (config[''..active_gun[currentGun].name].posH + (delta))
+				if isKeyDown(vkeys.VK_LEFT) then
+					config.outline_anim.posW = config.outline_anim.posW - 0.1
+					config[''..active_gun[currentGun].name].posW = config[''..active_gun[currentGun].name].posW - 0.1
+				end
+				if isKeyDown(vkeys.VK_UP) then
+					config.outline_anim.posH = config.outline_anim.posH - 0.1
+					config[''..active_gun[currentGun].name].posH = config[''..active_gun[currentGun].name].posH - 0.1
+				end
+				if isKeyDown(vkeys.VK_RIGHT) then
+					config.outline_anim.posW = config.outline_anim.posW + 0.1
+					config[''..active_gun[currentGun].name].posW = config[''..active_gun[currentGun].name].posW + 0.1
+				end
+				if isKeyDown(vkeys.VK_DOWN) then
+					config.outline_anim.posH = config.outline_anim.posH + 0.1
+					config[''..active_gun[currentGun].name].posH = config[''..active_gun[currentGun].name].posH + 0.1
+				end
+				if isKeyDown(vkeys.VK_RETURN) then
+					if samp == 2 then
+						sampAddChatMessage(u8:decode"Сохранено.", -1)
+					else
+						printString("~y~SAVED", 1000)
+					end
+					for k, v in pairs(config) do
+						if k ~= "MAIN" then
+							v.posX = config.outline_anim.posX
+							v.posY = config.outline_anim.posY
+							v.posW = config.outline_anim.posW
+							v.posH = config.outline_anim.posH
+						end
+					end
+					savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
+					setPlayerControl(PLAYER_HANDLE, true)
+					if limgui then main_window[0] = true else main_window_noi = true end
+					pos_active = false
+					pos_active_thread:terminate()
+				end
+			end
+		end
+	end)
 
 	if not limgui then
 		lua_thread.create(function() -- отдельный поток для мышки и настроек, если нету mimgui
@@ -1124,10 +1220,22 @@ function main()
 					if y_mouse > 448.0 then y_mouse = 448.0 end
 					if 0.0 > y_mouse then y_mouse = 0.0 end
 
-					renderDrawTexture(mouse, convert_x(x_mouse), convert_y(y_mouse), 32, 32, 0, -1)
+					renderDrawTexture(mouse, convert(x_mouse)[1], convert(y_mouse)[2], 32, 32, 0, -1)
 
-					mad.draw_rect(convert_x(500), convert_y(135), convert_x(600), convert_y(290), 64, 64, 64, 200)
-					renderDrawTexture(logo_test, convert_x(507.5), convert_y(135), sizeX_logo, sizeY_logo, 0, -1)
+					mad.draw_rect(convert(500)[1], convert(135)[2], convert(600)[1], convert(305)[2], 64, 64, 64, 174)
+
+					if drawClickableText(config.MAIN.language == "RU" and "~h~RU / ~w~EN" or "~w~RU / ~h~EN", 517, 151, 0.5, 1.0, 255, 255,  20, 8) then
+						if config.MAIN.language == "RU" then config.MAIN.language = "EN" else config.MAIN.language = "RU" end
+						savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
+					end
+
+					if drawClickableText("X", 596, 135, 1.0, 1.0, 64, 255, 5, 8) then
+						main_window_noi = false
+						clearThisPrintBigNow(4)
+						setPlayerControl(PLAYER_HANDLE, true)
+					end
+
+					renderDrawTexture(logo_test, convert(507.5)[1], convert(135)[2], sizeX_logo, sizeY_logo, 0, -1)
 
 					if drawClickableText("<-", 520, 165, _, _, 155, 255, 5, 5) then
 						test1 = test1 - 1
@@ -1136,6 +1244,7 @@ function main()
 							test1 = #item_list
 							test2 = item_list[test1]
 						end
+						if hasCharGotWeapon(PLAYER_PED, id_gun[test2]) then setCurrentCharWeapon(PLAYER_PED, id_gun[test2]) end
 					end
 					if drawClickableText(""..test2:gsub("_anim", ""), 550, 165, _, _, 155, 255, 10, 5) then
 						local text = ""
@@ -1151,6 +1260,7 @@ function main()
 							test1 = 1
 							test2 = item_list[test1]
 						end
+						if hasCharGotWeapon(PLAYER_PED, id_gun[test2]) then setCurrentCharWeapon(PLAYER_PED, id_gun[test2]) end
 					end
 
 					if drawClickableText("-", 507, 178, 0.8, 0.8, 155, 255, 5, 5) then
@@ -1161,7 +1271,7 @@ function main()
 							test4 = offset_list[test3]
 						end
 					end
-					if drawClickableText(test4.."~n~Offset", 520, 176, 0.4, 0.8, 155, 255, 5, 8) then
+					if drawClickableText(test4.."~n~"..(config.MAIN.language == "RU" and RusToGame(u8:decode'Смещение') or 'Offset'), 520, 176, 0.4, 0.8, 155, 255, 5, 8) then
 						local text = ""
 						for i, v in pairs(offset_list) do
 							text = text..""..v.."~n~"
@@ -1177,11 +1287,13 @@ function main()
 							test4 = offset_list[test3]
 						end
 					end
-					if drawClickableText((config[''..test2].outline and "Outline~n~ON" or "Outline~n~OFF"), 550, 176, 0.4, 0.8, 155, 255, 15, 10) then
+
+					if drawClickableText((config[''..test2].outline and (config.MAIN.language == "RU" and RusToGame(u8:decode'Обводка~n~ON') or 'Outline~n~ON') or (config.MAIN.language == "RU" and RusToGame(u8:decode'Обводка~n~OFF') or 'Outline~n~OFF')), 550, 176, 0.4, 0.8, 155, 255, 15, 10) then
 						config[''..test2].outline = not config[''..test2].outline
 						savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 					end
-					if drawClickableText((config[''..test2].foreground and "Foreground~n~ON" or "Foreground~n~OFF"), 578, 176, 0.4, 0.8, 155, 255, 15, 10) then
+
+					if drawClickableText((config[''..test2].foreground and (config.MAIN.language == "RU" and RusToGame(u8:decode'Поверх~n~обводки~n~ON') or 'Foreground~n~ON') or (config.MAIN.language == "RU" and RusToGame(u8:decode'Поверх~n~обводки~n~OFF') or 'Foreground~n~OFF')), 578, 176, (config.MAIN.language == "RU" and 0.4 or 0.4), (config.MAIN.language == "RU" and 0.6 or 0.8), 155, 255, 15, 10) then
 						config[''..test2].foreground = not config[''..test2].foreground
 						savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 					end
@@ -1212,7 +1324,7 @@ function main()
 						config[''..test2].customY2 = config[''..test2].customY2 - offset_list[test3]
 					end
 
-					mad.draw_rect(convert_x(507), convert_y(212), convert_x(532), convert_y(223), 10, 10, 10, 155)
+					mad.draw_rect(convert(507)[1], convert(212)[2], convert(532)[1], convert(223)[2], 10, 10, 10, 155)
 					if not draw_delay then
 						if drawClickableText(""..config[''..test2].delay, 519, 214, 0.4, 0.8, 155, 255, 10, 8) then
 							draw_delay = true
@@ -1221,7 +1333,7 @@ function main()
 						end
 					end
 
-					mad.draw_rect(convert_x(537), convert_y(212), convert_x(562), convert_y(223), 10, 10, 10, 155)
+					mad.draw_rect(convert(537)[1], convert(212)[2], convert(562)[1], convert(223)[2], 10, 10, 10, 155)
 					if not draw_delay_replay then
 						if drawClickableText(""..config[''..test2].delay_replay, 549.5, 214, 0.4, 0.8, 155, 255, 10, 8) then
 							draw_delay = false
@@ -1230,7 +1342,7 @@ function main()
 						end
 					end
 
-					mad.draw_rect(convert_x(567), convert_y(212), convert_x(592), convert_y(223), 10, 10, 10, 155)
+					mad.draw_rect(convert(567)[1], convert(212)[2], convert(592)[1], convert(223)[2], 10, 10, 10, 155)
 					if not draw_delay_replay_end then
 						if drawClickableText(""..config[''..test2].delay_replay_end, 579.5, 214, 0.4, 0.8, 155, 255, 10, 8) then
 							draw_delay = false
@@ -1279,13 +1391,13 @@ function main()
 							draw_delay_replay_end = false
 						end
 						if draw_delay then
-							printStringNow_text = "~n~ ~y~ACTIVE ~w~ " .. language.EN.input_delay
+							printStringNow_text = config.MAIN.language == "RU" and RusToGame(u8:decode'~n~ ~y~Активно: ~w~Задержка между кадрами') or '~n~ ~y~ACTIVE: ~w~Delay between frames'
 						elseif draw_delay_replay then
-							printStringNow_text = "~n~ ~y~ACTIVE ~w~ " .. language.EN.input_delay_replay
+							printStringNow_text = config.MAIN.language == "RU" and RusToGame(u8:decode'~n~ ~y~Активно: ~w~Задержка перед началом анимации') or '~n~ ~y~ACTIVE: ~w~Delay before animation starts'
 						elseif draw_delay_replay_end then
-							printStringNow_text = "~n~ ~y~ACTIVE ~w~ " .. language.EN.input_delay_replay_end
+							printStringNow_text = config.MAIN.language == "RU" and RusToGame(u8:decode'~n~ ~y~Активно: ~w~Задержка по окончанию анимации') or '~n~ ~y~ACTIVE: ~w~Delay at end animation'
 						end
-						printStringNow("Press ~y~ENTER ~w~to save the value~n~Press ~y~ESC ~w~to cancel the input." .. printStringNow_text, 0)
+						printStringNow((config.MAIN.language == "RU" and RusToGame(u8:decode'Нажмите ~y~ENTER~w~, чтобы сохранить значение ~n~Нажмите ~y~ESC~w~, чтобы отменить ввод.') or 'Press ~y~ENTER ~w~to save the value~n~Press ~y~ESC ~w~to cancel the input.') .. printStringNow_text, 0)
 
 						if wasKeyPressed(vkeys.VK_BACK) then
 							keyslist = keyslist:sub(1, -2)
@@ -1299,10 +1411,10 @@ function main()
 						end
 					end
 
-					if drawClickableText("SAVE", 530, 226.5,0.6, 1.2, 155, 255,  10, 8) then
+					if drawClickableText(config.MAIN.language == "RU" and RusToGame(u8:decode'Сохранить') or 'Save', 530, 226.5,0.6, 1.2, 155, 255,  10, 8) then
 						savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 					end
-					if drawClickableText("RESET", 570, 226.5, 0.6, 1.2, 155, 255, 10, 8) then
+					if drawClickableText(config.MAIN.language == "RU" and RusToGame(u8:decode'Сброс') or 'Reset', 570, 226.5, 0.6, 1.2, 155, 255, 10, 8) then
 						config[''..test2].customX1 = 0
 						config[''..test2].customX2 = 0
 						config[''..test2].customY1 = 0
@@ -1312,55 +1424,55 @@ function main()
 						config[''..test2].delay_replay_end = 0
 					end
 
-					if config.main.standart_icons then
-						if drawClickableText("Enable standard icons", 550, 245, 0.5, 1.0, 255, 255,  20, 8) then
-							config.main.standart_icons = not config.main.standart_icons
-						end
-					else
-						if drawClickableText("Enable standard icons", 550, 245, 0.5, 1.0, 64, 64,  20, 8) then
-							config.main.standart_icons = not config.main.standart_icons
-						end
-					end
+					mad.draw_rect(convert(502)[1], convert(240)[2], convert(598)[1], convert(284.5)[2], 47, 47, 47, 147)
 
-					if config.main.widescreen then
-						if drawClickableText("sa_widescreenfix_lite.asi", 550, 255, 0.47, 1.0, 255, 255,  20, 8) then
-							config.main.widescreen = not config.main.widescreen
-						end
-					else
-						if drawClickableText("sa widescreenfix lite.asi", 550, 255, 0.47, 1.0, 64, 64,  20, 8) then
-							config.main.widescreen = not config.main.widescreen
-							config.main.widescreen_Wesser = false
-						end
-					end
+					drawClickableText(config.MAIN.language == "RU" and RusToGame(u8:decode'~w~Настройки положения') or '~w~Position Settings', 550, 237, 0.4, 0.8, 147, 147,  20, 8)
 
-					if config.main.widescreen_Wesser then
-						if drawClickableText("Widescreen ThirteenAG + Wesser", 550, 265, 0.4, 1.1, 255, 255,  20, 8) then
-							config.main.widescreen_Wesser = not config.main.widescreen_Wesser
-
-						end
-					else
-						if drawClickableText("Widescreen ThirteenAG + Wesser", 550, 265, 0.4, 1.1, 64, 64,  20, 8) then
-							config.main.widescreen_Wesser = not config.main.widescreen_Wesser
-							config.main.widescreen = false
-						end
-					end
-
-					if config.main.main_active then
-						if drawClickableText("Enabled animated icons", 550, 275, 0.47, 1.0, 255, 255,  20, 8) then
-							config.main.main_active = not config.main.main_active
-						end
-					else
-						if drawClickableText("Enabled animated icons", 550, 275, 0.47, 1.0, 64, 64,  20, 8) then
-							config.main.main_active = not config.main.main_active
-						end
-					end
-
-					if drawClickableText("X", 593, 280, 1.0, 1.0, 64, 255,  10, 8) then
+					if drawClickableText(config.MAIN.language == "RU" and RusToGame(u8:decode'~h~Ручная позиция') or '~h~Manual position', 550, 245, 0.47, 1.0, 255, 200, 20, 8) then
 						main_window_noi = false
-						clearThisPrintBigNow(4)
-						setPlayerControl(PLAYER_HANDLE, true)
+						pos_active = true
+						pos_active_thread:run()
 					end
 
+					if drawClickableText(config.MAIN.language == "RU" and RusToGame(u8:decode'~h~Стандартная позиция') or '~h~Standard position', 550, 254, 0.47, 1.0, 255, 200, 20, 8) then
+						for k, v in pairs(config) do
+							if k ~= "MAIN" then
+								v.posX = currentXYWH("standard").x
+								v.posY = currentXYWH("standard").y
+								v.posW = currentXYWH("standard").w
+								v.posH = currentXYWH("standard").h
+							end
+						end
+						savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
+					end
+
+					if drawClickableText("~w~sa_widescreenfix_lite.asi/ThirteenAG", 550, 264, 0.47, 1.0, 255, 200, 20, 8) then
+						for k, v in pairs(config) do
+							if k ~= "MAIN" then
+								v.posX = currentXYWH("widescreen").x
+								v.posY = currentXYWH("widescreen").y
+								v.posW = currentXYWH("widescreen").w
+								v.posH = currentXYWH("widescreen").h
+							end
+						end
+						savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
+					end
+
+					if drawClickableText("~w~Widescreen ThirteenAG + Wesser", 550, 274, 0.4, 1.1, 255, 200, 20, 8) then
+						for k, v in pairs(config) do
+							if k ~= "MAIN" then
+								v.posX = currentXYWH("widescreen_Wesser").x
+								v.posY = currentXYWH("widescreen_Wesser").y
+								v.posW = currentXYWH("widescreen_Wesser").w
+								v.posH = currentXYWH("widescreen_Wesser").h
+							end
+						end
+						savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
+					end
+
+					if drawClickableText(config.MAIN.language == "RU" and RusToGame(u8:decode'Стандартные иконки: '..tostring(config.MAIN.standard_icons)) or 'Standard icons: '..tostring(config.MAIN.standard_icons), 550, 285, 0.5, 1.0, (config.MAIN.standard_icons and 255 or 64), (config.MAIN.standard_icons and 255 or 64), 25, 8) then config.MAIN.standard_icons = not config.MAIN.standard_icons end
+
+					if drawClickableText(config.MAIN.language == "RU" and RusToGame(u8:decode'Анимированные иконки: '..tostring(config.MAIN.main_active)) or 'Animated icons: '..tostring(config.MAIN.main_active), 550, 294, 0.47, 1.0, (config.MAIN.main_active and 255 or 64), (config.MAIN.main_active and 255 or 64),  20, 8) then config.MAIN.main_active = not config.MAIN.main_active end
 				else
 					x_mouse = 325.0
 					y_mouse = 225.0
@@ -1368,7 +1480,6 @@ function main()
 			end
 		end)
 	end
-
 	files = {}
 	local time = get_file_modify_time(string.format("%s/AnimatedIconcs/AnimatedIconcs.json",getWorkingDirectory()))
 	if time ~= nil then
@@ -1378,7 +1489,7 @@ function main()
 		files_check_window = true
 		while true do wait(274)
 			if limgui then files_check_window = main_window[0] else files_check_window = main_window_noi end
-			if files ~= nil and not files_check_window then  -- by FYP
+			if files ~= nil and not files_check_window and not pos_active then  -- by FYP
 				for fpath, saved_time in pairs(files) do
 					local file_time = get_file_modify_time(fpath)
 					if file_time ~= nil and (file_time[1] ~= saved_time[1] or file_time[2] ~= saved_time[2]) then
@@ -1391,49 +1502,31 @@ function main()
 		end
 	end)
 
-	while true do wait(0)
-
+	while true do -- main
 		if samp == 0 or samp == 1 then
-			if testCheat(config.main.cheatcode) then
-				if limgui then
-					main_window[0] = not main_window[0]
-				else
-					main_window_noi = not main_window_noi
-				end
+			if testCheat(config.MAIN.cheatcode) then
+				if limgui then main_window[0] = not main_window[0] else main_window_noi = not main_window_noi end
 			end
+
+			if samp == 1 then hud_test = samp_connect_test() end -- test
+
 			if samp == 0 and hasCutsceneLoaded() then active = false else active = true end
 		end
 
 		if samp == 2 then
 			if sampGetGamestate() == 3 then active = true else active = false end
+			hud_test = samp_connect_test()
 		end
 
 		local radar = memory.getint8(0xBA6769)
 		local hud = memory.getint8(0xA444A0)
 
-		if config.main.main_active and active and hud == 1 and radar == 1 and not isPauseMenuActive() then
-
-			if config.main.widescreen then
-				fist_game_x = 640 - (ffi.cast("float**", 0x58F925 + 2)[0][0] + 63.5)
-				fist_game_y = (ffi.cast("float**", 0x58F911 + 2)[0][0] - 5)
-				fist_game_width = ffi.cast("float**", 0x58D933 + 2)[0][0] - 15.5
-				fist_game_height = ffi.cast("float**", 0x58D94B + 2)[0][0] - 12.5
-			elseif config.main.widescreen_Wesser then
-				fist_game_x = 640 - (ffi.cast("float**", 0x58F925 + 2)[0][0] - 51)
-				fist_game_y = (ffi.cast("float**", 0x58F911 + 2)[0][0] - 4.5)
-				fist_game_width = ffi.cast("float**", 0x58D933 + 2)[0][0] - 16.7
-				fist_game_height = ffi.cast("float**", 0x58D94B + 2)[0][0] - 11.5
-			elseif not config.main.widescreen and not config.main.widescreen_Wesser then
-				fist_game_x = 640 - (ffi.cast("float**", 0x58F925 + 2)[0][0] + 111)
-				fist_game_y = (ffi.cast("float**", 0x58F911 + 2)[0][0])
-				fist_game_width = ffi.cast("float**", 0x58D933 + 2)[0][0]
-				fist_game_height = ffi.cast("float**", 0x58D94B + 2)[0][0]
-			end -- function by kin4stat, offest by dmitriyewich
+		if config.MAIN.main_active and active and hud == 1 and hud_test and radar == 1 and not isPauseMenuActive() then
 
 			local currentGun = getCurrentCharWeapon(PLAYER_PED)
 
 			if config.outline_anim.outline and active_gun[currentGun].active and config[''..active_gun[currentGun].name].foreground and config[''..active_gun[currentGun].name].outline then
-				display_texture(outline_anim[i_outline_anim], convert_x(fist_game_x + config.outline_anim.customX1) , convert_y(fist_game_y + config.outline_anim.customY1), convert_x((fist_game_x + fist_game_width) + config.outline_anim.customX2), convert_y((fist_game_y + fist_game_height) + config.outline_anim.customY2)) -- обводка
+				display_texture(outline_anim[i_outline_anim], convert(config.outline_anim.posX + config.outline_anim.customX1)[1], convert(config.outline_anim.posY + config.outline_anim.customY1)[2], convert((config.outline_anim.posX + config.outline_anim.posW) + config.outline_anim.customX2)[1], convert((config.outline_anim.posY + config.outline_anim.posH) + config.outline_anim.customY2)[2]) -- обводка
 			end
 
 			if active_gun[currentGun].active then
@@ -1442,14 +1535,23 @@ function main()
 				i_delay_replay = config[''..active_gun[currentGun].name].delay_replay
 				i_delay_replay_end = config[''..active_gun[currentGun].name].delay_replay_end
 
-				display_texture(active_gun[currentGun].frames[i_frames], convert_x(fist_game_x + config[''..active_gun[currentGun].name].customX1) , convert_y(fist_game_y + config[''..active_gun[currentGun].name].customY1), convert_x((fist_game_x + fist_game_width) + config[''..active_gun[currentGun].name].customX2), convert_y((fist_game_y + fist_game_height) + config[''..active_gun[currentGun].name].customY2))
+				display_texture(active_gun[currentGun].frames[i_frames], convert(config[''..active_gun[currentGun].name].posX + config[''..active_gun[currentGun].name].customX1)[1], convert(config[''..active_gun[currentGun].name].posY + config[''..active_gun[currentGun].name].customY1)[2], convert((config[''..active_gun[currentGun].name].posX + config[''..active_gun[currentGun].name].posW) + config[''..active_gun[currentGun].name].customX2)[1], convert((config[''..active_gun[currentGun].name].posY + config[''..active_gun[currentGun].name].posH) + config[''..active_gun[currentGun].name].customY2)[2])
 			end
 			if config.outline_anim.outline and active_gun[currentGun].active and not config[''..active_gun[currentGun].name].foreground and config[''..active_gun[currentGun].name].outline then
-				display_texture(outline_anim[i_outline_anim], convert_x(fist_game_x + config.outline_anim.customX1) , convert_y(fist_game_y + config.outline_anim.customY1), convert_x((fist_game_x + fist_game_width) + config.outline_anim.customX2), convert_y((fist_game_y + fist_game_height) + config.outline_anim.customY2))
+				display_texture(outline_anim[i_outline_anim], convert(config.outline_anim.posX + config.outline_anim.customX1)[1], convert(config.outline_anim.posY + config.outline_anim.customY1)[2], convert((config.outline_anim.posX + config.outline_anim.posW) + config.outline_anim.customX2)[1], convert((config.outline_anim.posY + config.outline_anim.posH) + config.outline_anim.customY2)[2]) -- обводка
 			end
 		else
 			memory.fill(0x58D7D0, 0xA1, 1, true)
 		end
+		wait(0)
+	end
+end
+
+function samp_connect_test()
+	local gta_sa = getModuleHandle('gta_sa.exe')
+	local hud1 = memory.read(gta_sa + 0x76F053, 1, false)
+	if hud1 >= 1 then
+		return true
 	end
 end
 
@@ -1502,52 +1604,82 @@ function drawClickableText(text, posX, posY, sizeX, sizeY, a1, a2, offsetX, offs
 		local a2 = 255
 	end
 	if x_mouse >= posX - offsetX and x_mouse <= posX + offsetX and y_mouse >= posY and y_mouse <= posY + offsetY then
-	mad.draw_text(text, convert_x(posX), convert_y(posY), mad.font_style.SUBTITLES, sizeX, sizeY, mad.font_align.CENTER, 1000, true, true, 255, 255, 255, a1, 1, 0, 30, 30, 30, false, 0, 0, 0, 0)
+	mad.draw_text(text, convert(posX)[1], convert(posY)[2], mad.font_style.SUBTITLES, sizeX, sizeY, mad.font_align.CENTER, 1000, true, true, 255, 255, 255, a1, 1, 0, 30, 30, 30, false, 0, 0, 0, 0)
 
 	if bool then
 		if int == 1 then
-			draw_text("X1+ "..config[''..int2].customX1, convert_x(fist_game_x + config[''..int2].customX1 - 12), convert_y((fist_game_y + config[''..int2].customY1 / 2) + fist_game_y + config[''..int2].customY1))
+			draw_text("X1+ "..config[''..int2].customX1, convert(config[''..int2].posX + config[''..int2].customX1 - 12)[1], convert((config[''..int2].posY + config[''..int2].customY1 / 2) + config[''..int2].posY + config[''..int2].customY1)[2])
 		end
 		if int == 2 then
-			draw_text("X2+ "..config[''..int2].customX2, convert_x(14 + (fist_game_x + fist_game_width) + config[''..int2].customX2), convert_y((fist_game_y + config[''..int2].customY1 / 2) + fist_game_y + config[''..int2].customY1))
+			draw_text("X2+ "..config[''..int2].customX2, convert(14 + (config[''..int2].posX + config[''..int2].posW) + config[''..int2].customX2)[1], convert((config[''..int2].posY + config[''..int2].customY1 / 2) + config[''..int2].posY + config[''..int2].customY1)[2])
 		end
 		if int == 3 then
-			draw_text("Y1+ "..config[''..int2].customY1, convert_x(fist_game_x + config[''..int2].customX1 + (fist_game_width / 2)), convert_y(fist_game_y + config[''..int2].customY1 - 7))
+			draw_text("Y1+ "..config[''..int2].customY1, convert(config[''..int2].posX + config[''..int2].customX1 + (config[''..int2].posW / 2))[1], convert(config[''..int2].posY + config[''..int2].customY1 - 7)[2])
 		end
 		if int == 4 then
-			draw_text("Y2+ "..config[''..int2].customY2, convert_x(fist_game_x + config[''..int2].customX1 + (fist_game_width / 2)), convert_y((fist_game_y + fist_game_height) + config[''..int2].customY2))
+			draw_text("Y2+ "..config[''..int2].customY2, convert(config[''..int2].posX + config[''..int2].customX1 + (config[''..int2].posW / 2))[1], convert((config[''..int2].posY + config[''..int2].posH) + config[''..int2].customY2)[2])
 		end
 		if int == 5 then
-			draw_text("X1- "..config[''..int2].customX1, convert_x(fist_game_x + config[''..int2].customX1 - 12), convert_y((fist_game_y + config[''..int2].customY1 / 2) + fist_game_y + config[''..int2].customY1))
+			draw_text("X1- "..config[''..int2].customX1, convert(config[''..int2].posX + config[''..int2].customX1 - 12)[1], convert((config[''..int2].posY + config[''..int2].customY1 / 2) + config[''..int2].posY + config[''..int2].customY1)[2])
 		end
 		if int == 6 then
-			draw_text("X2- "..config[''..int2].customX2, convert_x(14 + (fist_game_x + fist_game_width) + config[''..int2].customX2), convert_y((fist_game_y + config[''..int2].customY1 / 2) + fist_game_y + config[''..int2].customY1))
+			draw_text("X2- "..config[''..int2].customX2, convert(14 + (config[''..int2].posX + config[''..int2].posW) + config[''..int2].customX2)[1], convert((config[''..int2].posY + config[''..int2].customY1 / 2) + config[''..int2].posY + config[''..int2].customY1)[2])
 		end
 		if int == 7 then
-			draw_text("Y1- "..config[''..int2].customY1, convert_x(fist_game_x + config[''..int2].customX1 + (fist_game_width / 2)), convert_y(fist_game_y + config[''..int2].customY1 - 8))
+			draw_text("Y1- "..config[''..int2].customY1, convert(config[''..int2].posX + config[''..int2].customX1 + (config[''..int2].posW / 2))[1], convert(config[''..int2].posY + config[''..int2].customY1 - 8)[2])
 		end
 		if int == 8 then
-			draw_text("Y2- "..config[''..int2].customY2, convert_x(fist_game_x + config[''..int2].customX1 + (fist_game_width / 2)), convert_y((fist_game_y + fist_game_height) + config[''..int2].customY2))
+			draw_text("Y2- "..config[''..int2].customY2, convert(config[''..int2].posX + config[''..int2].customX1 + (config[''..int2].posW / 2))[1], convert((config[''..int2].posY + config[''..int2].posH) + config[''..int2].customY2)[2])
 		end
 	end
 
 		if wasKeyPressed(1) then
-			mad.draw_text(text, convert_x(posX), convert_y(posY), mad.font_style.SUBTITLES, sizeX, sizeY, mad.font_align.CENTER, 1000, true, true, 255, 255, 255, a2, 1, 0, 30, 30, 30, false, 0, 0, 0, 0)
+			mad.draw_text(text, convert(posX)[1], convert(posY)[2], mad.font_style.SUBTITLES, sizeX, sizeY, mad.font_align.CENTER, 1000, true, true, 255, 255, 255, a2, 1, 0, 30, 30, 30, false, 0, 0, 0, 0)
 			return true
 		end
 	else
-		mad.draw_text(text, convert_x(posX), convert_y(posY), mad.font_style.SUBTITLES, sizeX, sizeY, mad.font_align.CENTER, 1000, true, true, 255, 255, 255, a2, 1, 0, 30, 30, 30, false, 0, 0, 0, 0)
+		mad.draw_text(text, convert(posX)[1], convert(posY)[2], mad.font_style.SUBTITLES, sizeX, sizeY, mad.font_align.CENTER, 1000, true, true, 255, 255, 255, a2, 1, 0, 30, 30, 30, false, 0, 0, 0, 0)
 	end
 end
 
-function convert_x(x)
-	local gposX, gposY = convertGameScreenCoordsToWindowScreenCoords(x, x)
-	return gposX
+function RusToGame(text)
+    local convtbl = {[230]=155,[231]=159,[247]=164,[234]=107,[250]=144,[251]=168,[254]=171,[253]=170,[255]=172,[224]=97,[240]=112,[241]=99,[226]=162,[228]=154,[225]=151,[227]=153,[248]=165,[243]=121,[184]=101,[235]=158,[238]=111,[245]=120,[233]=157,[242]=166,[239]=163,[244]=63,[237]=174,[229]=101,[246]=160,[236]=175,[232]=156,[249]=161,[252]=169,[215]=141,[202]=75,[204]=77,[220]=146,[221]=147,[222]=148,[192]=65,[193]=128,[209]=67,[194]=139,[195]=130,[197]=69,[206]=79,[213]=88,[168]=69,[223]=149,[207]=140,[203]=135,[201]=133,[199]=136,[196]=131,[208]=80,[200]=133,[198]=132,[210]=143,[211]=89,[216]=142,[212]=129,[214]=137,[205]=72,[217]=138,[218]=167,[219]=145}
+    local result = {}
+    for i = 1, #text do
+        local c = text:byte(i)
+        result[i] = string.char(convtbl[c] or c)
+    end
+    return table.concat(result)
 end
 
-function convert_y(y)
-	local gposX, gposY = convertGameScreenCoordsToWindowScreenCoords(y, y)
-	return gposY
+function convert(xy)
+	local gposX, gposY = convertGameScreenCoordsToWindowScreenCoords(xy, xy)
+	return {gposX, gposY}
+end
+
+function currentXYWH(arg)
+	if arg == "widescreen" then  -- ffi by kin4stat
+		ccitable = {}
+		ccitable["x"] = 640 - (ffi.cast("float**", 0x58F925 + 2)[0][0] + 63.5)
+		ccitable["y"] = (ffi.cast("float**", 0x58F911 + 2)[0][0] - 5)
+		ccitable["w"] = ffi.cast("float**", 0x58D933 + 2)[0][0] - 15.5
+		ccitable["h"] = ffi.cast("float**", 0x58D94B + 2)[0][0] - 12.5
+		return ccitable
+	elseif arg == "widescreen_Wesser" then
+		ccitable = {}
+		ccitable["x"] = 640 - (ffi.cast("float**", 0x58F925 + 2)[0][0] - 51)
+		ccitable["y"] = (ffi.cast("float**", 0x58F911 + 2)[0][0] - 4.5)
+		ccitable["w"] = ffi.cast("float**", 0x58D933 + 2)[0][0] - 16.7
+		ccitable["h"] = ffi.cast("float**", 0x58D94B + 2)[0][0] - 11.5
+		return ccitable
+	elseif arg == "standard" then
+		ccitable = {}
+		ccitable["x"] = 640 - (ffi.cast("float**", 0x58F925 + 2)[0][0] + 111)
+		ccitable["y"] = (ffi.cast("float**", 0x58F911 + 2)[0][0])
+		ccitable["w"] = ffi.cast("float**", 0x58D933 + 2)[0][0]
+		ccitable["h"] = ffi.cast("float**", 0x58D94B + 2)[0][0]
+		return ccitable
+	end
 end
 
 function onWindowMessage(msg, wparam, lparam)
@@ -1574,6 +1706,9 @@ end
 
 function onScriptTerminate(LuaScript, quitGame)
     if LuaScript == thisScript() and not quitGame then
+		if not lmad then
+			printString("Library ~y~\'MoonAdditions\' ~r~not found.~n~~w~Download: ~y~ https://github.com/THE-FYP/MoonAdditions.~n~~r~Copy link in~y~ moonloader.log", 5000)
+		end
 		setPlayerControl(PLAYER_HANDLE, true)
 		memory.fill(0x58D7D0, 0xA1, 1, true)
 	end
