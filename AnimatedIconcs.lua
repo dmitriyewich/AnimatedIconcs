@@ -12,7 +12,7 @@ script_authors("deddosouru(idea), dmitriyewich")
 script_url("https://vk.com/dmitriyewichmods")
 script_dependencies("mimgui", "MoonAdditions" )
 script_properties('work-in-pause', 'forced-reloading-only')
-script_version("1.7.0")
+script_version("1.7.0.1")
 
 changelog = [[
 	NoNameAnimHud 0.1beta
@@ -562,8 +562,12 @@ if limgui then
 				if imgui.Checkbox("##6", outline_checkbox) then
 					config[''..item_list[int_item[0] + 1]].outline = outline_checkbox[0]
 				end
+				-- if imgui.CustomCheck(config.MAIN.language == "RU" and 'Обводка' or 'Outline'.."##6", outline_checkbox) then
+					-- config[''..item_list[int_item[0] + 1]].outline = outline_checkbox[0]
+				-- end
 				imgui.SameLine(nil, 0)
 				imgui.SetCursorPosX(imgui.GetCursorPosX() + 4.7)
+				-- imgui.SetCursorPosY(imgui.GetCursorPosY() + 5)
 				imgui.Text(config.MAIN.language == "RU" and 'Обводка' or 'Outline')
 				imgui.SameLine(nil, 0)
 				imgui.TextDisabled("|")
@@ -992,6 +996,64 @@ if limgui then
 
 		return result
 	end
+	
+	function imgui.CustomCheck(label, bool) -- by Котовский. https://www.blast.hk/threads/13380/post-890308
+		local result = false
+		local drawList = imgui.GetWindowDrawList()
+		local draw = imgui.GetCursorScreenPos()
+		local lineHeight = imgui.GetTextLineHeight()
+		local itemSpacing = imgui.GetStyle().ItemSpacing
+		local boxSize = math.floor(lineHeight * 0.95)
+		local clearance = boxSize * 0.2
+		local corner = draw + imgui.ImVec2(0, itemSpacing.y + math.floor(0.5 * (lineHeight - boxSize)))
+		local color = imgui.GetStyle().Colors[imgui.Col.Text]
+		local changedColor = imgui.ImVec4(color.x, color.y, color.z, 0.25)
+		local colorMark = color
+		local name = string.gsub(label, "##.*", "")
+		local radius = boxSize * 0.2
+		local conv = imgui.ColorConvertFloat4ToU32
+		local ImVec2 = imgui.ImVec2
+
+		if not cMarks then cMarks = {} end
+		if not cMarks[label] then cMarks[label] = 0 end
+
+		imgui.BeginGroup()
+			imgui.InvisibleButton(label, ImVec2(boxSize, boxSize))
+			if #name > 0 then
+				imgui.SameLine()
+				imgui.SetCursorPosY(imgui.GetCursorPosY() + 2.5)
+				imgui.Text(name)
+			end
+		imgui.EndGroup()
+		if imgui.IsItemClicked() then
+			bool[0] = not bool[0]
+			result = true
+			if bool[0] then cMarks[label] = os.clock() end
+		end
+
+		changedColor.w = imgui.IsItemHovered() and 1.0 or 0.25
+		drawList:AddRect(corner, corner + ImVec2(boxSize, boxSize), conv(changedColor), 0.0, 0, 1.0)
+
+		if bool[0] then
+			local pts = {
+				corner + ImVec2(clearance, clearance + boxSize * 0.3),
+				corner + ImVec2(boxSize * 0.5, boxSize - clearance),
+				corner + ImVec2(boxSize - clearance, clearance)
+			}
+			drawList:AddLine(pts[1], pts[2], conv(colorMark), 1.0)
+			drawList:AddLine(pts[2], pts[3], conv(colorMark), 1.0)
+		end
+
+		local timer = os.clock() - cMarks[label]
+		if timer < 0.4 then
+			local r = radius + timer*25
+			if timer <= 0.2 then circColor = imgui.ImVec4(color.x, color.y, color.z, r/5)
+			else circColor = imgui.ImVec4(color.x, color.y, color.z, r/75)
+			end
+			drawList:AddCircle(ImVec2(draw.x + boxSize/2, draw.y + boxSize - clearance), r, conv(circColor))
+		end
+		return result
+	end
 else
 	item_list = {"outline_anim"}
 	offset_list = {'0.1', '0.2', '0.3', '0.4', '0.5', '1.0', '2.0', '4.0', '6.0', '8.0'}
@@ -1011,6 +1073,21 @@ function main()
 	assert(lencoding, 'Library \'encoding\' not found.')
 
 	samp, hud_test = 0, true
+-- local ccitabjkjle = ffi.cast("void*, int, int, float*", 0x5893B0)
+-- ccitabjkjle = ffi.cast("float**", 0x5893B0)[0][0]
+-- memory.write(0x58F9F7, 320, 4, true)
+-- local LimitToMap = ffi.cast("int", 0x5893B0)[0][0]
+-- plugin::Call<0x5893B0, CPed*, int, int, float>(ped, x, y, alpha);
+-- function SetRwObjectAlpha(handle, alpha)
+    -- local pedEn = getCharPointer(PLAYER_PED)
+	-- print(pedEn)
+    -- if pedEn ~= 0 then
+        -- ffi.cast("void(__thiscall*)(uint32_t, unsigned int, unsigned int, float)", 0x5893B0)(pedEn, 1, 100, 100)
+    -- end
+-- end
+-- callFunction(0x5893B0, 4, 4, pedEn, 32, 32, 155.0)
+-- LimitToMap(pX, pY)
+-- print(ccitabjkjle)
 
 	if isSampLoaded() then samp = 1 end
 	if isSampLoaded() and isSampfuncsLoaded() then samp = 2 end
@@ -1026,7 +1103,6 @@ function main()
 		end)
 		sampSetClientCommandDescription(config.MAIN.command, (string.format(u8:decode'Activating/deactivating the window %s, File: %s', thisScript().name, thisScript().filename)))
 	end
-
 
 	active_gun = {[0] = {["name"] ="fist_anim", ["active"] = false, ["frames"] = {}},[1] = {["name"] ="brassknuckle_anim", ["active"] = false, ["frames"] = {}}, [2] = {["name"] ="golfclub_anim", ["active"] = false, ["frames"] = {}}, [3] = {["name"] ="nitestick_anim", ["active"] = false, ["frames"] = {}}, [4] = {["name"] ="knifecur_anim", ["active"] = false, ["frames"] = {}}, [5] = {["name"] ="bat_anim", ["active"] = false, ["frames"] = {}}, [6] = {["name"] ="shovel_anim", ["active"] = false, ["frames"] = {}}, [7] = {["name"] ="poolcue_anim", ["active"] = false, ["frames"] = {}}, [8] = {["name"] ="katana_anim", ["active"] = false, ["frames"] = {}}, [9] = {["name"] ="chnsaw_anim", ["active"] = false, ["frames"] = {}}, [10] = {["name"] ="gun_dildo1_anim", ["active"] = false, ["frames"] = {}}, [11] = {["name"] ="gun_dildo2_anim", ["active"] = false, ["frames"] = {}}, [12] = {["name"] ="gun_vibe1_anim", ["active"] = false, ["frames"] = {}}, [13] = {["name"] ="gun_vibe2_anim", ["active"] = false, ["frames"] = {}}, [14] = {["name"] ="flowera_anim", ["active"] = false, ["frames"] = {}}, [15] = {["name"] ="gun_cane_anim", ["active"] = false, ["frames"] = {}}, [16] = {["name"] ="grenade_anim", ["active"] = false, ["frames"] = {}}, [17] = {["name"] ="teargas_anim", ["active"] = false, ["frames"] = {}}, [18] = {["name"] ="molotov_anim", ["active"] = false, ["frames"] = {}}, [22] = {["name"] ="colt45_anim", ["active"] = false, ["frames"] = {}}, [23] = {["name"] ="silenced_anim", ["active"] = false, ["frames"] = {}}, [24] = {["name"] ="desert_eagle_anim", ["active"] = false, ["frames"] = {}}, [25] = {["name"] ="chromegun_anim", ["active"] = false, ["frames"] = {}}, [26] = {["name"] ="sawnoff_anim", ["active"] = false, ["frames"] = {}}, [27] = {["name"] ="shotgspa_anim", ["active"] = false, ["frames"] = {}}, [28] = {["name"] ="micro_uzi_anim", ["active"] = false, ["frames"] = {}}, [29] = {["name"] ="mp5lng_anim", ["active"] = false, ["frames"] = {}}, [30] = {["name"] ="ak47_anim", ["active"] = false, ["frames"] = {}}, [31] = {["name"] ="m4_anim", ["active"] = false, ["frames"] = {}}, [32] = {["name"] ="tec9_anim", ["active"] = false, ["frames"] = {}}, [33] = {["name"] ="cuntgun_anim", ["active"] = false, ["frames"] = {}}, [34] = {["name"] ="sniper_anim", ["active"] = false, ["frames"] = {}}, [35] = {["name"] ="rocketla_anim", ["active"] = false, ["frames"] = {}}, [36] = {["name"] ="heatseek_anim", ["active"] = false, ["frames"] = {}}, [37] = {["name"] ="flame_anim", ["active"] = false, ["frames"] = {}}, [38] = {["name"] ="minigun_anim", ["active"] = false, ["frames"] = {}}, [39] = {["name"] ="satchel_anim", ["active"] = false, ["frames"] = {}}, [40] = {["name"] ="bomb_anim", ["active"] = false, ["frames"] = {}}, [41] = {["name"] ="spraycan_anim", ["active"] = false, ["frames"] = {}}, [42] = {["name"] ="fire_ex_anim", ["active"] = false, ["frames"] = {}}, [43] = {["name"] ="camera_anim", ["active"] = false, ["frames"] = {}}, [44] = {["name"] ="nvgoggles_anim", ["active"] = false, ["frames"] = {}}, [45] = {["name"] ="irgoggles_anim", ["active"] = false, ["frames"] = {}}, [46] = {["name"] ="gun_para_anim", ["active"] = false, ["frames"] = {}}}
 
@@ -1132,6 +1208,25 @@ function main()
 			wait(0)
 		end
     end)
+
+ammoX = 640 - (ffi.cast("float**", 0x58F9F7)[0][0] + 119.5) -- standard
+-- ammoY = 440 - (ffi.cast("float**", 0x58F9DC)[0][0] + 0) -- standard
+
+-- print(ammoX)
+-- weapon_bullets_thread = lua_thread.create_suspended(function()
+lua_thread.create(function()
+	while true do
+		if getAmmoInCharWeapon(PLAYER_PED, getCurrentCharWeapon(PLAYER_PED)) ~= 0 then
+			local bullets = myAmmo()
+			local othBullets = getAmmoInCharWeapon(PLAYER_PED, getCurrentCharWeapon(PLAYER_PED)) - myAmmo()
+			-- print(othBullets)
+			-- print(bullets)
+			mad.draw_text(othBullets.."-"..bullets, convert(520.4)[1], convert(62.6)[2], 1, 0.9, 1.69, mad.font_align.CENTER, 1000, true, true, 181, 214, 255, 255, 1.0, 0, 30, 30, 30, false, 0, 0, 0, 0)
+			-- mad.draw_text(othBullets.."-"..bullets, convert(ammoX)[1], convert(62.6)[2], 1, 0.9, 1.69, 0, 1000, true, false, 181, 214, 255, 255, 1.0, 0, 30, 30, 30, false, 0, 0, 0, 0)
+		end
+		wait(0)
+	end
+end)
 
 	pos_active_thread = lua_thread.create_suspended(function() -- отдельный поток настройки позиции обводки/иконки
 		posx_mouse, posy_mouse = 325.0, 225.0
@@ -1519,9 +1614,10 @@ function main()
 		end
 
 		local radar = memory.getint8(0xBA6769)
+		local radar2 = memory.getint8(0xBAA3FB)
 		local hud = memory.getint8(0xA444A0)
 
-		if config.MAIN.main_active and active and hud == 1 and hud_test and radar == 1 and not isPauseMenuActive() then
+		if config.MAIN.main_active and active and hud == 1 and hud_test and radar == 1 and not isPauseMenuActive() and radar2 == 0 then
 
 			local currentGun = getCurrentCharWeapon(PLAYER_PED)
 
@@ -1550,8 +1646,7 @@ end
 function samp_connect_test()
 	local gta_sa = getModuleHandle('gta_sa.exe')
 	local hud1 = memory.read(gta_sa + 0x76F053, 1, false)
-	if hud1 >= 1 then
-		return true
+	if hud1 >= 1 then return true else return false
 	end
 end
 
@@ -1655,6 +1750,10 @@ end
 function convert(xy)
 	local gposX, gposY = convertGameScreenCoordsToWindowScreenCoords(xy, xy)
 	return {gposX, gposY}
+end
+
+function myAmmo()
+    return memory.getint32(getCharPointer(PLAYER_PED) + 0x5A0 + memory.getint8(getCharPointer(PLAYER_PED) + 0x0718, false) * 0x1C + 0x8, false)
 end
 
 function currentXYWH(arg)
