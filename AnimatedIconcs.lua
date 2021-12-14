@@ -12,7 +12,7 @@ script_authors("deddosouru(idea), dmitriyewich")
 script_url("https://vk.com/dmitriyewichmods")
 script_dependencies("mimgui", "MoonAdditions" )
 script_properties('work-in-pause', 'forced-reloading-only')
-script_version("1.7.0.1")
+script_version("1.7.0.2")
 
 changelog = [[
 	NoNameAnimHud 0.1beta
@@ -81,6 +81,9 @@ changelog = [[
 		- Микрофиксы
 	AnimatedIconcs v1.7.0.1
 		- Дополнительная проверка
+	AnimatedIconcs v1.7.0.2
+		- Фикс мигания если в .txd одна текстура
+		- Микрофиксы настройки задержек
 ]]
 
 local lvkeys, vkeys = pcall(require, 'vkeys')
@@ -531,15 +534,15 @@ if limgui then
 			imgui.SetCursorPosX(imgui.GetCursorPosX() + 0)
 			imgui.SetCursorPosY(imgui.GetCursorPosY() - 32)
 			if config.MAIN.language == "RU" then imgui.Text("RU") else imgui.TextDisabled("RU") end
-			if imgui.IsItemClicked(0) then 
-				config.MAIN.language = "RU" 
+			if imgui.IsItemClicked(0) then
+				config.MAIN.language = "RU"
 				savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 			end
 			imgui.SameLine(nil, 0)
 			imgui.Text("|")
 			imgui.SameLine(nil, 0)
 			if config.MAIN.language == "EN" then imgui.Text("EN") else imgui.TextDisabled("EN") end
-			if imgui.IsItemClicked(0) then 
+			if imgui.IsItemClicked(0) then
 				config.MAIN.language = "EN"
 				savejson(convertTableToJsonString(config), "moonloader/AnimatedIconcs/AnimatedIconcs.json")
 			end
@@ -659,8 +662,9 @@ if limgui then
 			imgui.PushItemWidth(60)
 
 			local input_delay_hint = config[''..item_list[int_item[0] + 1]].delay
+			-- print()
 				imgui.StrCopy(input_delay, ''..config[''..item_list[int_item[0] + 1]].delay)
-			if imgui.InputTextWithHint('##input_delay', ''..input_delay_hint, input_delay, sizeof(input_delay) - 1, imgui.InputTextFlags.CharsDecimal) then
+			if imgui.InputTextWithHint('##input_delay'..item_list[int_item[0] + 1], input_delay_hint..'##'..item_list[int_item[0] + 1], input_delay, sizeof(input_delay) - 1, imgui.InputTextFlags.CharsDecimal) then
 				if str(input_delay) == nil or str(input_delay) == "" then
 					imgui.StrCopy(input_delay, '0')
 				end
@@ -675,7 +679,7 @@ if limgui then
 			imgui.PushItemWidth(60)
 			local input_delay_replay_hint = config[''..item_list[int_item[0] + 1]].delay_replay
 				imgui.StrCopy(input_delay_replay, ''..config[''..item_list[int_item[0] + 1]].delay_replay)
-			if imgui.InputTextWithHint('##input_delay_replay', ''..input_delay_replay_hint, input_delay_replay, sizeof(input_delay_replay) - 1, imgui.InputTextFlags.CharsDecimal) then
+			if imgui.InputTextWithHint('##input_delay_replay'..item_list[int_item[0] + 1], input_delay_replay_hint..'##'..item_list[int_item[0] + 1], input_delay_replay, sizeof(input_delay_replay) - 1, imgui.InputTextFlags.CharsDecimal) then
 				if str(input_delay_replay) == nil or str(input_delay_replay) == "" then
 					imgui.StrCopy(input_delay_replay, '0')
 				end
@@ -690,7 +694,7 @@ if limgui then
 			imgui.PushItemWidth(60)
 			local input_delay_replay_end_hint = config[''..item_list[int_item[0] + 1]].delay_replay_end
 				imgui.StrCopy(input_delay_replay_end, ''..config[''..item_list[int_item[0] + 1]].delay_replay_end)
-			if imgui.InputTextWithHint('##input_delay_replay_end', ''..input_delay_replay_hint, input_delay_replay_end, sizeof(input_delay_replay_end) - 1, imgui.InputTextFlags.CharsDecimal) then
+			if imgui.InputTextWithHint('##input_delay_replay_end'..item_list[int_item[0] + 1], input_delay_replay_hint..'##'..item_list[int_item[0] + 1], input_delay_replay_end, sizeof(input_delay_replay_end) - 1, imgui.InputTextFlags.CharsDecimal) then
 				if str(input_delay_replay_end) == nil or str(input_delay_replay_end) == "" then
 					imgui.StrCopy(input_delay_replay_end, '0')
 				end
@@ -1109,7 +1113,8 @@ function main()
 	lua_thread.create(function() -- отдельный поток для прогона кадров иконок
 		i_delay, i_delay_replay, i_delay_replay_end, i_frames_max, i_frames = 0, 0, 0, 0, 0
 		while true do
-			if i_frames > i_frames_max then
+			i_frames = i_frames + 1
+			if i_frames >= i_frames_max then
 				i_frames = 0
 			else
 				i_frames = i_frames + 1
@@ -1124,7 +1129,7 @@ function main()
     end)
 
 	lua_thread.create(function() -- отдельный поток для скрытия иконок
-		while true do 
+		while true do
 			local currentGun = getCurrentCharWeapon(PLAYER_PED)
 			if not config.MAIN.standard_icons and active_gun[currentGun].active and config.MAIN.main_active then
 				memory.fill(0x58D7D0, 0xC3, 1, false) -- Выключить иконки.
