@@ -12,7 +12,7 @@ script_authors("deddosouru(idea), dmitriyewich")
 script_url("https://vk.com/dmitriyewichmods")
 script_dependencies("mimgui", "MoonAdditions" )
 script_properties('work-in-pause', 'forced-reloading-only')
-script_version("1.7.0.2")
+script_version("1.7.0.3")
 
 changelog = [[
 	NoNameAnimHud 0.1beta
@@ -84,6 +84,8 @@ changelog = [[
 	AnimatedIconcs v1.7.0.2
 		- Фикс мигания если в .txd одна текстура
 		- Микрофиксы настройки задержек
+	AnimatedIconcs v1.7.0.3
+		- Микрофикс
 ]]
 
 local lvkeys, vkeys = pcall(require, 'vkeys')
@@ -1515,14 +1517,14 @@ function main()
 				if limgui then main_window[0] = not main_window[0] else main_window_noi = not main_window_noi end
 			end
 
-			if samp == 1 then hud_test = samp_connect_test() end -- test
+			if samp == 1 then hud_test = fixed_camera_to_skin() end -- test
 
 			if samp == 0 and hasCutsceneLoaded() then active = false else active = true end
 		end
 
 		if samp == 2 then
 			if sampGetGamestate() == 3 then active = true else active = false end
-			hud_test = samp_connect_test()
+			hud_test = fixed_camera_to_skin()
 		end
 
 		local radar = memory.getint8(0xBA6769)
@@ -1555,12 +1557,8 @@ function main()
 	end
 end
 
-function samp_connect_test()
-	local gta_sa = getModuleHandle('gta_sa.exe')
-	local hud1 = memory.read(gta_sa + 0x76F053, 1, false)
-	if hud1 >= 1 then
-		return true
-	end
+function fixed_camera_to_skin() -- проверка на приклепление камеры к скину
+	return (memory.read(getModuleHandle('gta_sa.exe') + 0x76F053, 1, false) >= 1 and true or false)
 end
 
 function checktable(t, str)
