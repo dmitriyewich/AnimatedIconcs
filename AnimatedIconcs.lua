@@ -1115,18 +1115,19 @@ function main()
 	lua_thread.create(function() -- отдельный поток для прогона кадров иконок
 		i_delay, i_delay_replay, i_delay_replay_end, i_frames_max, i_frames = 0, 0, 0, 0, 0
 		while true do
-			i_frames = i_frames + 1
-			if i_frames >= i_frames_max then
-				i_frames = 0
-			else
+			if i_frames_max ~= 0 then
+				wait(i_delay)
 				i_frames = i_frames + 1
 				if i_frames == i_frames_max then
 					wait(i_delay_replay_end)
 					i_frames = 0
 					wait(i_delay_replay)
 				end
+			else
+				i_frames = 0
+				wait(i_delay)
 			end
-			wait(i_delay)
+
 		end
     end)
 
