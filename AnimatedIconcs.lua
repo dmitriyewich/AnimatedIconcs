@@ -85,6 +85,7 @@ changelog = [[
 		- Фикс мигания если в .txd одна текстура
 		- Микрофиксы настройки задержек
 	AnimatedIconcs v1.7.0.3
+		- Фикс краша при отсутвии mimgui(временное решение, как будет время доработаю эту функцию).
 		- Микрофикс, который надеюсь не поломает скрипт...
 ]]
 
@@ -1268,11 +1269,11 @@ function main()
 						if hasCharGotWeapon(PLAYER_PED, id_gun[test2]) then setCurrentCharWeapon(PLAYER_PED, id_gun[test2]) end
 					end
 					if drawClickableText(""..test2:gsub("_anim", ""), 550, 165, _, _, 155, 255, 10, 5) then
-						local text = ""
-						for i, v in pairs(item_list) do
-							text = text..""..v:gsub("_anim", "").."~n~"
-						end
-						printStyledString(text, 2000, 4)
+						-- local text = ""
+						-- for i, v in pairs(item_list) do
+							-- text = text..""..v:gsub("_anim", "").."~n~"
+						-- end
+						-- printStyledString(text, 2000, 4)
 					end
 					if drawClickableText("->", 580, 165, _, _, 155, 255, 5, 5) then
 						test1 = test1 + 1
