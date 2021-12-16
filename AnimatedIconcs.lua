@@ -85,7 +85,7 @@ changelog = [[
 		- Фикс мигания если в .txd одна текстура
 		- Микрофиксы настройки задержек
 	AnimatedIconcs v1.7.0.3
-		- Микрофикс
+		- Микрофикс, который надеюсь не поломает скрипт...
 ]]
 
 local lvkeys, vkeys = pcall(require, 'vkeys')
@@ -1112,7 +1112,7 @@ function main()
 		end
     end)
 
-	lua_thread.create(function() -- отдельный поток для прогона кадров иконок
+	thread_icons = lua_thread.create(function() -- отдельный поток для прогона кадров иконок
 		i_delay, i_delay_replay, i_delay_replay_end, i_frames_max, i_frames = 0, 0, 0, 0, 0
 		while true do
 			if i_frames_max ~= 0 then
@@ -1130,6 +1130,17 @@ function main()
 
 		end
     end)
+	
+	lua_thread.create(function() -- ещё один поток отвечающий за перезапуск потоко с прогоном кадров иконок, нужен для того чтобы не завершенное ожидание сбрасывалось при смене оружия, иначе прогон кадров ждал завершения wait от предыдущего оружия
+		gCCW = 0
+		while true do wait(0)
+			if getCurrentCharWeapon(PLAYER_PED) ~= gCCW then
+				i_delay, i_delay_replay, i_delay_replay_end, i_frames_max, i_frames = 0, 0, 0, 0, 0
+				gCCW = getCurrentCharWeapon(PLAYER_PED)
+				thread_icons:run()
+			end
+		end
+	end)
 
 	lua_thread.create(function() -- отдельный поток для скрытия иконок
 		while true do
